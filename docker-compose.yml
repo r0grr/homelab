@@ -81,7 +81,25 @@ services:
       - homelab-net
 
   # ============================================================================
-  # 5. CLOUDFLARE ZERO TRUST TUNNEL
+  # 5. SOLAREDGE PRO WEB DASHBOARD (React + Vite)
+  # Panel web visual interactivo con gráficas y flujo de energía en tiempo real.
+  # ============================================================================
+  solaredge-dashboard:
+    build:
+      context: ./scripts/solaredge_dashboard
+    container_name: solaredge-dashboard
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    environment:
+      - TZ=${TZ:-Europe/Madrid}
+      - VITE_SOLAREDGE_SITE_ID=${SOLAREDGE_SITE_ID}
+      - VITE_SOLAREDGE_API_KEY=${SOLAREDGE_API_KEY}
+    networks:
+      - homelab-net
+
+  # ============================================================================
+  # 6. CLOUDFLARE ZERO TRUST TUNNEL
   # Túnel saliente seguro sin apertura de puertos en el router.
   # Perfil 'tunnel' para activación en la fase final con zona DNS.
   # ============================================================================

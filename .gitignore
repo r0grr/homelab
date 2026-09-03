@@ -38,3 +38,4 @@ homeassistant/config/backups/
 *.swp
 *.bak
 *~
+scripts/solaredge_dashboard/node_modules/
