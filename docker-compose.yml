@@ -8,6 +8,9 @@ services:
     container_name: homeassistant
     restart: unless-stopped
     network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
     environment:
       - TZ=${TZ:-Europe/Madrid}
     volumes:
@@ -35,7 +38,7 @@ services:
   # Mapeo directo de puertos serie hardware COM1 (/dev/ttyS0) y COM2 (/dev/ttyS1).
   # ============================================================================
   cumulusmx:
-    image: weatherwatchers/cumulusmx:latest
+    image: ghcr.io/hucknz/cumulusmx:v4
     container_name: cumulusmx
     restart: unless-stopped
     ports:
@@ -46,55 +49,41 @@ services:
     environment:
       - TZ=${TZ:-Europe/Madrid}
     volumes:
-      - /opt/servidor/cumulusmx/data:/data
+      - /opt/servidor/cumulusmx/data:/opt/CumulusMX/data
+      - /opt/servidor/cumulusmx/config:/opt/CumulusMX/config
       - /etc/localtime:/etc/localtime:ro
     networks:
       - homelab-net
 
   # ============================================================================
-  # 4. MICROSERVICIO TELEMETRÍA SOLAR
-  # Polling del inversor solar y publicación de estado a Mosquitto.
+  # 4. SOLAREDGE BOT & TELEMETRÍA SOLAR (Microservicio Unificado)
+  # Consulta API SolarEdge, publica a Mosquitto (solar/*) y atiende Telegram.
   # ============================================================================
-  placas-solares:
+  solaredge-bot:
     build:
-      context: ./scripts/placas_solares
-    container_name: placas-solares
+      context: ./scripts/solaredge_bot
+    container_name: solaredge-bot
     restart: unless-stopped
     environment:
       - TZ=${TZ:-Europe/Madrid}
       - MQTT_BROKER_HOST=mosquitto
       - MQTT_PORT=${MQTT_PORT:-1883}
-      - SOLAR_INVERTER_IP=${SOLAR_INVERTER_IP:-192.168.2.150}
-      - SOLAR_POLL_INTERVAL_SEC=${SOLAR_POLL_INTERVAL_SEC:-30}
-    depends_on:
-      - mosquitto
-    networks:
-      - homelab-net
-
-  # ============================================================================
-  # 5. BOT DE TELEGRAM
-  # Suscriptor MQTT de clima/# y solar/# para consultas y alertas interactivas.
-  # ============================================================================
-  bot-telegram:
-    build:
-      context: ./scripts/bot_telegram
-    container_name: bot-telegram
-    restart: unless-stopped
-    environment:
-      - TZ=${TZ:-Europe/Madrid}
-      - MQTT_BROKER_HOST=mosquitto
-      - MQTT_PORT=${MQTT_PORT:-1883}
+      - SOLAREDGE_SITE_ID=${SOLAREDGE_SITE_ID}
+      - SOLAREDGE_API_KEY=${SOLAREDGE_API_KEY}
+      - SOLAR_POLL_INTERVAL_SEC=${SOLAR_POLL_INTERVAL_SEC:-600}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+    volumes:
+      - /opt/servidor/scripts/solaredge_bot/memoria.json:/app/memoria.json
     depends_on:
       - mosquitto
     networks:
       - homelab-net
 
   # ============================================================================
-  # 6. CLOUDFLARE ZERO TRUST TUNNEL
+  # 5. CLOUDFLARE ZERO TRUST TUNNEL
   # Túnel saliente seguro sin apertura de puertos en el router.
-  # Se asigna a profile 'tunnel' para que no falle mientras no haya token real.
+  # Perfil 'tunnel' para activación en la fase final con zona DNS.
   # ============================================================================
   cloudflared:
     image: cloudflare/cloudflared:latest
