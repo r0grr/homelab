@@ -13,6 +13,18 @@ const SOLAREDGE_API_KEY = process.env.SOLAREDGE_API_KEY;
 const MQTT_HOST = process.env.MQTT_BROKER_HOST || 'mosquitto';
 const MQTT_PORT = process.env.MQTT_PORT || 1883;
 
+// Horari de silenci absolut per a alertes proactives (per defecte: de 22:00 a 08:00)
+const QUIET_START_HOUR = process.env.QUIET_START_HOUR !== undefined ? parseInt(process.env.QUIET_START_HOUR, 10) : 22;
+const QUIET_END_HOUR = process.env.QUIET_END_HOUR !== undefined ? parseInt(process.env.QUIET_END_HOUR, 10) : 8;
+
+function isQuietHours(date = new Date()) {
+  const h = date.getHours();
+  if (QUIET_START_HOUR > QUIET_END_HOUR) {
+    return h >= QUIET_START_HOUR || h < QUIET_END_HOUR;
+  }
+  return h >= QUIET_START_HOUR && h < QUIET_END_HOUR;
+}
+
 // Inicialización de Telegram Bot
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 
@@ -218,6 +230,12 @@ async function checkAlerts() {
       state.date = currentDay;
       state.dailyMax = 0;
       state.lastNotifiedPv = 0;
+    }
+
+    // Si estem en horari de silenci (ex: de 22:00 a 08:00), NO enviar cap alerta proactiva a Telegram
+    if (isQuietHours()) {
+      console.log(`🌙 [Silenci Nocturn (${QUIET_START_HOUR}:00 - ${QUIET_END_HOUR}:00)] Alertes automàtiques silenciades.`);
+      return;
     }
 
     // 1. Excessive consumption

@@ -73,6 +73,8 @@ services:
       - SOLAR_POLL_INTERVAL_SEC=${SOLAR_POLL_INTERVAL_SEC:-600}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - QUIET_START_HOUR=${QUIET_START_HOUR:-22}
+      - QUIET_END_HOUR=${QUIET_END_HOUR:-8}
     volumes:
       - /opt/servidor/scripts/solaredge_bot/memoria.json:/app/memoria.json
     depends_on:
