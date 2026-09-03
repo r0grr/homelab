@@ -1,0 +1,89 @@
+# ==============================================================================
+# Home Assistant Core Configuration
+# ==============================================================================
+
+default_config:
+
+# Soporte para túnel de Cloudflare / Proxy Inverso
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 127.0.0.1
+    - ::1
+    - 172.16.0.0/12      # Rango de redes internas de Docker
+    - 192.168.2.0/24     # Red local
+
+frontend:
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+# ------------------------------------------------------------------------------
+# Sensores MQTT: Telemetría Davis Vantage Pro2 (Cumulus MX) y Placas Solares
+# ------------------------------------------------------------------------------
+mqtt:
+  sensor:
+    # Telemetría Meteorológica (Davis Vantage Pro2)
+    - name: "Estación Davis - Temperatura Exterior"
+      unique_id: "davis_temp_exterior"
+      state_topic: "clima/temperatura"
+      unit_of_measurement: "°C"
+      device_class: "temperature"
+      state_class: "measurement"
+      value_template: "{{ value | float }}"
+
+    - name: "Estación Davis - Humedad Exterior"
+      unique_id: "davis_humedad_exterior"
+      state_topic: "clima/humedad"
+      unit_of_measurement: "%"
+      device_class: "humidity"
+      state_class: "measurement"
+      value_template: "{{ value | float }}"
+
+    - name: "Estación Davis - Velocidad del Viento"
+      unique_id: "davis_viento_velocidad"
+      state_topic: "clima/viento_velocidad"
+      unit_of_measurement: "km/h"
+      device_class: "wind_speed"
+      state_class: "measurement"
+      value_template: "{{ value | float }}"
+
+    - name: "Estación Davis - Dirección del Viento"
+      unique_id: "davis_viento_direccion"
+      state_topic: "clima/viento_direccion"
+      unit_of_measurement: "°"
+      value_template: "{{ value | float }}"
+
+    - name: "Estación Davis - Lluvia Hoy"
+      unique_id: "davis_lluvia_hoy"
+      state_topic: "clima/lluvia_hoy"
+      unit_of_measurement: "mm"
+      device_class: "precipitation"
+      state_class: "total_increasing"
+      value_template: "{{ value | float }}"
+
+    - name: "Estación Davis - Presión Barométrica"
+      unique_id: "davis_presion"
+      state_topic: "clima/presion"
+      unit_of_measurement: "hPa"
+      device_class: "atmospheric_pressure"
+      state_class: "measurement"
+      value_template: "{{ value | float }}"
+
+    # Telemetría Solar (Microservicio Inversor)
+    - name: "Solar - Potencia Instantánea"
+      unique_id: "solar_potencia_w"
+      state_topic: "solar/power"
+      unit_of_measurement: "W"
+      device_class: "power"
+      state_class: "measurement"
+      value_template: "{{ value | float }}"
+
+    - name: "Solar - Energía Producida Hoy"
+      unique_id: "solar_energia_hoy_kwh"
+      state_topic: "solar/energy_today"
+      unit_of_measurement: "kWh"
+      device_class: "energy"
+      state_class: "total_increasing"
+      value_template: "{{ value | float }}"

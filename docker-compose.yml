@@ -1,0 +1,118 @@
+services:
+  # ============================================================================
+  # 1. HOME ASSISTANT
+  # Requiere network_mode: host para descubrimiento mDNS, SSDP e integración Tuya.
+  # ============================================================================
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: homeassistant
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - TZ=${TZ:-Europe/Madrid}
+    volumes:
+      - /opt/servidor/homeassistant/config:/config
+      - /etc/localtime:/etc/localtime:ro
+
+  # ============================================================================
+  # 2. MOSQUITTO MQTT BROKER
+  # Broker de mensajería central que desacopla hardware y consumidores.
+  # ============================================================================
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+    volumes:
+      - /opt/servidor/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - /opt/servidor/mosquitto/data:/mosquitto/data
+    networks:
+      - homelab-net
+
+  # ============================================================================
+  # 3. CUMULUS MX (Estación Meteorológica Davis Vantage Pro2)
+  # Mapeo directo de puertos serie hardware COM1 (/dev/ttyS0) y COM2 (/dev/ttyS1).
+  # ============================================================================
+  cumulusmx:
+    image: weatherwatchers/cumulusmx:latest
+    container_name: cumulusmx
+    restart: unless-stopped
+    ports:
+      - "8998:8998"
+    devices:
+      - /dev/ttyS0:/dev/ttyS0
+      - /dev/ttyS1:/dev/ttyS1
+    environment:
+      - TZ=${TZ:-Europe/Madrid}
+    volumes:
+      - /opt/servidor/cumulusmx/data:/data
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - homelab-net
+
+  # ============================================================================
+  # 4. MICROSERVICIO TELEMETRÍA SOLAR
+  # Polling del inversor solar y publicación de estado a Mosquitto.
+  # ============================================================================
+  placas-solares:
+    build:
+      context: ./scripts/placas_solares
+    container_name: placas-solares
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ:-Europe/Madrid}
+      - MQTT_BROKER_HOST=mosquitto
+      - MQTT_PORT=${MQTT_PORT:-1883}
+      - SOLAR_INVERTER_IP=${SOLAR_INVERTER_IP:-192.168.2.150}
+      - SOLAR_POLL_INTERVAL_SEC=${SOLAR_POLL_INTERVAL_SEC:-30}
+    depends_on:
+      - mosquitto
+    networks:
+      - homelab-net
+
+  # ============================================================================
+  # 5. BOT DE TELEGRAM
+  # Suscriptor MQTT de clima/# y solar/# para consultas y alertas interactivas.
+  # ============================================================================
+  bot-telegram:
+    build:
+      context: ./scripts/bot_telegram
+    container_name: bot-telegram
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ:-Europe/Madrid}
+      - MQTT_BROKER_HOST=mosquitto
+      - MQTT_PORT=${MQTT_PORT:-1883}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+    depends_on:
+      - mosquitto
+    networks:
+      - homelab-net
+
+  # ============================================================================
+  # 6. CLOUDFLARE ZERO TRUST TUNNEL
+  # Túnel saliente seguro sin apertura de puertos en el router.
+  # Se asigna a profile 'tunnel' para que no falle mientras no haya token real.
+  # ============================================================================
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: unless-stopped
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - homelab-net
+    profiles:
+      - tunnel
+
+networks:
+  homelab-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
