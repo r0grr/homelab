@@ -9,20 +9,27 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+scripts/solaredge_bot/node_modules/
+scripts/solaredge_bot/memoria.json
 
 # Mosquitto runtime state
 mosquitto/data/
 mosquitto/log/
 
-# Cumulus MX runtime state & data
+# Cumulus MX runtime state, configs & data
 cumulusmx/data/
+cumulusmx/config/
+cumulusmx/backup/
+cumulusmx/MXdiags/
 cumulusmx/reports/
 
 # Home Assistant dynamic databases and internal storage
 homeassistant/config/.storage/
 homeassistant/config/home-assistant_v2.db*
 homeassistant/config/home-assistant.log*
-homeassistant/config/.HA_RESTORE*
+homeassistant/config/.HA_*
+homeassistant/config/.ha_*
+homeassistant/config/blueprints/
 homeassistant/config/tts/
 homeassistant/config/backups/
 

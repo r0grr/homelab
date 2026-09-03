@@ -8,8 +8,8 @@ cd /opt/servidor
 
 echo "🚀 Iniciando despliegue de Homelab..."
 
-# Si existe repositorio Git, sincronizar cambios
-if [ -d ".git" ]; then
+# Si existe repositorio Git y remote 'origin' configurado, sincronizar cambios
+if [ -d ".git" ] && git remote get-url origin >/dev/null 2>&1; then
     echo "📦 Obteniendo últimas modificaciones de Git..."
     git fetch origin
     git pull --ff-only
