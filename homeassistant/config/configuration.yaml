@@ -15,6 +15,16 @@ http:
 
 frontend:
 
+# Terminal web integrado en el menú lateral de Home Assistant
+panel_iframe:
+  terminal:
+    title: "Terminal"
+    icon: "mdi:console"
+    url: "http://192.168.2.200:7681"
+    require_admin: true
+
+shell_command: {}
+
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
