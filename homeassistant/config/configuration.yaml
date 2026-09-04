@@ -71,6 +71,20 @@ mqtt:
       state_class: "measurement"
       value_template: "{{ value | float }}"
 
+    - name: "Estación Davis - Radiación Solar"
+      unique_id: "davis_radiacion_solar"
+      state_topic: "clima/radiacion_solar"
+      unit_of_measurement: "W/m²"
+      device_class: "irradiance"
+      state_class: "measurement"
+      value_template: "{{ value | float }}"
+
+    - name: "Estación Davis - Índice UV"
+      unique_id: "davis_uv"
+      state_topic: "clima/uv"
+      state_class: "measurement"
+      value_template: "{{ value | float }}"
+
     # Telemetría Solar (Microservicio Inversor)
     - name: "Solar - Potencia Instantánea"
       unique_id: "solar_potencia_w"
