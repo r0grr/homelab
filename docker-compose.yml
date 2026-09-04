@@ -101,7 +101,21 @@ services:
       - homelab-net
 
   # ============================================================================
-  # 6. CLOUDFLARE ZERO TRUST TUNNEL
+  # 6. WEB TERMINAL & SSH (Mòdul de Terminal Web per a Home Assistant)
+  # Accés a shell interactiva per navegador i des del menú lateral d'HA.
+  # ============================================================================
+  web-terminal:
+    build:
+      context: ./scripts/web_terminal
+    container_name: web-terminal
+    restart: unless-stopped
+    ports:
+      - "7681:7681"
+    networks:
+      - homelab-net
+
+  # ============================================================================
+  # 7. CLOUDFLARE ZERO TRUST TUNNEL
   # Túnel saliente seguro sin apertura de puertos en el router.
   # Perfil 'tunnel' para activación en la fase final con zona DNS.
   # ============================================================================
