@@ -51,7 +51,12 @@ services:
     volumes:
       - /opt/servidor/cumulusmx/data:/opt/CumulusMX/data
       - /opt/servidor/cumulusmx/config:/opt/CumulusMX/config
+      - /opt/servidor/cumulusmx/strings.ini:/opt/CumulusMX/strings.ini
       - /opt/servidor/cumulusmx/interface_override/index.html:/opt/CumulusMX/interface/index.html:ro
+      - /opt/servidor/cumulusmx/ai2_catalan/index.html:/opt/CumulusMX/interface/ai2/index.html:ro
+      - /opt/servidor/cumulusmx/ai2_catalan/menus.html:/opt/CumulusMX/interface/ai2/menus.html:ro
+      - /opt/servidor/cumulusmx/ai2_catalan/gauges.html:/opt/CumulusMX/interface/ai2/gauges.html:ro
+      - /opt/servidor/cumulusmx/ai2_catalan/ai-page-manager.js:/opt/CumulusMX/interface/ai2/js/ai-page-manager.js:ro
       - /etc/localtime:/etc/localtime:ro
     networks:
       - homelab-net
