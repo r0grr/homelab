@@ -112,6 +112,8 @@ services:
     command: tunnel run
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    volumes:
+      - /opt/servidor/cloudflared:/etc/cloudflared
     extra_hosts:
       - "host.docker.internal:host-gateway"
     networks:
