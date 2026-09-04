@@ -103,12 +103,12 @@ let configPage = function() {
     var footHeight = $('#PageFoot').outerHeight( true );
     var contentHeight = $(window).height() - (headHeight + footHeight);
     $('#content').css('min-height', contentHeight  + 'px');
-    if( CMXConfig.StaticHead ) {
-        //  Header is fixed - need to add marging to content
+    if( CMXConfig.StaticHead && $(window).width() > 768 ) {
+        //  Header is fixed on desktop (>768px)
         $('#PageHead').addClass('w3-top');
         $('#content').css('margin-top', headHeight + 'px');
     } else {
-        //  Header scrolls
+        //  Header scrolls naturally on mobile / small screens
         $('#PageHead').removeClass('w3-top').css('position','relative');
         $('#content').css('margin-top','0px');
     }

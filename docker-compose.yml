@@ -57,6 +57,7 @@ services:
       - /opt/servidor/cumulusmx/ai2_catalan/menus.html:/opt/CumulusMX/interface/ai2/menus.html:ro
       - /opt/servidor/cumulusmx/ai2_catalan/gauges.html:/opt/CumulusMX/interface/ai2/gauges.html:ro
       - /opt/servidor/cumulusmx/ai2_catalan/ai-page-manager.js:/opt/CumulusMX/interface/ai2/js/ai-page-manager.js:ro
+      - /opt/servidor/cumulusmx/ai2_catalan/main.css:/opt/CumulusMX/interface/ai2/css/main.css:ro
       - /etc/localtime:/etc/localtime:ro
     networks:
       - homelab-net
