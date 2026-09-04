@@ -1,0 +1,27 @@
+# ==============================================================================
+# Cloudflare Zero Trust Tunnel - Configuració d'Ingress (Local Config)
+# Domini: meteosallent.cat
+# ==============================================================================
+
+# Si utilitzes gestió per arxiu de credencials local en lloc de TUNNEL_TOKEN:
+# tunnel: <EL_TEU_TUNNEL_ID>
+# credentials-file: /etc/cloudflared/<EL_TEU_TUNNEL_ID>.json
+
+ingress:
+  # 1. Web de l'estació meteorològica Davis Vantage Pro2 (Cumulus MX)
+  - hostname: meteosallent.cat
+    service: http://cumulusmx:8998
+
+  - hostname: www.meteosallent.cat
+    service: http://cumulusmx:8998
+
+  # 2. Panell web interactiu de plaques solars (SolarEdge Dashboard)
+  - hostname: solar.meteosallent.cat
+    service: http://solaredge-dashboard:5173
+
+  # 3. Panell de control de Home Assistant
+  - hostname: ha.meteosallent.cat
+    service: http://host.docker.internal:8123
+
+  # 4. Regla Catch-All final (Respon 404 a qualsevol altre tràfic no coincident)
+  - service: http_status:404
