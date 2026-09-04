@@ -4,7 +4,7 @@ const axios = require('axios');
 const fs = require('fs');
 const mqtt = require('mqtt');
 
-// Variables de entorno
+// Variables d'entorn
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID = process.env.CHAT_ID || process.env.TELEGRAM_CHAT_ID;
 const SOLAREDGE_SITE_ID = process.env.SOLAREDGE_SITE_ID;
@@ -13,9 +13,9 @@ const SOLAREDGE_API_KEY = process.env.SOLAREDGE_API_KEY;
 const MQTT_HOST = process.env.MQTT_BROKER_HOST || 'mosquitto';
 const MQTT_PORT = process.env.MQTT_PORT || 1883;
 
-// Horari de silenci absolut per a alertes proactives (per defecte: de 22:00 a 08:00)
+// Horari de silenci general nocturn (per defecte: de 22:00 a 06:00)
 const QUIET_START_HOUR = process.env.QUIET_START_HOUR !== undefined ? parseInt(process.env.QUIET_START_HOUR, 10) : 22;
-const QUIET_END_HOUR = process.env.QUIET_END_HOUR !== undefined ? parseInt(process.env.QUIET_END_HOUR, 10) : 8;
+const QUIET_END_HOUR = process.env.QUIET_END_HOUR !== undefined ? parseInt(process.env.QUIET_END_HOUR, 10) : 6;
 
 function isQuietHours(date = new Date()) {
   const h = date.getHours();
@@ -25,7 +25,17 @@ function isQuietHours(date = new Date()) {
   return h >= QUIET_START_HOUR && h < QUIET_END_HOUR;
 }
 
-// Inicialización de Telegram Bot
+// Regla de consum vespre/nit: Si a partir de les 20:30 la producció baixa de 500W,
+// silenciar avisos de consum fins a les 06:00 del matí
+function isEveningNightConsumptionSilenced(pvKw, date = new Date()) {
+  const hour = date.getHours();
+  const minute = date.getMinutes();
+  const timeInMinutes = hour * 60 + minute;
+  const inWindow = timeInMinutes >= (20 * 60 + 30) || timeInMinutes < (6 * 60);
+  return inWindow && pvKw < 0.5;
+}
+
+// Inicialització del Bot de Telegram
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: true });
 
 bot.on('polling_error', (error) => {
@@ -33,7 +43,7 @@ bot.on('polling_error', (error) => {
 });
 
 // ------------------------------------------------------------------------------
-// Cliente MQTT: Publicación de métricas solares y suscripción al clima (Davis)
+// Client MQTT: Publicació de telemetria solar i recepció de dades Davis (Cumulus MX)
 // ------------------------------------------------------------------------------
 console.log(`[MQTT] Conectant a mqtt://${MQTT_HOST}:${MQTT_PORT}...`);
 const mqttClient = mqtt.connect(`mqtt://${MQTT_HOST}:${MQTT_PORT}`, {
@@ -122,14 +132,14 @@ function saveMemory() {
 
 loadMemory();
 
-// Limites i llindars
+// Límit i llindars
 const POLL_INTERVAL_MS = (parseInt(process.env.SOLAR_POLL_INTERVAL_SEC, 10) || 600) * 1000;
 const EXCESS_THRESHOLD_KW = -1.0; 
 const CONSUMPTION_THRESHOLD_KW = 0.2; 
 const ALERT_COOLDOWN_MS = 60 * 60 * 1000; 
 
 // ------------------------------------------------------------------------------
-// Comandes de Telegram
+// Comandes de Telegram (sempre disponibles sota petició de l'usuari)
 // ------------------------------------------------------------------------------
 
 // Comanda /estat o /estado o /solar
@@ -155,7 +165,7 @@ bot.onText(/\/(estado|estat|solar)/, async (msg) => {
   }
 });
 
-// Comanda /clima o /temps (Telemetria Davis Vantage Pro2 de Cumulus MX)
+// Comanda /clima o /temps (Telemetria Davis Vantage Pro2 des de Cumulus MX)
 bot.onText(/\/(clima|temps|estacio)/, (msg) => {
   const chatId = msg.chat.id;
   const c = weatherState;
@@ -218,42 +228,44 @@ async function checkAlerts() {
     const loadKw = data.LOAD?.currentPower || 0;
     const gridKw = data.gridKwSigned !== undefined ? data.gridKwSigned : (data.GRID?.currentPower || 0);
 
-    // Publicació automàtica a MQTT en cada cicle
+    // Publicació automàtica a MQTT en cada cicle (telemetria ininterrompuda 24/7)
     publishSolarToMqtt(pvKw * 1000, loadKw * 1000, gridKw * 1000);
 
     const now = Date.now();
     const currentDay = new Date().getDate();
-    const currentHour = new Date().getHours();
 
-    // Reset daily milestones every morning
+    // Reset de fites diàries al matí
     if (state.date !== currentDay) {
       state.date = currentDay;
       state.dailyMax = 0;
       state.lastNotifiedPv = 0;
     }
 
-    // Si estem en horari de silenci (ex: de 22:00 a 08:00), NO enviar cap alerta proactiva a Telegram
-    if (isQuietHours()) {
-      console.log(`🌙 [Silenci Nocturn (${QUIET_START_HOUR}:00 - ${QUIET_END_HOUR}:00)] Alertes automàtiques silenciades.`);
-      return;
-    }
-
-    // 1. Excessive consumption
+    // 1. Consum excessiu de la xarxa
     if (gridKw >= CONSUMPTION_THRESHOLD_KW) {
       state.isConsumingFromGrid = true;
-      if (now - state.lastConsumptionAlertTime > ALERT_COOLDOWN_MS) {
+      // Regla: si a partir de les 20:30 la producció baixa de 500W, silenci fins a les 06:00
+      if (isEveningNightConsumptionSilenced(pvKw)) {
+        console.log(`🌙 [Silenci Consum Vespre/Nit] Producció < 500W (${(pvKw*1000).toFixed(0)}W) entre 20:30 i 06:00. Avís de consum cancel·lat.`);
+      } else if (now - state.lastConsumptionAlertTime > ALERT_COOLDOWN_MS) {
         bot.sendMessage(CHAT_ID, `🚨 *Avís de Consum:* S'estan comprant ${(gridKw * 1000).toFixed(0)}W de la xarxa elèctrica. Reviseu si hi ha alguna cosa encesa que es pugui apagar!`, { parse_mode: 'Markdown' }).catch(err => console.error("Error enviant Telegram:", err));
         state.lastConsumptionAlertTime = now;
         saveMemory();
       }
     } else if (gridKw <= 0 && state.isConsumingFromGrid) {
-      // Recovery!
+      // Recuperació
       bot.sendMessage(CHAT_ID, `✅ *Recuperació:* La casa torna a ser autosuficient i tornem a vendre excedent a la xarxa! (${Math.abs(gridKw * 1000).toFixed(0)}W)`, { parse_mode: 'Markdown' }).catch(err => console.error("Error enviant Telegram:", err));
       state.isConsumingFromGrid = false;
       saveMemory();
     }
 
-    // 2. Excess Generation
+    // Horari de silenci absolut nocturn (22:00 a 06:00) per a la resta d'alertes proactives
+    if (isQuietHours()) {
+      console.log(`🌙 [Silenci Nocturn (${QUIET_START_HOUR}:00 - ${QUIET_END_HOUR}:00)] Alertes automàtiques silenciades.`);
+      return;
+    }
+
+    // 2. Excedent de Generació (venda a la xarxa)
     if (gridKw <= EXCESS_THRESHOLD_KW) {
       if (now - state.lastExcessAlertTime > ALERT_COOLDOWN_MS) {
         bot.sendMessage(CHAT_ID, `💡 *Energia Sobrant!* Esteu regalant a la xarxa ${Math.abs(gridKw * 1000).toFixed(0)}W ara mateix.\n\n✅ És un bon moment per posar rentadores, encendre aires condicionats o el termo d'aigua calenta.`, { parse_mode: 'Markdown' }).catch(err => console.error("Error enviant Telegram:", err));
@@ -262,7 +274,7 @@ async function checkAlerts() {
       }
     }
 
-    // 3. Absolute Step Tracking (every 500W movement, min 1000W)
+    // 3. Seguiment de passos de potència (cada 500W, min 1000W)
     if (state.lastNotifiedPv === 0 && pvKw >= 1.0) {
       state.lastNotifiedPv = pvKw;
       state.dailyMax = pvKw;
@@ -280,14 +292,12 @@ async function checkAlerts() {
       saveMemory();
     }
 
-    // 4. Periodic 1.5-hour status during the day (6 AM to 10 PM)
-    if (currentHour >= 6 && currentHour < 22) {
-      if (state.lastStatusTime === 0 || now - state.lastStatusTime >= 1.5 * 60 * 60 * 1000) {
-        const text = `🕒 *Resum periòdic (1.5h)*\n⚡ Generació: ${(pvKw*1000).toFixed(0)} W\n🏠 Consum: ${(loadKw*1000).toFixed(0)} W\n🔌 Xarxa: ${Math.abs(gridKw*1000).toFixed(0)} W ${gridKw >= 0 ? '(Comprant 💸)' : '(Venent excedent 📉)'}`;
-        bot.sendMessage(CHAT_ID, text, { parse_mode: 'Markdown' }).catch(err => console.error("Error enviant Telegram:", err));
-        state.lastStatusTime = now;
-        saveMemory();
-      }
+    // 4. Resum periòdic cada 1.5 hores durant el dia
+    if (state.lastStatusTime === 0 || now - state.lastStatusTime >= 1.5 * 60 * 60 * 1000) {
+      const text = `🕒 *Resum periòdic (1.5h)*\n⚡ Generació: ${(pvKw*1000).toFixed(0)} W\n🏠 Consum: ${(loadKw*1000).toFixed(0)} W\n🔌 Xarxa: ${Math.abs(gridKw*1000).toFixed(0)} W ${gridKw >= 0 ? '(Comprant 💸)' : '(Venent excedent 📉)'}`;
+      bot.sendMessage(CHAT_ID, text, { parse_mode: 'Markdown' }).catch(err => console.error("Error enviant Telegram:", err));
+      state.lastStatusTime = now;
+      saveMemory();
     }
 
   } catch (error) {
