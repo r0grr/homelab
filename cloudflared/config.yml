@@ -22,6 +22,9 @@ ingress:
   # 3. Panell de control de Home Assistant
   - hostname: ha.meteosallent.cat
     service: http://host.docker.internal:8123
+    originRequest:
+      noTLSVerify: true
+      httpHostHeader: ha.meteosallent.cat
 
   # 4. Regla Catch-All final (Respon 404 a qualsevol altre tràfic no coincident)
   - service: http_status:404

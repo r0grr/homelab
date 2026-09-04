@@ -51,6 +51,7 @@ services:
     volumes:
       - /opt/servidor/cumulusmx/data:/opt/CumulusMX/data
       - /opt/servidor/cumulusmx/config:/opt/CumulusMX/config
+      - /opt/servidor/cumulusmx/interface_override/index.html:/opt/CumulusMX/interface/index.html:ro
       - /etc/localtime:/etc/localtime:ro
     networks:
       - homelab-net
