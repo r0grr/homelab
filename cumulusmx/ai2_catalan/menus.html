@@ -1,0 +1,238 @@
+<!--
+	MENU	Last modified 30/03/2025 
+-->
+<a href="index.html" class="w3-bar-item w3-btn ax-theme6-hvr">Portada</a>
+<div class="w3-dropdown-hover w3-hide-small w3-hide-medium">
+	<button id="Weather" class="w3-btn ax-theme5 ax-theme6-hvr" aria-label="Dades meteorològiques" onClick="toggleDropDown( this)" aria-controls="mnuWeather">Dades del temps <i class="fa-solid fa-caret-down fa-xs"></i></button>
+	<div id="mnuWeather" class="w3-dropdown-content w3-bar-block w3-card ax-theme6 ax-animate-menu">
+		<a href="current.html" class="w3-bar-item w3-btn ax-theme4-hvr" role="menuitem" aria-label="Readings now">Lectures actuals<i></i></a>
+		<a href="gauges.html" class="w3-bar-item w3-btn ax-theme4-hvr" role="menuitem" aria-label="Gauges"><i class="fa-solid fa-gauge-high"></i>Indicadors</a>
+		<a href="charts.html" class="w3-bar-item w3-btn ax-theme4-hvr" role="menuitem" aria-label="Recent Charts"><i class="fa-solid fa-chart-column"></i><i class="fa-solid fa-chart-line"></i>Gràfiques recents</a>
+		<a href="chartscompare.html" class="w3-bar-item w3-btn ax-theme4-hvr" role="menuitem" aria-label="Custom charts"><i class="fa-solid fa-chart-line"></i>Gràfiques a mida</a>
+		<a href="chartsperiod.html" class="w3-bar-item w3-btn ax-theme4-hvr" role="menuitem" aria-label="Select a Chart"><i class="fa-solid fa-chart-line"></i>Seleccionar període</a>
+		<a href="chartshistoric.html" class="w3-bar-item w3-btn ax-theme4-hvr" role="menuitem" aria-label="Historic charts"><i class="fa-solid fa-chart-column"></i><i class="fa-solid fa-chart-line"></i>Gràfiques històriques</a>
+		<a href="todayVyesterday.html" class="w3-bar-item w3-btn ax-theme4-hvr" role="menuitem" aria-label="Today verses yesterday">Avui vs Ahir<i></i></a>
+		<a href="records.html" class="w3-bar-item w3-btn ax-theme4-hvr" role="menuitem" aria-label="Weather records">Rècords meteorològics<i></i></a>
+		<a href="recsthisperiod.html" class="w3-bar-item w3-btn ax-theme4-hvr" role="menuitem" aria-label="Records for any period">Rècords d'aquest període<i></i></a>
+		<a href="querydayfile.html" class="w3-bar-item w3-btn ax-theme4-hvr" role="menuitem" aria-label="Query specific data in the Day File"><i class="fa-solid fa-question"></i>Consulta de dades diàries</a>
+	</div>
+</div>
+<div class="w3-dropdown-hover w3-hide-small w3-hide-medium">
+	<button id="Extra" class="w3-btn ax-theme5 ax-theme6-hvr" onClick="toggleDropDown(this);" aria-label="Sensors extra" aria-controls="mnuExtra">Sensors extra <i class="fa-solid fa-caret-down fa-xs"></i></button>
+	<div id="mnuExtra" class="w3-dropdown-content w3-bar-block w3-card ax-theme6 ax-animate-menu">
+		<a href="extrasensors.html"			class="w3-bar-item w3-btn ax-theme4-hvr" role="menuitem" aria-label="Your additional sensors"><i class="fa-solid fa-wand-magic-sparkles"></i>Sensors addicionals</a>
+		<a href="airlinksensors.html"		class="w3-bar-item w3-btn ax-theme4-hvr" role="menuitem" aria-label="Airlink sensors"><i class="fa-solid fa-tower-cell"></i>Sensors AirLink</a>
+	</div>
+</div>
+<span class="w3-bar-item" ><i class="fa-solid fa-diamond ax-theme2-txt ax-diamond w3-hide-medium w3-hide-small w3-tiny"></i></span>
+<div class="w3-dropdown-hover w3-hide-small w3-hide-medium">
+	<button id="NOAA" class="w3-btn ax-theme5 ax-theme4-hvr" onClick="toggleDropDown(this);" aria-label="Informes NOAA" aria-controls="mnuNOAA">Informes <i class="fa-solid fa-caret-down fa-xs"></i></button>
+	<div id="mnuNOAA" class="w3-dropdown-content w3-bar-block w3-card ax-theme4 ax-animate-menu">
+		<a href="noaamonthreport.html" 	class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Monthly NOAA reports"><i class="fa-regular fa-clipboard"></i>Informe NOAA mensual</a>
+		<a href="noaayearreport.html" 	class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Yearly NOAA reports"><i class="fa-regular fa-clipboard"></i>Informe NOAA anual</a>
+	</div>
+</div>
+<div class="w3-dropdown-hover w3-hide-small w3-hide-medium">
+	<button id="Logs" class="w3-btn ax-theme5 ax-theme4-hvr" onClick="toggleDropDown(this)" aria-label="Registres" aria-controls="mnuLogs">Registres <i class="fa-solid fa-caret-down fa-xs"></i></button>
+	<div id="mnuLogs" class="w3-dropdown-content w3-bar-block w3-card ax-theme4 ax-animate-menu">
+		<a href="datalogeditor.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Edit the readings logs"><i class="fa-regular fa-pen-to-square"></i>Editar registres de lectures</a>
+		<a href="extradatalogeditor.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Edit any extra data logs"><i class="fa-regular fa-pen-to-square"></i>Editar registres addicionals</a>
+		<a href="dayfileeditor.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Edit the day file"><i class="fa-regular fa-pen-to-square"></i>Editar fitxer diari (dayfile)</a>
+		<div class="ax-menu-line"></div>
+		<a href="intervaldata.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Select and view interval data"><i class="fa-solid fa-clipboard-question"></i>Visor de dades per intervals</a>
+		<a href="dailydata.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Select and view day-file data"><i class="fa-solid fa-clipboard-question"></i>Visor de dades del fitxer diari</a>
+	</div>
+</div>
+
+<div class="w3-dropdown-hover w3-hide-small w3-hide-medium" >
+	<button id="Settings" class="w3-btn ax-theme5 ax-them4-hvr" onClick="toggleDropDown(this)" aria-label="Configuració de CumulusMX" aria-controls="mnuSettings">Configuració <i class="fa-solid fa-caret-down fa-xs"></i></button>
+	<div id="mnuSettings" class="w3-dropdown-content w3-bar-block w3-card ax-theme4 ax-animate-menu" style="width:800px;margin-left:-450px;">
+		
+		<div class="ax-menuCol3" >
+			<div class="">
+				<p class="w3-bar-item w3-center ax-theme9-txt" style="margin:0; padding: 0; font-size: 120%;">Configuració principal</p>
+				<div class="ax-menu-line"></div>
+				<a href="wizard.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Configuration wizard"><i class="fa-solid fa-list-check"></i>Assistent de configuració</a>
+				<div class="ax-menu-line"></div>
+				<a href="programsettings.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Program settings"><i class="fa-solid fa-list-check"></i>Configuració del programa</a>
+				<a href="stationsettings.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Station settings"><i class="fa-solid fa-list-check"></i>Configuració de l'estació</a>
+				<a href="internetsettings.html"	class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Internet settings"><i class="fa-solid fa-list-check"></i>Configuració d'Internet</a>
+				<div class="ax-menu-line"></div>
+			</div>
+			<div class="">
+				<div class="ax-menu-line w3-hide"></div>
+				<a href="thirdpartysettings.html" class="w3-bar-item w3-btn ax-theme6-hvr"  role="menuitem" aria-label="Third party uploads"><i class="fa-solid fa-list-check"></i>Pujades a tercers</a>
+				<a href="extrasensorsettings.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Configure your extra sensors"><i class="fa-solid fa-arrow-up-from-bracket"></i>Configuració sensors extra</a>
+				<a href="extrawebfiles.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Upload additional files"><i class="fa-solid fa-arrow-up-from-bracket"></i>Fitxers web addicionals</a>
+				<a href="confighttpfiles.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="HTTP File download"><i class="fa-solid fa-download"></i>Descàrrega HTTP</a>
+				<a href="calibrationsettings.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Calibration settings"><i class="fa-solid fa-sliders"></i>Calibratge</a>
+				<a href="noaareportsettings.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="NOAA settings"><i class="fa-solid fa-list-check"></i>Configuració NOAA</a>
+			</div>
+			<div style="margin-top: 0.5em;">
+				<div class="ax-menu-line w3-hide"></div>
+				<a href="mysqlsettings.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="MySQL settings"><i class="fa-solid fa-database"></i>Configuració MySQL</a>
+				<a href="mqttsettings.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="MQTT settings"><i class="fa-solid fa-list-check"></i>Configuració MQTT</a>
+				<a href="alarmsettings.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Alarm settings"><i class="fa-regular fa-bell"></i>Configuració d'alarmes</a>
+				<a href="useralarms.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="User defined Alarms"><i class="fa-regular fa-bell"></i>Alarmes personalitzades</a>
+				<a href="customlogs.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Custom logs"><i class="fa-solid fa-xmarks-lines"></i>Registres personalitzats</a>
+				<a href="configdisplay.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Display options"><i class="fa-solid fa-display"></i>Opcions de pantalla</a>
+				<a href="configlocale.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Locale settings"><i class="fa-solid fa-globe"></i>Configuració regional / Idioma</a>
+			</div>
+		</div>		
+	</div>
+</div>
+
+<div class="w3-dropdown-hover w3-hide-small w3-hide-medium">
+	<button id="Records" onClick="toggleDropDown(this);" class="w3-btn ax-theme5 ax-theme4-hvr" aria-label="Edició de registres" aria-controls="mnuRecords">Edició <i class="fa-solid fa-caret-down fa-xs"></i></button>
+	<div id="mnuRecords" class="w3-dropdown-content w3-bar-block w3-card ax-theme4 ax-animate-menu">
+		<a href="raintodayeditor.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Edit today's rain"><i class="fa-solid fa-droplet-slash" style="color:#88f"></i>Editar pluja d'avui</a>
+		<a href="weatherdiary.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Weather conditions editor"><i class="fa-solid fa-cloud-sun-rain"></i>Editor de condicions meteorològiques</a>
+		<div class="ax-menu-line"></div>
+		<a href="editalltimerecs.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Edit all-time records"><i class="fa-solid fa-pen-to-square"></i>Editar rècords absoluts</a>
+		<a href="editmonthlyrecs.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Edit monthly records"><i class="fa-solid fa-pen-to-square"></i>Editar rècords mensuals</a>
+		<a href="editthismonthrecs.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Edit 'this months' records"><i class="fa-solid fa-pen-to-square"></i>Editar rècords d'aquest mes</a>
+		<a href="editthisyearrecs.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Edit 'this years' records"><i class="fa-solid fa-pen-to-square"></i>Editar rècords d'aquest any</a>
+	</div>
+</div>
+
+<div class="w3-dropdown-hover w3-hide-small w3-hide-medium">
+	<button id="Utils" onClick="toggleDropDown(this);" class="w3-btn ax-theme5 ax-theme4-hvr" aria-label="Utilitats" aria-controls="mnuUtils">Utilitats <i class="fa-solid fa-caret-down fa-xs"></i></button>
+	<div id="mnuUtils" class="w3-dropdown-content w3-bar-block w3-card ax-theme4 ax-animate-menu">
+		<a href="utilities.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="FTP/Copy and Dayfile"><i class="fa-solid fa-copy"></i>FTP / Copiar ara</a>
+		<a href="utilities.html#day-anchor" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Reload the day file"><i class="fa-solid fa-retweet"></i>Recarregar fitxer diari</a>
+		<a href="utilities.html#purge-anchor" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Purge MySQL"><i class="fa-solid fa-server"></i>Purgar MySQL</a>
+		<a href="utilerrorslog.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Show latest errors"><i class="fa-solid fa-triangle-exclamation" style="color:#f88;"></i>Últims errors</a>
+		<div class="ax-menu-line"></div>
+		<a href="ai-config.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="AI Settings"><i class="fa-solid fa-gears"></i>Configuració AI2</a>
+		<div class="ax-menu-line"></div>
+		<a href="/index.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="The Default Interface"><i class="fa-solid fa-gears"></i>Interfície clàssica per defecte</a>
+	</div>
+</div>
+<div class="w3-dropdown-hover w3-hide-small w3-hide-medium">
+	<button id="Support" class="w3-btn ax-theme5 ax-theme4-hvr" onClick="toggleDropDown(this);" aria-label="Suport i informació" aria-controls="mnuSupport">Suport <i class="fa-solid fa-caret-down fa-xs"></i></button>
+	<div id="mnuSupport" class="w3-dropdown-content w3-bar-block w3-card ax-theme4 ax-animate-menu">
+		<a href="https://cumulus.hosiene.co.uk" target="_blank" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Cumulus MX Forum"><i class="fa-solid fa-users"></i>Fòrum Cumulus MX</a>
+		<a href="https://cumuluswiki.org/a/Original_Cumulus_Wiki" target="_blank" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Cumulus MX Wiki"><i class="fa-solid fa-book"></i>Wiki de Cumulus MX</a>
+		<div class="ax-menu-line"></div>
+		<a href="https://oaktreewebs.co.uk/wiki/" target="_blank" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="AI Wiki"><i class="fa-solid fa-book"></i>Wiki d'AI2</a>
+	</div>
+</div>
+<button  class="w3-bar-item w3-btn ax-theme5 ax-theme3-hvr w3-right w3-hide-large" onClick="toggleMenus();" role="menuitem" aria-label="Mobile menu toggle">Menú:&nbsp;<strong><i class="fa-solid fa-bars"></i></strong></button>
+<!--	Mobile Menu		-->
+<div id="menuMobile" class="siteWidth w3-hide-large w3-hide" role="menubar">
+	<div class="w3-bar-block ax-theme5" role="menubar" aria-label="Main menu">
+		<a href="index.html" class="w3-bar-item w3-btn ax-theme6-hvr w3-hide w3-hide-medium" role="menuitem" aria-label="The Dashboard">Portada</a>
+		<div class="w3-dropdown-click">
+			<button id="PagesMob" class="w3-bar-item w3-btn ax-theme5 ax-theme6-hvr" onClick="toggleDropDown(this);"  aria-controls="mnuPagesMob" aria-label="Standard information pages">Pàgines d'informació... </button>
+			<div id="mnuPagesMob" class="w3-dropdown-content w3-bar-block w3-card ax-theme7 ax-animate-menu" style="margin-right:1vw;">
+				<a href="current.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="The current weather readings">Lectures meteorològiques actuals</a>
+				<a href="gauges.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Steelseries gauges"><i class="fa-solid fa-gauge-high"></i>Lectures actuals en indicadors</a>
+				<a href="charts.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Recent charts"><i class="fa-solid fa-chart-column"></i>Gràfiques recents</a>
+				<a href="chartscompare.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Custom charts"><i class="fa-solid fa-chart-column"></i>Gràfiques a mida</a>
+				<a href="chartsperiod.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Select a Chart"><i class="fa-solid fa-chart-column"></i><i class="fa-solid fa-chart-line"></i>Seleccionar període</a>
+				<a href="chartshistoric.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Historic charts"><i class="fa-solid fa-chart-column"></i>Gràfiques històriques</a>
+				<a href="todayVyesterday.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Today verses yesterday">Avui comparat amb ahir</a>
+				<a href="records.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Your weather records">Veure rècords meteorològics</a>
+				<a href="recsthisperiod.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Records this period">Veure rècords per període</a>
+				<a href="querydayfile.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Query specific data in the Day File"><i class="fa-solid fa-question"></i>Consultar dades específiques del fitxer diari</a>
+			</div>
+		</div>
+		<div class="w3-dropdown-click">
+			<button id="ExtraMob" class="w3-bar-item w3-btn ax-theme5 ax-theme6-hvr" onClick="toggleDropDown(this);" aria-controls="mnuExtraMob" aria-label="Extra sensor readings">Lectures de sensors extra...</button>
+			<div id="mnuExtraMob" class="w3-dropdown-content w3-bar-block w3-card ax-theme7 ax-animate-menu">
+				<a href="extrasensors.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Extra sensors"><i class="fa-solid fa-wand-magic-sparkles"></i>Veure sensors addicionals</a>
+				<a href="airlinksensors.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="Airlink sensors"><i class="fa-solid fa-tower-cell"></i>Veure sensors AirLink</a>
+			</div>
+			<div class="ax-menu-line"></div>
+		</div>
+	
+		<div class="w3-dropdown-click">
+			<button id="NOAAMob" class="w3-bar-item w3-btn ax-theme5 ax-theme6-hvr" onClick="toggleDropDown(this);" aria-controls="mnuNOAAMob" aria-label="Informes NOAA">Informes NOAA</button>
+			<div id="mnuNOAAMob" class="w3-dropdown-content w3-bar-block w3-card ax-theme4 ax-animate-menu">
+				<a href="noaamonthreport.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Monthly NOAA reports"><i class="fa-regular fa-clipboard"></i>Informes NOAA mensuals</a>
+				<a href="noaayearreport.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Yearly NOAA reports"><i class="fa-regular fa-clipboard"></i>Informes NOAA anuals</a>
+			</div>
+		</div>
+		<div class="w3-dropdown-click">
+			<button id="LogsMob" class="w3-bar-item w3-btn ax-theme5 ax-theme6-hvr" onClick="toggleDropDown(this);" aria-controls="mnuLogsMob" aria-label="Registres">Registres</button>
+			<div id="mnuLogsMob" class="w3-dropdown-content w3-bar-block w3-card ax-theme4 ax-animate-menu">
+				<a href="datalogeditor.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Edit reading logs"><i class="fa-regular fa-pen-to-square"></i>Gestionar registres de lectures</a>
+				<a href="extradatalogeditor.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Edit extra data logs"><i class="fa-regular fa-pen-to-square"></i>Gestionar registres addicionals</a>
+				<a href="dayfileeditor.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Edit the Day File"><i class="fa-regular fa-pen-to-square"></i>Gestionar fitxer diari (dayfile)</a>
+				<a href="intervaldata.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Select and view interval data"><i class="fa-solid fa-clipboard-question"></i>Veure dades per intervals</a>
+				<a href="dailydata.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Select and view day-file data"><i class="fa-solid fa-clipboard-question"></i>Veure dades del fitxer diari</a>
+			</div>
+		</div>
+
+		<div class="w3-dropdown-click">
+			<button id="SettingsMob" class="w3-bar-item w3-btn ax-theme5 ax-theme6-hvr" onClick="toggleDropDown(this);" aria-controls="mnuSettingsMob" aria-label="Cumulus MX settings">Configuració...</button>
+			<div id="mnuSettingsMob" class="w3-dropdown-content w3-bar-block w3-card ax-theme4 ax-animate-menu" style="overflow: scroll!important;">
+				<div class="ax-btnBar">
+					<div>
+						<h4 class="w3-center">Configuració principal</h4>
+						<a href="wizard.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Setup Wizard"><i class="fa-solid fa-list-check"></i>Assistent de configuració</a>
+						<div class="ax-menu-line"></div>
+						<a href="programsettings.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Configure CMX settings"><i class="fa-solid fa-list-check"></i>Configuració CumulusMX</a>
+						<a href="stationsettings.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Edit station settings"><i class="fa-solid fa-list-check"></i>Configuració de l'estació</a>
+						<a href="internetsettings.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Edit Internet settings"><i class="fa-solid fa-list-check"></i>Configuració d'Internet</a>
+						<div class="ax-menu-line"></div>
+					</div>
+					<div>
+						<a href="thirdpartysettings.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Third party uploads"><i class="fa-solid fa-arrow-up-from-bracket"></i>Pujades a tercers</a>
+						<a href="extrasensorsettings.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Configure extra sensors"><i class="fa-solid fa-list-check"></i>Configuració sensors extra</a>
+						<a href="extrawebfiles.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Extra web files"><i class="fa-solid fa-arrow-up-from-bracket"></i>Pujada de fitxers extra</a>
+						<a href="confighttpfiles.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="HTTP Files"><i class="fa-solid fa-download"></i>Fitxers HTTP</a>
+						<a href="calibrationsettings.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Calibration settings"><i class="fa-solid fa-list-check"></i>Calibration settings</a>
+						<a href="noaareportsettings.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="NOAA settings"><i class="fa-solid fa-list-check"></i>NOAA settings</a>
+						<div class="ax-menu-line"></div>
+					</div>
+					<div>
+						<a href="mysqlsettings.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="MySQL settings"><i class="fa-solid fa-database"></i>Configuració MySQL</a>
+						<a href="mqttsettings.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="MQTT settings"><i class="fa-solid fa-list-check"></i>MQTT Settings</a>
+						<a href="alarmsettings.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Alarm settings"><i class="fa-regular fa-bell"></i>Configuració d'alarmes</a>
+						<a href="useralarms.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Custom Alarms"><i class="fa-regular fa-bell"></i>Alarmes personalitzades</a>
+						<a href="customlogs.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Custom logs"><i class="fa-solid fa-xmarks-lines"></i>Registres de dades personalitzats</a>
+						<a href="configdisplay.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Display options"><i class="fa-solid fa-display"></i>Opcions de pantalla</a>
+						<a href="configlocale.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Locale settings"><i class="fa-solid fa-globe"></i>Configuració regional / Idioma</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="w3-dropdown-click">
+			<button id="EditMob" class="w3-bar-item w3-btn ax-theme5 ax-theme6-hvr" onClick="toggleDropDown(this);" aria-controls="mnuEditMob" aria-label="Edit...">Edició...</button>
+			<div id="mnuEditMob" class="w3-dropdown-content w3-bar-block w3-card ax-theme4 ax-animate-menu">
+				<a href="raintodayeditor.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Edit today's rainfall"><i class="fa-solid fa-droplet-slash" style="color:#88f"></i>Editar pluja d'avui</a>
+				<a href="weatherdiary.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Weather information editor"><i class="fa-solid fa-cloud-sun-rain"></i>Editor de condicions del temps</a>
+				<div class="ax-menu-line"></div>
+				<a href="editalltimerecs.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Edit 'All-time' records"><i class="fa-regular fa-pen-to-square"></i>Editar rècords absoluts</a>
+				<a href="editmonthlyrecs.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Edit 'Monthly' records"><i class="fa-regular fa-pen-to-square"></i>Editar rècords mensuals</a>
+				<a href="editthismonthrecs.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Edit 'this months' records"><i class="fa-regular fa-pen-to-square"></i>Editar rècords d'aquest mes</a>
+				<a href="editthisyearrecs.html"	class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Edit 'this years' records"><i class="fa-regular fa-pen-to-square"></i>Editar rècords d'aquest any</a>
+			</div>
+		</div>
+
+		<div class="w3-dropdown-click">
+			<button id="UtilsMob" class="w3-bar-item w3-btn ax-theme5 ax-theme6-hvr" onClick="toggleDropDown(this);" aria-controls="mnuUtilsMob" aria-label="Utilities">Utilitats...</button>
+			<div id="mnuUtilsMob" class="w3-dropdown-content w3-bar-block w3-card ax-theme4 ax-animate-menu">
+				<a href="utilities.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="FTP/Copy and Dayfile"><i class="fa-solid fa-copy"></i>Iniciar manualment còpia / FTP</a>
+				<a href="utilities.html#day" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Reload the Day File"><i class="fa-solid fa-retweet"></i>Recarregar fitxer diari</a>
+				<a href="utilities.html#purge" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Purge MySQL"><i class="fa-solid fa-server"></i>Purgar cua d'ordres MySQL</a>
+				<a href="utilerrorslog.html" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="List latest errors in reverse order"><i class="fa-solid fa-triangle-exclamation" style="color:#f88;"></i>Llistar últims errors</a>
+				<div class="ax-menu-line"></div>
+				<a href="ai-config.html"	class="w3-bar-item w3-btn theme ax-theme5-hvr" role="menuitem" aria-label="AI Settings"><i class="fa-solid fa-gears"></i>Configuració interfície AI2</a>
+				<div class="ax-menu-line"></div>
+				<a href="/index.html" class="w3-bar-item w3-btn ax-theme6-hvr" role="menuitem" aria-label="The Default Interface"><i class="fa-solid fa-gears"></i>Interfície clàssica per defecte</a>
+			</div>
+		</div>
+		<div class="w3-dropdown-click">
+			<button id="SupportMob" class="w3-bar-item w3-btn ax-theme5 ax-theme6-hvr" onClick="toggleDropDown(this);" aria-controls="mnuSupportMob" aria-label="Help and information">Suport...</button>
+			<div id="mnuSupportMob" class="w3-dropdown-content w3-bar-block w3-card ax-theme4 ax-animate-menu">
+				<a href="https://cumulus.hosiene.co.uk" target="_blank" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Cumulus MX Forum"><i class="fa-solid fa-users"></i>Fòrum Cumulus MX</a>
+				<a href="https://cumuluswiki.org/a/Original_Cumulus_Wiki" target="_blank" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Cumulus MX Wiki"><i class="fa-solid fa-book"></i>Wiki de Cumulus MX</a>
+				<div class="ax-menu-line"></div>
+				<a href="https://oaktreewebs.co.uk/wiki/" target="_blank" class="w3-bar-item w3-btn ax-theme5-hvr" role="menuitem" aria-label="Alternative Interface Wiki"><i class="fa-solid fa-book"></i>Wiki d'AI2</a>
+			</div>
+		</div>
+	</div>
+</div>
