@@ -17,13 +17,15 @@ $feel_in = isset($weather["temp_indoor_feel"]) ? floatval($weather["temp_indoor_
         <div class="PWS_div_left" style="border-right-color: #8DFC2D;">
             Sensació<br><b><?php echo number_format($feel_in, 1); ?>&deg;C</b>
         </div>
-        <div style="text-align: center; margin-top: 8px;">
-            <svg width="40px" height="76px" viewBox="0 0 44 84">
-                <rect x="12" y="8" width="20" height="66" rx="4" fill="rgba(255,255,255,0.06)" />
-                <rect x="14" y="60" width="16" height="12" rx="2" fill="#8DFC2D" />
-                <rect x="14" y="46" width="16" height="12" rx="2" fill="<?php echo ($temp_in > 22 ? '#8DFC2D' : 'rgba(255,255,255,0.1)'); ?>" />
-                <rect x="14" y="32" width="16" height="12" rx="2" fill="<?php echo ($temp_in > 26 ? '#ecb454' : 'rgba(255,255,255,0.1)'); ?>" />
-                <rect x="14" y="18" width="16" height="12" rx="2" fill="<?php echo ($temp_in > 30 ? '#ff8841' : 'rgba(255,255,255,0.1)'); ?>" />
+        <div style="text-align: center; margin-top: 6px;">
+            <svg width="44px" height="82px" viewBox="0 0 48 84">
+                <rect x="8" y="2" width="32" height="80" rx="5" fill="rgba(255,255,255,0.06)" />
+                <rect x="11" y="69" width="26" height="10" rx="2" fill="#01a4b4" />
+                <rect x="11" y="56" width="26" height="10" rx="2" fill="<?php echo ($feel_in > 18 ? '#00bfa5' : 'rgba(255,255,255,0.1)'); ?>" />
+                <rect x="11" y="43" width="26" height="10" rx="2" fill="<?php echo ($feel_in > 21 ? '#8DFC2D' : 'rgba(255,255,255,0.1)'); ?>" />
+                <rect x="11" y="30" width="26" height="10" rx="2" fill="<?php echo ($feel_in > 24 ? '#ecb454' : 'rgba(255,255,255,0.1)'); ?>" />
+                <rect x="11" y="17" width="26" height="10" rx="2" fill="<?php echo ($feel_in > 27 ? '#ff8841' : 'rgba(255,255,255,0.1)'); ?>" />
+                <rect x="11" y="4"  width="26" height="10" rx="2" fill="<?php echo ($feel_in > 30 ? '#f37867' : 'rgba(255,255,255,0.1)'); ?>" />
             </svg>
         </div>
     </div>
@@ -54,17 +56,19 @@ $feel_in = isset($weather["temp_indoor_feel"]) ? floatval($weather["temp_indoor_
         <div class="PWS_div_right" style="border-left-color: #01a4b4;">
             Humitat<br><b><?php echo $hum_in; ?>%</b>
         </div>
-        <div style="text-align: center; margin-top: 8px;">
-            <svg width="40px" height="76px" viewBox="0 0 44 84">
-                <rect x="12" y="8" width="20" height="66" rx="4" fill="rgba(255,255,255,0.06)" />
-                <rect x="14" y="60" width="16" height="12" rx="2" fill="#01a4b4" />
-                <rect x="14" y="46" width="16" height="12" rx="2" fill="<?php echo ($hum_in > 40 ? '#01a4b4' : 'rgba(255,255,255,0.1)'); ?>" />
-                <rect x="14" y="32" width="16" height="12" rx="2" fill="<?php echo ($hum_in > 55 ? '#01a4b4' : 'rgba(255,255,255,0.1)'); ?>" />
-                <rect x="14" y="18" width="16" height="12" rx="2" fill="<?php echo ($hum_in > 70 ? '#ff8841' : 'rgba(255,255,255,0.1)'); ?>" />
+        <div style="text-align: center; margin-top: 6px;">
+            <svg width="44px" height="82px" viewBox="0 0 48 84">
+                <rect x="8" y="2" width="32" height="80" rx="5" fill="rgba(255,255,255,0.06)" />
+                <rect x="11" y="69" width="26" height="10" rx="2" fill="#01a4b4" />
+                <rect x="11" y="56" width="26" height="10" rx="2" fill="<?php echo ($hum_in > 35 ? '#00bfa5' : 'rgba(255,255,255,0.1)'); ?>" />
+                <rect x="11" y="43" width="26" height="10" rx="2" fill="<?php echo ($hum_in > 45 ? '#8DFC2D' : 'rgba(255,255,255,0.1)'); ?>" />
+                <rect x="11" y="30" width="26" height="10" rx="2" fill="<?php echo ($hum_in > 55 ? '#ecb454' : 'rgba(255,255,255,0.1)'); ?>" />
+                <rect x="11" y="17" width="26" height="10" rx="2" fill="<?php echo ($hum_in > 65 ? '#ff8841' : 'rgba(255,255,255,0.1)'); ?>" />
+                <rect x="11" y="4"  width="26" height="10" rx="2" fill="<?php echo ($hum_in > 75 ? '#f37867' : 'rgba(255,255,255,0.1)'); ?>" />
             </svg>
         </div>
     </div>
 </div>
 <div class="PWS_module_footer">
-    <a href="homeindoor.php" data-featherlight="iframe"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Guia Confort Interior</a>
+    <a href="homeindoor.php" data-featherlight="iframe" data-featherlight-variant="featherlight-vertical" class="featherlight-vertical-link"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Guia Confort Interior</a>
 </div>

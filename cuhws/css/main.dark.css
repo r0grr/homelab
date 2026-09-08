@@ -695,6 +695,14 @@ supunit {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
 }
 
+.featherlight.featherlight-vertical .featherlight-content,
+.featherlight-iframe.featherlight-vertical .featherlight-content {
+    max-width: 480px !important;
+    width: 92vw !important;
+    height: 640px !important;
+    max-height: 92vh !important;
+}
+
 .indoorlocation,
 .stationlocationtime {
     padding: 2px 4px 2px 2px;
