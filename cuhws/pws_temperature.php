@@ -16,6 +16,42 @@ $dew = isset($weather["dewpoint"]) ? floatval($weather["dewpoint"]) : 20.8;
 $wetbulb = isset($weather["wetbulb"]) ? floatval($weather["wetbulb"]) : round($cur_temp * atan(0.151977 * pow($hum + 8.313659, 0.5)) + atan($cur_temp + $hum) - atan($hum - 1.676331) + 0.00391838 * pow($hum, 1.5) * atan(0.023101 * $hum) - 4.686035, 1);
 $trend = isset($weather["temp_trend"]) ? floatval($weather["temp_trend"]) : -1.7;
 
+// Càlcul de la diferència de temperatura respecte a fa 24 hores (ahir a la mateixa hora)
+$diff_24h = null;
+$target_ts = time() - 86400;
+$target_date = date("d/m/y", $target_ts);
+$log_file = __DIR__ . "/cumulusmxdata/" . date("Ym", $target_ts) . "log.txt";
+if (file_exists($log_file) && is_readable($log_file)) {
+    $f = @fopen($log_file, "r");
+    if ($f) {
+        $closest_temp = null;
+        $min_diff = 999999;
+        while (($line = fgets($f)) !== false) {
+            if (strpos($line, $target_date) === 0) {
+                $cols = str_getcsv($line);
+                if (isset($cols[2]) && is_numeric($cols[2])) {
+                    $dt = DateTime::createFromFormat("d/m/y H:i", $cols[0] . " " . $cols[1]);
+                    if ($dt) {
+                        $diff = abs($dt->getTimestamp() - $target_ts);
+                        if ($diff < $min_diff) {
+                            $min_diff = $diff;
+                            $closest_temp = floatval($cols[2]);
+                            if ($diff <= 300) break;
+                        }
+                    }
+                }
+            }
+        }
+        fclose($f);
+        if ($closest_temp !== null) {
+            $diff_24h = round($cur_temp - $closest_temp, 1);
+        }
+    }
+}
+if ($diff_24h === null) {
+    $diff_24h = $trend;
+}
+
 // Dynamic circle background color based on temperature range: -10°C to 45°C
 if ($cur_temp < -5) {
     // Congelació severa (< -5°C)
@@ -89,7 +125,7 @@ if ($cur_temp < -5) {
         <div class="PWS_div_left PWS_div_temp" style="border-right-color: #007aff;" title="<?php echo $lowtemptime ? "Hora mínima: $lowtemptime" : "Mínima d'avui"; ?>">Mín Avui<br><b><?php echo number_format($min_temp, 1); ?>&deg;C</b></div>
         <div class="PWS_div_left PWS_div_temp" style="border-right-color: #ffb703;" title="Índex THSW (Temperatura, Humitat, Sol i Vent)">Índex THSW<br><b><?php echo number_format($thsw, 1); ?>&deg;C</b></div>
         <div class="PWS_div_left PWS_div_temp" style="border-right-color: #40FC39;">Sensació<br><b><?php echo number_format($feel, 1); ?>&deg;C</b></div>
-        <div class="PWS_div_left PWS_div_temp" style="border-right-color: #00d2d3;" title="Tendència de la temperatura en l'última hora">Tendència 1h<br><b><?php echo ($trend > 0 ? '+' : '') . number_format($trend, 1); ?>&deg;C/h <?php echo ($trend >= 0 ? '&uarr;' : '&darr;'); ?></b></div>
+        <div class="PWS_div_left PWS_div_temp" style="border-right-color: #00d2d3;" title="Diferència de temperatura respecte a fa 24 hores (ahir a la mateixa hora)">Dif. 24h<br><b><?php echo ($diff_24h > 0 ? '+' : '') . number_format($diff_24h, 1); ?>&deg;C <?php echo ($diff_24h >= 0 ? '&uarr;' : '&darr;'); ?></b></div>
     </div>
 
     <!-- Middle temperature circle & humidity underneath -->
