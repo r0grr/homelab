@@ -42,6 +42,7 @@ $(document).ready(function() {
     
     // Tira superior de l'estació Davis (Actualització cada 10 minuts / 600000 ms)
     setTimeout(function() { updateModule("pws_toptemp", "pws_toptemp.php", 600000); }, 600000);
+    setTimeout(function() { updateModule("pws_topextra", "pws_topextra.php", 600000); }, 600000);
     setTimeout(function() { updateModule("pws_topwind", "pws_topwind.php", 600000); }, 600000);
     setTimeout(function() { updateModule("pws_toprain", "pws_toprain.php", 600000); }, 600000);
 
