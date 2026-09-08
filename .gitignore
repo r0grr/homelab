@@ -23,8 +23,6 @@ cumulusmx/web/
 cumulusmx/backup/
 cumulusmx/MXdiags/
 cumulusmx/reports/
-cuhws/chartswudata/
-cuhws/jsondata/
 
 # Home Assistant dynamic databases and internal storage
 homeassistant/config/.storage/
@@ -66,5 +64,15 @@ homeassistant/config/ssd_backup_stats.json
 scripts/solaredge_dashboard/node_modules/
 homeassistant/config/.cache/
 
-# Weather web station (maintained as separate upstream repository)
-cuhws/
+# Weather web station runtime state, sensitive configs & data caches
+cuhws/.git*
+cuhws/settings1.php
+cuhws/chartswudata/
+cuhws/cumulusdata
+cuhws/cumulusmxdata
+cuhws/dades/
+cuhws/noaa_reports/
+cuhws/sallent/
+cuhws/meteoclimatic.htm
+cuhws/jsondata/*.txt
+cuhws/jsondata/*.json

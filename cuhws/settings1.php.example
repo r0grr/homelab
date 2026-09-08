@@ -1,0 +1,109 @@
+<?php
+# Settings template for Home Weather Station
+$apikey = "";
+$weatherflowID = "";
+$weatherflowdairID = "";
+$weatherflowdskyID = "";
+$weatherflowoption = "no";
+$weatherflowmapzoom = "5";
+$id = "STATION_ID";
+$TZ = "Europe/Madrid";
+$UTC = "2";
+$lon = 0.0000;
+$lat = 0.0000;
+$stationlocation = "Station Location";
+$stationName = "StationName";
+$moonadj = "0";
+$minmag = "3";
+$unit = "metric";
+$metric = true;
+$elevation = "100 m";
+
+$purpleairID = "";
+$purpleairhardware = "no";
+$darkskyunit = "si";
+
+$indoor = false;
+$worldloc = "europe";
+$usa = false; 
+$uk = false; 
+$scandinavia = false; 
+$restoftheworld = true; 
+
+$windunit = "km/h";
+$distanceunit = "km";
+$tempunit = "C";
+$rainunit = "mm";
+$rainrate = "/h";
+$pressureunit = "hPa";
+$livedataFormat = "cumulus";
+$livedata = "cumulusdata/realtime.txt";
+$lastraindate = "";
+
+$currentconditions = "currentconditionsmetar34davis.php";
+$boltekfile = "demodata/NSRealtime.txt";
+
+$personalmessage = "Smart Weather Station";
+$extralinks = "yes";
+$languages = "yes";
+
+$dateFormat = "d-m-Y";
+$timeFormat = "H:i";
+$timeFormatShort = "H:i";
+$clockformat = "24";
+
+$showDate = false;
+$fireriskshow = false;
+$position1 = "weather34clock.php";
+$position2 = "max-minwind.php";
+$position3 = "rainfallf-year-month.php";
+$position4 = "advisory.php";
+$position1title = "Clock";
+$position2title = "Wind";
+$position3title = "Rain";
+$position4title = "Advisory";
+
+$position6 = "forecast3ds.php";
+$position6title = "Forecast";
+
+$position12title = "Solar / UV";
+$position12 = "weather34uvsolar.php";
+
+$positionlastmoduletitle = "Moon";
+$positionlastmodule = "moonphase.php";
+$temperaturemodule = "temperature.php";
+$hardware = "Davis VP2 / Linux";
+$email = "admin@example.com";
+$twitter = "";
+$showEqNotDaylight = false;
+$notificationeq = "no";
+
+$theme1 = "dark";
+$since = "2026";
+
+$db_host = "localhost";
+$db_user = "root";
+$db_pass = "";
+$db_name = "weatherstation";
+
+$metarapikey = "";
+
+$metar = "yes";
+$icao1 = "LEBL";
+$airport1 = "Airport";
+$airport1dist = "50";
+
+$notifications = "yes";
+$sunoption = "sun3.php";
+$weatherhardware = "Davis Vantage Pro2 Plus";
+$davis = "Yes";
+$sunpositionbearing = "75";
+$cloudbase = "metres";
+$hemisphere = "0";
+
+$defaultlanguage = "cat";
+$language = "cat";
+$password = "CHANGE_ME";
+$https = "yes";
+$flag = "cat";
+?>
