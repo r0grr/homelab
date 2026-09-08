@@ -24,6 +24,17 @@ http://tempscat.com, http://www.tempscat.com, http://sallent.dyndns.org, tempsca
         -X-Powered-By
     }
 
+    # Redireccions d'enllaços externs heretats (Legacy VWS / Meteoclimatic)
+    @sqv {
+        path /santquirze/meteoclimatic.html* /santquirze/meteoclimatic.htm*
+    }
+    redir @sqv https://sqv.tempscat.com/meteoclimatic.html 301
+
+    @legacy_vws {
+        path /sallent/dades/vws/UV_solar.htm* /sallent/dades/vws/temperatura.htm*
+    }
+    redir @legacy_vws / 301
+
     # Redirecció cap a la web de l'estació meteorològica
     reverse_proxy weather34:80 {
         header_down -Server
