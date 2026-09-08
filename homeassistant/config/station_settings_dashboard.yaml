@@ -1,0 +1,11 @@
+title: Config Web Estació
+views:
+  - title: Configuració Estació
+    path: station-setup
+    icon: mdi:tune-vertical
+    type: panel
+    cards:
+      - type: custom:dynamic-iframe
+        title: Configuració Weather34
+        port: 8090
+        path: /easyweathersetup.php
