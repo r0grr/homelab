@@ -886,7 +886,7 @@ supmb {
     padding: 0 !important;
     width: 96vw !important;
     max-width: 782px !important;
-    height: 442px !important;
+    height: 490px !important;
     max-height: 94vh !important;
     overflow: auto !important;
     -webkit-overflow-scrolling: touch;
@@ -918,7 +918,7 @@ supmb {
     .featherlight-iframe .featherlight-content {
         width: 98vw !important;
         max-width: 98vw !important;
-        height: 395px !important;
+        height: 445px !important;
         max-height: 94vh !important;
         overflow: auto !important;
         -webkit-overflow-scrolling: touch;
