@@ -53,6 +53,7 @@ services:
     volumes:
       - /opt/servidor/cumulusmx/data:/opt/CumulusMX/data
       - /opt/servidor/cumulusmx/config:/opt/CumulusMX/config
+      - /opt/servidor/cumulusmx/reports:/opt/CumulusMX/Reports
       - /opt/servidor/cumulusmx/web:/opt/CumulusMX/web
       - /opt/servidor/cumulusmx/strings.ini:/opt/CumulusMX/strings.ini
       - /opt/servidor/cumulusmx/interface_override/index.html:/opt/CumulusMX/interface/index.html:ro
