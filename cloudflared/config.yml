@@ -1,30 +1,52 @@
 # ==============================================================================
-# Cloudflare Zero Trust Tunnel - Configuració d'Ingress (Local Config)
-# Domini: meteosallent.cat
+# Cloudflare Zero Trust Tunnel - Configuració d'Ingress Blindada
+# Serveis Públics: tempscat.com / meteosallent.cat
+# Serveis Privats (HA, Cumulus, Plaques, Terminal): Protegits via Tailscale
 # ==============================================================================
 
-# Si utilitzes gestió per arxiu de credencials local en lloc de TUNNEL_TOKEN:
-# tunnel: <EL_TEU_TUNNEL_ID>
-# credentials-file: /etc/cloudflared/<EL_TEU_TUNNEL_ID>.json
+originRequest:
+  connectTimeout: 10s
+  tlsTimeout: 10s
+  tcpKeepAlive: 30s
+  keepAliveConnections: 100
 
 ingress:
-  # 1. Web de l'estació meteorològica Davis Vantage Pro2 (Cumulus MX)
+  # 1. BLOQUEIG DE SEGURETAT: Prohibir accés a configuració i contrasenyes des d'Internet
+  - hostname: tempscat.com
+    path: "^/(easyweathersetup|settings|settings1)\\.php.*$"
+    service: http_status:403
+
+  - hostname: www.tempscat.com
+    path: "^/(easyweathersetup|settings|settings1)\\.php.*$"
+    service: http_status:403
+
   - hostname: meteosallent.cat
-    service: http://cumulusmx:8998
+    path: "^/(easyweathersetup|settings|settings1)\\.php.*$"
+    service: http_status:403
 
   - hostname: www.meteosallent.cat
-    service: http://cumulusmx:8998
+    path: "^/(easyweathersetup|settings|settings1)\\.php.*$"
+    service: http_status:403
 
-  # 2. Panell web interactiu de plaques solars (SolarEdge Dashboard)
-  - hostname: solar.meteosallent.cat
-    service: http://solaredge-dashboard:5173
+  - hostname: sallent.tempscat.com
+    path: "^/(easyweathersetup|settings|settings1)\\.php.*$"
+    service: http_status:403
 
-  # 3. Panell de control de Home Assistant
-  - hostname: ha.meteosallent.cat
-    service: http://host.docker.internal:8123
-    originRequest:
-      noTLSVerify: true
-      httpHostHeader: ha.meteosallent.cat
+  # 2. SERVEI PÚBLIC: Web meteorològica Weather34 (Sallent)
+  - hostname: tempscat.com
+    service: http://weather34:80
 
-  # 4. Regla Catch-All final (Respon 404 a qualsevol altre tràfic no coincident)
+  - hostname: www.tempscat.com
+    service: http://weather34:80
+
+  - hostname: meteosallent.cat
+    service: http://weather34:80
+
+  - hostname: www.meteosallent.cat
+    service: http://weather34:80
+
+  - hostname: sallent.tempscat.com
+    service: http://weather34:80
+
+  # 3. Regla Catch-All final (Respon 404 a qualsevol petició no autoritzada)
   - service: http_status:404
