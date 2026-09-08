@@ -50,7 +50,7 @@ date_default_timezone_set($TZ);
     </div>
 
     <div class="top-navbar-right">
-      <a href="https://www.meteoclimatic.net/perfil/ESCA0800000008650A" target="_blank" class="meteoclimatic-seal-badge" title="Meteoclimatic Sallent E08650">
+      <a href="https://www.meteoclimatic.net/perfil/ESCAT0800000008650B" target="_blank" class="meteoclimatic-seal-badge" title="Meteoclimatic Sallent E08650">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="#fbbf24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
         <span>Estació amb segell Meteoclimatic de qualitat destacada</span>
       </a>
@@ -61,7 +61,7 @@ date_default_timezone_set($TZ);
     <div class="mobile-station-line">
       Davis Vantage Pro2 Plus (UV-Solar) - 336m. snm. - E08650 SALLENT (El Bages) CAT
     </div>
-    <a href="https://www.meteoclimatic.net/perfil/ESCA0800000008650A" target="_blank" class="mobile-meteoclimatic-line" title="Meteoclimatic Sallent E08650">
+    <a href="https://www.meteoclimatic.net/perfil/ESCAT0800000008650B" target="_blank" class="mobile-meteoclimatic-line" title="Meteoclimatic Sallent E08650">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
       <span>Estació amb segell Meteoclimatic de qualitat destacada</span>
     </a>
@@ -135,7 +135,7 @@ date_default_timezone_set($TZ);
       <a href="https://cumuluswiki.org/a/Software" target="_blank" title="Cumulus MX">
         <img src="img/cumulusmx.png" height="24" alt="Cumulus MX">
       </a>
-      <a href="https://www.meteoclimatic.net/perfil/ESCA0800000008650A" target="_blank" class="meteoclimatic-footer-badge" title="Meteoclimatic E08650">
+      <a href="https://www.meteoclimatic.net/perfil/ESCAT0800000008650B" target="_blank" class="meteoclimatic-footer-badge" title="Meteoclimatic E08650">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="#fbbf24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
         <span>Meteoclimatic E08650</span>
       </a>
