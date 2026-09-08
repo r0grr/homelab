@@ -4,9 +4,75 @@ $result = date_sun_info(time(), $lat, $lon);
 $suns2 =date('G.i', $result['sunset']);
 $sunrs2 =date('G.i', $result['sunrise']);
 $now =date('G.i');
- //weather34 wxcheck API aviation metar script May 2018 
-$json_string             = file_exists("jsondata/metar34.txt") ? file_get_contents("jsondata/metar34.txt") : "";
-$parsed_json             = json_decode($json_string);
+// METAR fetch: NOAA Aviation Weather Center for LEBL (Josep Tarradellas Barcelona-El Prat)
+$metar_file = __DIR__ . '/jsondata/metar34.txt';
+$need_fetch = !file_exists($metar_file) || (time() - filemtime($metar_file) > 900) || (filesize($metar_file) < 200);
+
+if ($need_fetch) {
+    $ctx = stream_context_create([
+        'http' => [
+            'timeout' => 5,
+            'header' => "User-Agent: MeteoSallent-WeatherStation/2.0\r\n"
+        ]
+    ]);
+    $raw_noaa = @file_get_contents('https://aviationweather.gov/api/data/metar?ids=LEBL&format=json', false, $ctx);
+    if ($raw_noaa) {
+        $noaa_arr = json_decode($raw_noaa, true);
+        if (is_array($noaa_arr) && !empty($noaa_arr[0]['icaoId'])) {
+            $n = $noaa_arr[0];
+            $t = isset($n['temp']) ? floatval($n['temp']) : 20.0;
+            $dp = isset($n['dewp']) ? floatval($n['dewp']) : 15.0;
+            $press = isset($n['altim']) ? floatval($n['altim']) : 1013.25;
+            $wdir = is_numeric($n['wdir'] ?? null) ? intval($n['wdir']) : 90;
+            $wspd_kts = isset($n['wspd']) ? floatval($n['wspd']) : 0.0;
+            $wspd_mph = $wspd_kts * 1.15078;
+            $clouds = !empty($n['cover']) ? $n['cover'] : 'FEW';
+            $cond_code = !empty($n['wxString']) ? $n['wxString'] : '';
+            
+            // Calculate relative humidity from temp & dewp
+            $rh = 100 * exp((17.625 * $dp) / (243.04 + $dp)) / exp((17.625 * $t) / (243.04 + $t));
+            $rh = max(0, min(100, round($rh)));
+
+            $clean_data = [
+                'data' => [[
+                    'observed' => $n['reportTime'] ?? date('c'),
+                    'raw_text' => $n['rawOb'] ?? '',
+                    'icao' => 'LEBL',
+                    'station' => ['name' => 'Aeroport Josep Tarradellas Barcelona-El Prat'],
+                    'barometer' => [
+                        'hg' => round($press * 0.02953, 2),
+                        'mb' => round($press, 1)
+                    ],
+                    'conditions' => [['code' => $cond_code, 'text' => $cond_code]],
+                    'clouds' => [['code' => $clouds, 'text' => $clouds]],
+                    'dewpoint' => [
+                        'celsius' => round($dp, 1),
+                        'fahrenheit' => round($dp * 1.8 + 32, 1)
+                    ],
+                    'temperature' => [
+                        'celsius' => round($t, 1),
+                        'fahrenheit' => round($t * 1.8 + 32, 1)
+                    ],
+                    'humidity' => ['percent' => $rh],
+                    'visibility' => [
+                        'meters' => '10000',
+                        'miles' => '6.2'
+                    ],
+                    'wind' => [
+                        'degrees' => $wdir,
+                        'speed_mph' => round($wspd_mph, 1),
+                        'speed_kts' => round($wspd_kts, 1)
+                    ],
+                    'rain_in' => 0
+                ]]
+            ];
+            @file_put_contents($metar_file, json_encode($clean_data, JSON_PRETTY_PRINT));
+        }
+    }
+}
+
+$json_string = file_exists($metar_file) ? file_get_contents($metar_file) : "";
+$parsed_json = json_decode($json_string);
 if (isset($parsed_json->{'data'}[0])) {
     $d0 = $parsed_json->{'data'}[0];
     $metar34time       = isset($d0->{'observed'}) ? $d0->{'observed'} : '';
