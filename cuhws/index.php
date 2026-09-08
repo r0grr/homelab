@@ -74,7 +74,7 @@ date_default_timezone_set($TZ);
     <span class="top-summary-btn-title">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
       <span>Indicadors ràpids en directe</span>
-      <span class="summary-badge">5 blocs</span>
+      <span class="summary-badge">6 blocs</span>
     </span>
     <span class="top-summary-chevron">&#9662;</span>
   </button>
@@ -82,6 +82,7 @@ date_default_timezone_set($TZ);
     <div class="PWS_weather_container">
       <div class="PWS_weather_item_s"><div id="pws_topclock"><?php include('pws_topclock.php'); ?></div></div>
       <div class="PWS_weather_item_s"><div id="pws_toptemp"><?php include('pws_toptemp.php'); ?></div></div>
+      <div class="PWS_weather_item_s"><div id="pws_topextra"><?php include('pws_topextra.php'); ?></div></div>
       <div class="PWS_weather_item_s"><div id="pws_topwind"><?php include('pws_topwind.php'); ?></div></div>
       <div class="PWS_weather_item_s"><div id="pws_toprain"><?php include('pws_toprain.php'); ?></div></div>
       <div class="PWS_weather_item_s"><div id="pws_topeq"><?php include('pws_topeq.php'); ?></div></div>
