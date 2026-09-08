@@ -74,7 +74,7 @@ spancalm{postion:relative;font-family:weathertext,Arial;font-size:26px;}.weather
 </style>
 </head>
 <body>
-<div class="weather34darkbrowser" url="Metar Aviation Weather Data  <?php echo $metar34stationid ," ", $metar34stationname;?>"></div>
+<div class="weather34darkbrowser" url="Dades METAR d'Aviació &bull; <?php echo $metar34stationid ,' &bull; ', $metar34stationname;?>"></div>
    
 <section class="weather34cards"><div class="weather34card weather34card--earthquake1">
 <div class="weather34card_weather34-container"> <div class="weather34card_weather34-wrapper"><span class="weather34card__count-text--big">
@@ -186,7 +186,7 @@ else{echo "Due <span> North</span>";}?>
 <div class="weather34card__count-container"> <div class="weather34card__count-textuv"><span class="weather34card__count-text--bigs"> </div>
 </div><br>
  <div class="weather34card__stuff-container">
-<actual>Wind Speed</actual>
+<actual>Velocitat del Vent</actual>
 <div class="icon"><img src=css/icons/gust.svg width=20px></div>
 </section>
 <section class="weather34cards">
@@ -198,17 +198,17 @@ else{echo "Due <span> North</span>";}?>
 <?php //min year 
  echo '<uppercase>',$sky_desc.'</uppercase> '; ?>
 <div class="lotemp">
-<div class="hitemp">Pressure <green> <?php echo $metar34pressuremb ," </green>(hPa)"; 	?> - <green><?php echo $metar34pressurehg ," </green>(in)"; 	?></span></div>
-<div class="hitemp">Visibility <yellow> <?php echo $metar34vismiles  ," </yellow>(mi)"; 	?> - <yellow><?php echo $metar34viskm  ," </yellow>(km)"; 	?></span></div>
+<div class="hitemp">Pressió <green> <?php echo $metar34pressuremb ," </green>(hPa)"; 	?></span></div>
+<div class="hitemp">Visibilitat <yellow> <?php echo $metar34viskm  ," </yellow>(km)"; 	?></span></div>
 <div class="icon"><img src=css/icons/clear.svg width=45px></div></div> </div> </div>
 <div class="weather34card__count-container"><div class="weather34card__count-textuv"><span class="weather34card__count-text--big">  </span></div>  
 <div class="weather34card__stuff-container"><br>
-<actual>Current Conditions</actual></div></div></div></div>
+<actual>Condicions Actuals</actual></div></div></div></div>
 <div class="weather34card weather34card--earthquake2">
 <div class="weather34card_weather34-container">
 <div class="weather34card_weather34-wrapper"><span class="weather34card__count-text--big">
 <div class="weather34-uvrate-bar" style="margin-top:0;"></div><?php echo $metar34stationid ; ?>
-</span> <div class="hitemp"><?php echo "Location <yellow>",$metar34stationname  ;?></yellow> <green><?php echo $airport1dist. "</green>(".$distanceunit.")"?> 
+</span> <div class="hitemp"><?php echo "Ubicació: <yellow>",$metar34stationname  ;?></yellow> <green><?php echo $airport1dist. "</green>(".$distanceunit.")"?> 
  <div class="lotempraw">
 <?php //metar raw
 echo "<sup><unit>Metar :<greyuv>" .$metar34raw."</greyuv>";?>
@@ -216,17 +216,17 @@ echo "<sup><unit>Metar :<greyuv>" .$metar34raw."</greyuv>";?>
 <div class="hitemp">
 <?php //update timestamp
 date_default_timezone_set($tz);$date = $metar34time;$date=str_replace('@', ' ', $date);
-$date=str_replace('Z', ' ', $date);$date1 = strtotime($date) + 60*60*$UTC;echo date('D jS F H:i a ',$date1);
+$date=str_replace('Z', ' ', $date);$date1 = strtotime($date) + 60*60*$UTC;echo date('d/m/Y H:i',$date1);
 ?> </div></div></div></div>
 <div class="weather34card__count-container">
 <div class="weather34card__count-textuv">
 <span class="weather34card__count-text--big">  </span></div>  
 <div class="weather34card__stuff-container"><br>           
-<actual>Airport</actual>
+<actual>Aeroport</actual>
 <div class="icon"><img src=css/icons/airport.svg width=40px></div>
 </section>
 <div class="provided">   
 &nbsp;
-Metar Aviation API Data Provided by <a href="https://www.checkwx.com/" title="https://www.checkwx.com/" target="_blank">https://www.checkwx.com/</a> <?php echo $info;?> PHP scripts by <a href="https://weather34.com" title="weather34.com" target="_blank">weather34.com  &copy;<?php echo date('Y');?></a></div>
+Dades oficials METAR d'Aviació &bull; NOAA Aviation Weather Center &bull; Aeroport de Barcelona-El Prat (LEBL)</div>
 </body>
 </html>
