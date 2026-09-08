@@ -13329,7 +13329,7 @@ supdavis {
 }
 @media screen and (min-width: 1460px) {
     .PWS_weather_container { width: 1460px; }
-    .PWS_weather_item_s { width: 286px; }
+    .PWS_weather_item_s { width: 236px; }
     .PWS_weather_item { width: 359px; min-width: 359px; }
     .PWS_weather_item_w { width: 724px; }
     .PWS_left, .PWS_right {

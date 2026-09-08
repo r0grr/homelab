@@ -28,6 +28,47 @@ if ($is_day) {
 } else {
     $status_txt = "Nit en curs";
 }
+
+if (!function_exists('get_solar_coords_sun')) {
+    function get_solar_coords_sun($timestamp, $lat, $lon) {
+        $rad = M_PI / 180.0;
+        $day_of_year = date("z", $timestamp);
+        $hour = date("G", $timestamp) + (date("i", $timestamp)/60.0) + (date("s", $timestamp)/3600.0);
+        $gamma = 2.0 * M_PI / 365.0 * ($day_of_year - 1 + ($hour - 12.0) / 24.0);
+        $eqtime = 229.18 * (0.000075 + 0.001868 * cos($gamma) - 0.032077 * sin($gamma) - 0.014615 * cos(2 * $gamma) - 0.040849 * sin(2 * $gamma));
+        $decl = 0.006918 - 0.399912 * cos($gamma) + 0.070257 * sin($gamma) - 0.006758 * cos(2 * $gamma) + 0.000907 * sin(2 * $gamma) - 0.002697 * cos(3 * $gamma) + 0.00148 * sin(3 * $gamma);
+        $tz_offset = date("Z", $timestamp) / 60.0;
+        $time_offset = $eqtime + 4.0 * $lon - $tz_offset;
+        $tst = $hour * 60.0 + $time_offset;
+        $ha = ($tst / 4.0) - 180.0;
+        $ha_rad = $ha * $rad;
+        $lat_rad = $lat * $rad;
+        $cos_zenith = sin($lat_rad) * sin($decl) + cos($lat_rad) * cos($decl) * cos($ha_rad);
+        $zenith = acos(max(-1.0, min(1.0, $cos_zenith)));
+        $elevation = 90.0 - ($zenith / $rad);
+        $sin_zenith = sin($zenith);
+        if ($sin_zenith != 0) {
+            $cos_az = (sin($decl) - cos($zenith) * sin($lat_rad)) / ($sin_zenith * cos($lat_rad));
+            $azimuth = acos(max(-1.0, min(1.0, $cos_az))) / $rad;
+            if ($ha > 0) {
+                $azimuth = 360.0 - $azimuth;
+            }
+        } else {
+            $azimuth = 180.0;
+        }
+        $dirs = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+        $cardinal = $dirs[round($azimuth / 22.5) % 16];
+        return [
+            "elevation" => round($elevation, 1),
+            "azimuth"   => round($azimuth, 0),
+            "cardinal"  => $cardinal
+        ];
+    }
+}
+$solar_now = get_solar_coords_sun($now, $lat, $lon);
+$elevation_val = $solar_now['elevation'];
+$azimuth_val = $solar_now['azimuth'];
+$azimuth_card = $solar_now['cardinal'];
 ?>
 <div class="PWS_module_title">
     <span>Posició Solar &bull; Llum Diürna</span>
@@ -38,7 +79,7 @@ if ($is_day) {
     <div class="PWS_left">
         <div class="PWS_div_left" style="border-right-color: #e8c400;">Llum Diürna<br><b><?php echo "$daylight_h h $daylight_m min"; ?></b></div>
         <div class="PWS_div_left" style="border-right-color: #e8c400;">Sortida Sol<br><b><?php echo $sunrise_str; ?></b> Demà</div>
-        <div class="PWS_div_left" style="border-right-color: #01a4b4;">Azimut<br><b>165&deg; SSE</b></div>
+        <div class="PWS_div_left" style="border-right-color: #01a4b4;">Azimut<br><b><?php echo $azimuth_val; ?>&deg; <?php echo $azimuth_card; ?></b></div>
     </div>
 
     <!-- Middle Sun Arc -->
@@ -81,9 +122,9 @@ if ($is_day) {
     <div class="PWS_right">
         <div class="PWS_div_right" style="border-left-color: #718096;">Foscor<br><b><?php echo "$darkness_h h $darkness_m min"; ?></b></div>
         <div class="PWS_div_right" style="border-left-color: #e8c400;">Posta Sol<br><b><?php echo $sunset_str; ?></b> Avui</div>
-        <div class="PWS_div_right" style="border-left-color: #01a4b4;">Elevació<br><b><?php echo ($is_day ? '45&deg;' : '-15&deg;'); ?></b></div>
+        <div class="PWS_div_right" style="border-left-color: #01a4b4;">Elevació<br><b><?php echo ($elevation_val > 0 ? '+' : '') . $elevation_val; ?>&deg;</b></div>
     </div>
 </div>
 <div class="PWS_module_footer">
-    <a href="mooninfo.php" data-featherlight="iframe"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Dades Sol</a>
+    <a href="suninfo.php" data-featherlight="iframe"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Dades Sol</a>
 </div>
