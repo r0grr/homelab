@@ -1,0 +1,72 @@
+title: Router Vera (Fibra)
+views:
+  - title: Router Vera
+    path: router-vera
+    icon: mdi:router-wireless
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              # 🌐 Router de Fibra Vera (Huawei HG8245H)
+              Terminal de fibra òptica GPON de la companyia **Vera** (Connecta). Connectat directament a la línia de fibra fins a la central i subministrant accés a Internet al router ASUS ROG.
+
+          - type: horizontal-stack
+            cards:
+              - type: entity
+                entity: binary_sensor.estat_router_vera_huawei
+                name: Connexió LAN (192.168.1.1)
+                icon: mdi:lan-connect
+              - type: entity
+                entity: binary_sensor.estat_router_asus_principal
+                name: Enllaç ASUS (192.168.1.115)
+                icon: mdi:router-network
+
+          - type: entities
+            title: Informació i Estat de la Línia de Fibra
+            entities:
+              - type: attribute
+                entity: binary_sensor.estat_router_vera_huawei
+                name: Model Dispositiu
+                attribute: model
+                icon: mdi:devices
+              - type: attribute
+                entity: binary_sensor.estat_router_vera_huawei
+                name: IP LAN Gestió
+                attribute: lan_ip
+                icon: mdi:ip-network
+              - type: attribute
+                entity: binary_sensor.estat_router_vera_huawei
+                name: IP Pública WAN (PPPoE)
+                attribute: wan_ip
+                icon: mdi:web
+              - type: attribute
+                entity: binary_sensor.estat_router_vera_huawei
+                name: Estat CG-NAT
+                attribute: cgnat_status
+                icon: mdi:shield-check
+              - type: attribute
+                entity: binary_sensor.estat_router_vera_huawei
+                name: Obertura de Ports (Port Mapping)
+                attribute: port_mapping
+                icon: mdi:arrow-decision
+
+          - type: markdown
+            content: |
+              ### 🔑 Accessos Ràpids al Panell d'Administració Huawei
+              Per motius de seguretat, els routers de fibra bloquegen la visualització en marcs incrustats (*X-Frame-Options: SAMEORIGIN*). Pots obrir el panell directament amb un sol clic:
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Obrir Panell Huawei (LAN)
+                icon: mdi:open-in-new
+                tap_action:
+                  action: url
+                  url_path: "http://192.168.1.1"
+              - type: button
+                name: Obrir Panell Huawei (Tailscale)
+                icon: mdi:shield-link-variant
+                tap_action:
+                  action: url
+                  url_path: "http://100.122.161.66:8082"
