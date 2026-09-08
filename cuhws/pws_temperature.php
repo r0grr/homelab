@@ -89,7 +89,7 @@ if ($cur_temp < -5) {
         <div class="PWS_div_left PWS_div_temp" style="border-right-color: #007aff;" title="<?php echo $lowtemptime ? "Hora mínima: $lowtemptime" : "Mínima d'avui"; ?>">Mín Avui<br><b><?php echo number_format($min_temp, 1); ?>&deg;C</b></div>
         <div class="PWS_div_left PWS_div_temp" style="border-right-color: #ffb703;" title="Índex THSW (Temperatura, Humitat, Sol i Vent)">Índex THSW<br><b><?php echo number_format($thsw, 1); ?>&deg;C</b></div>
         <div class="PWS_div_left PWS_div_temp" style="border-right-color: #40FC39;">Sensació<br><b><?php echo number_format($feel, 1); ?>&deg;C</b></div>
-        <div class="PWS_div_left PWS_div_temp" style="border-right-color: #00d2d3;" title="Tendència tèrmica en 24 hores">Dif. 24h<br><b><?php echo ($trend > 0 ? '+' : '') . number_format($trend, 1); ?>&deg;C <?php echo ($trend >= 0 ? '&uarr;' : '&darr;'); ?></b></div>
+        <div class="PWS_div_left PWS_div_temp" style="border-right-color: #00d2d3;" title="Tendència de la temperatura en l'última hora">Tendència 1h<br><b><?php echo ($trend > 0 ? '+' : '') . number_format($trend, 1); ?>&deg;C/h <?php echo ($trend >= 0 ? '&uarr;' : '&darr;'); ?></b></div>
     </div>
 
     <!-- Middle temperature circle & humidity underneath -->
@@ -105,8 +105,11 @@ if ($cur_temp < -5) {
                 <circle style="stroke: rgba(255,255,255,0.18); stroke-width: 1.5; filter: drop-shadow(0 0 10px <?php echo $temp_glow; ?>);" fill="url(#pws_temp_grad)" cx="65" cy="65" r="52" />
             </svg>
             <div style="position: absolute; top: 0; left: 0; width: 124px; height: 124px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: <?php echo $text_color; ?>; text-shadow: 0 0 8px <?php echo ($text_color == '#ffffff' ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.8)'); ?>;">
-                <b style="font-size: 24px; line-height: 1.1;"><?php echo number_format($cur_temp, 1); ?>&deg;</b>
-                <span style="font-size: 11.5px; font-weight: 700; margin-top: 3px;">&uarr;<?php echo number_format($max_temp, 1); ?>&deg; &darr;<?php echo number_format($min_temp, 1); ?>&deg;</span>
+                <b style="font-size: 23px; line-height: 1.05;"><?php echo number_format($cur_temp, 1); ?>&deg;</b>
+                <span style="font-size: 11px; font-weight: 800; margin-top: 2px;">
+                    <?php echo ($trend < 0 ? '&darr; ' . number_format(abs($trend), 1) . '&deg;/h' : ($trend > 0 ? '&uarr; ' . number_format($trend, 1) . '&deg;/h' : '&rarr; 0.0&deg;/h')); ?>
+                </span>
+                <span style="font-size: 10px; font-weight: 700; margin-top: 2px; opacity: 0.9;">&uarr;<?php echo number_format($max_temp, 1); ?>&deg; &darr;<?php echo number_format($min_temp, 1); ?>&deg;</span>
             </div>
         </div>
         <div style="text-align: center; margin-top: 3px; font-size: 12.5px; font-weight: 700; color: #cbd5e1;">
