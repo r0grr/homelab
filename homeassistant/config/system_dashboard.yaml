@@ -1,0 +1,233 @@
+title: Estat Mini PC
+views:
+  - title: Monitor del Sistema
+    path: system-status
+    icon: mdi:server
+    cards:
+      # ========================================================================
+      # BLOC 1: POTÈNCIA I CONSUM ELÈCTRIC (WATTS)
+      # ========================================================================
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: "### ⚡ Potència i Consum Elèctric (Watts)"
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                name: Potència CPU (SoC)
+                entity: sensor.mini_pc_consum_potencia_cpu
+                min: 0
+                max: 30
+                needle: true
+                severity:
+                  green: 0
+                  yellow: 15
+                  red: 25
+              - type: gauge
+                name: Potència Total Sistema
+                entity: sensor.mini_pc_potencia_total_estimada_del_sistema
+                min: 0
+                max: 40
+                needle: true
+                severity:
+                  green: 0
+                  yellow: 20
+                  red: 30
+          - type: entities
+            title: Desglossament de Potència (Intel RAPL)
+            entities:
+              - entity: sensor.mini_pc_consum_potencia_cpu
+                name: Potència Total CPU (Package)
+                icon: mdi:cpu-64-bit
+              - entity: sensor.mini_pc_potencia_nuclis_cpu
+                name: Potència Nuclis CPU (Cores)
+                icon: mdi:chip
+              - entity: sensor.mini_pc_potencia_grafica_i_uncore
+                name: Potència Gràfica i Uncore (iGPU)
+                icon: mdi:laptop
+              - entity: sensor.mini_pc_potencia_total_estimada_del_sistema
+                name: Potència Total Estimada Mini PC
+                icon: mdi:flash
+
+      # ========================================================================
+      # BLOC 2: TEMPERATURES HARDWARE
+      # ========================================================================
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: "### 🌡️ Temperatures del Mini PC"
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                name: Processador (CPU)
+                entity: sensor.system_monitor_temperatura_del_procesador
+                min: 20
+                max: 100
+                needle: true
+                severity:
+                  green: 20
+                  yellow: 70
+                  red: 85
+              - type: gauge
+                name: Placa Base (ACPI)
+                entity: sensor.mini_pc_temperatura_placa_base
+                min: 15
+                max: 75
+                needle: true
+                severity:
+                  green: 15
+                  yellow: 45
+                  red: 65
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                name: Disc NVMe (Sistema)
+                entity: sensor.mini_pc_temperatura_nvme_ssd
+                min: 20
+                max: 90
+                needle: true
+                severity:
+                  green: 20
+                  yellow: 65
+                  red: 80
+              - type: gauge
+                name: Disc SATA (Backups)
+                entity: sensor.mini_pc_temperatura_ssd_backup_sata
+                min: 20
+                max: 75
+                needle: true
+                severity:
+                  green: 20
+                  yellow: 55
+                  red: 65
+
+      # ========================================================================
+      # BLOC 3: PROCESSADOR I RENDIMENT
+      # ========================================================================
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: "### ⚙️ Rendiment del Processador (Intel N150)"
+          - type: gauge
+            name: Ús Total de CPU
+            entity: sensor.system_monitor_uso_del_procesador
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 0
+              yellow: 70
+              red: 90
+          - type: entities
+            title: Mitjanes de Càrrega del Sistema
+            entities:
+              - entity: sensor.system_monitor_carga_1_min
+                name: Càrrega (1 min)
+              - entity: sensor.system_monitor_carga_5_min
+                name: Càrrega (5 min)
+              - entity: sensor.system_monitor_carga_15_min
+                name: Càrrega (15 min)
+
+      # ========================================================================
+      # BLOC 4: MEMÒRIA RAM
+      # ========================================================================
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: "### 🧠 Memòria RAM (16 GB)"
+          - type: gauge
+            name: Percentatge d'Ús RAM
+            entity: sensor.system_monitor_uso_de_memoria_2
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 0
+              yellow: 75
+              red: 90
+          - type: entities
+            title: Detall de Memòria
+            entities:
+              - entity: sensor.system_monitor_uso_de_memoria
+                name: Memòria Utilitzada
+              - entity: sensor.system_monitor_memoria_libre
+                name: Memòria Lliure
+
+      # ========================================================================
+      # BLOC 5: ESPAI DE DISC (NVMe SSD)
+      # ========================================================================
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: "### 💾 Emmagatzematge NVMe (Arrel /)"
+          - type: gauge
+            name: Percentatge Ocupat
+            entity: sensor.system_monitor_uso_del_disco_de_2
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 0
+              yellow: 75
+              red: 90
+          - type: entities
+            title: Detall d'Espai en Disc
+            entities:
+              - entity: sensor.system_monitor_disco_libre_de
+                name: Espai Lliure Disponible
+              - entity: sensor.system_monitor_uso_del_disco_de
+                name: Espai Ocupat Actual
+
+      # ========================================================================
+      # BLOC 6: ESPAI DE DISC BACKUP (SSD SATA - /mnt/backups)
+      # ========================================================================
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: "### 💽 Disc Còpies de Seguretat (SATA SSD 120 GB)"
+          - type: gauge
+            name: Percentatge Ocupat Backups
+            entity: sensor.mini_pc_espai_ocupat_ssd_backup
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 0
+              yellow: 75
+              red: 90
+          - type: entities
+            title: Capacitat i Estat del Disc de Backup
+            entities:
+              - entity: sensor.mini_pc_estat_smart_ssd_backup
+                name: Estat de Salut (SMART)
+              - entity: sensor.mini_pc_salut_ssd_backup
+                name: Vida Útil Restant del SSD
+              - entity: sensor.mini_pc_hores_d_us_ssd_backup
+                name: Hores d'Ús Engegat
+              - entity: sensor.mini_pc_temperatura_ssd_backup_sata
+                name: Temperatura Operativa
+              - entity: sensor.mini_pc_espai_lliure_ssd_backup
+                name: Espai Lliure per a Còpies
+              - entity: sensor.mini_pc_espai_utilitzat_ssd_backup
+                name: Espai Ocupat Actualment
+
+      # ========================================================================
+      # BLOC 7: XARXA I CONNECTIVITAT
+      # ========================================================================
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: "### 🌐 Trànsit de Xarxa Ethernet (enp3s0)"
+          - type: entities
+            title: Velocitat i Trànsit de Dades
+            entities:
+              - entity: sensor.system_monitor_trafico_de_red_de_entrada_de_enp3s0
+                name: Velocitat d'Entrada (Baixada)
+              - entity: sensor.system_monitor_trafico_de_red_de_salida_de_enp3s0
+                name: Velocitat de Sortida (Pujada)
+              - entity: sensor.system_monitor_entrada_de_red_de_enp3s0
+                name: Total Dades Rebuts
+              - entity: sensor.system_monitor_salida_de_red_de_enp3s0
+                name: Total Dades Enviats
+              - entity: sensor.system_monitor_tiempo_de_actividad
+                name: Data de l'Últim Reinici

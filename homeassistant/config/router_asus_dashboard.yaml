@@ -1,0 +1,101 @@
+title: Routers ASUS & AiMesh
+views:
+  - title: Xarxa ASUS & AiMesh
+    path: router-asus
+    icon: mdi:router-network
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              # 📡 Xarxa Wi-Fi ASUS & Sistema AiMesh
+              Xarxa principal domèstica d'alt rendiment amb router **ASUS ROG GS-BE18000** com a passarel·la principal (Gateway) i node d'extensió **AiMesh** per a cobertura a tota la casa.
+
+          - type: horizontal-stack
+            cards:
+              - type: entity
+                entity: binary_sensor.estat_router_asus_principal
+                name: ASUS Principal (Master)
+                icon: mdi:router-wireless
+              - type: entity
+                entity: binary_sensor.estat_node_aimesh_asus
+                name: Node AiMesh (Satèl·lit)
+                icon: mdi:access-point-network
+
+          - type: entities
+            title: Router ASUS Principal (Master Gateway)
+            entities:
+              - type: attribute
+                entity: binary_sensor.estat_router_asus_principal
+                name: Model
+                attribute: model
+                icon: mdi:devices
+              - type: attribute
+                entity: binary_sensor.estat_router_asus_principal
+                name: IP LAN (Porta d'enllaç)
+                attribute: lan_ip
+                icon: mdi:ip-network
+              - type: attribute
+                entity: binary_sensor.estat_router_asus_principal
+                name: IP WAN (Xarxa Vera)
+                attribute: wan_ip
+                icon: mdi:wan
+              - type: attribute
+                entity: binary_sensor.estat_router_asus_principal
+                name: Nom DynDNS Actiu
+                attribute: dyndns
+                icon: mdi:dns
+              - type: attribute
+                entity: binary_sensor.estat_router_asus_principal
+                name: Redirecció Ports 80 & 443
+                attribute: port_forwarding
+                icon: mdi:check-circle
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Obrir ASUS Master (LAN)
+                icon: mdi:open-in-new
+                tap_action:
+                  action: url
+                  url_path: "http://192.168.2.1"
+              - type: button
+                name: Obrir ASUS Master (Tailscale)
+                icon: mdi:shield-link-variant
+                tap_action:
+                  action: url
+                  url_path: "http://100.122.161.66:8081"
+
+          - type: entities
+            title: Node AiMesh ASUS (Extensor de Cobertura)
+            entities:
+              - type: attribute
+                entity: binary_sensor.estat_node_aimesh_asus
+                name: Rol a la Xarxa
+                attribute: role
+                icon: mdi:access-point-network
+              - type: attribute
+                entity: binary_sensor.estat_node_aimesh_asus
+                name: IP LAN Node
+                attribute: lan_ip
+                icon: mdi:ip
+              - type: attribute
+                entity: binary_sensor.estat_node_aimesh_asus
+                name: Connexió amb el Master
+                attribute: master_ip
+                icon: mdi:link-variant
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Obrir Node AiMesh (LAN)
+                icon: mdi:open-in-new
+                tap_action:
+                  action: url
+                  url_path: "http://192.168.2.194"
+              - type: button
+                name: Obrir Node AiMesh (Tailscale)
+                icon: mdi:shield-link-variant
+                tap_action:
+                  action: url
+                  url_path: "http://100.122.161.66:8083"
