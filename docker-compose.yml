@@ -16,6 +16,8 @@ services:
     volumes:
       - /opt/servidor/homeassistant/config:/config
       - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro
+      - /sys/devices/virtual/powercap:/host_powercap:ro
 
   # ============================================================================
   # 2. MOSQUITTO MQTT BROKER
@@ -51,6 +53,7 @@ services:
     volumes:
       - /opt/servidor/cumulusmx/data:/opt/CumulusMX/data
       - /opt/servidor/cumulusmx/config:/opt/CumulusMX/config
+      - /opt/servidor/cumulusmx/web:/opt/CumulusMX/web
       - /opt/servidor/cumulusmx/strings.ini:/opt/CumulusMX/strings.ini
       - /opt/servidor/cumulusmx/interface_override/index.html:/opt/CumulusMX/interface/index.html:ro
       - /opt/servidor/cumulusmx/ai2_catalan/index.html:/opt/CumulusMX/interface/ai2/index.html:ro
@@ -104,6 +107,9 @@ services:
       - TZ=${TZ:-Europe/Madrid}
       - VITE_SOLAREDGE_SITE_ID=${SOLAREDGE_SITE_ID}
       - VITE_SOLAREDGE_API_KEY=${SOLAREDGE_API_KEY}
+    volumes:
+      - /opt/servidor/scripts/solaredge_dashboard/src:/app/src
+      - /opt/servidor/scripts/solaredge_dashboard/vite.config.ts:/app/vite.config.ts
     networks:
       - homelab-net
 
@@ -141,6 +147,88 @@ services:
       - homelab-net
     profiles:
       - tunnel
+  # ============================================================================
+  # 8. WEATHER34 DASHBOARD (Panell Meteorològic per a MeteoSallent)
+  # Interfície web Weather34 / CU-HWS optimitzada per a Cumulus MX i Davis VP2+.
+  # ============================================================================
+  weather34:
+    image: php:8.2-apache
+    container_name: weather34
+    restart: unless-stopped
+    ports:
+      - "8090:80"
+    environment:
+      - TZ=${TZ:-Europe/Madrid}
+    volumes:
+      - /opt/servidor/cuhws:/var/www/html
+      - /opt/servidor/cumulusmx/web:/var/www/html/cumulusdata:ro
+      - /opt/servidor/cumulusmx/data:/var/www/html/cumulusmxdata:ro
+      - /opt/servidor/cuhws/custom-php.ini:/usr/local/etc/php/conf.d/custom.ini:ro
+      - /opt/servidor/cuhws/apache-security.conf:/etc/apache2/conf-available/security.conf:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - homelab-net
+
+  # ============================================================================
+  # 9. FILE BROWSER (Gestor de Fitxers Web per a Home Assistant)
+  # Explorador de fitxers, cerca i editor de text per a tot /opt/servidor.
+  # ============================================================================
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    restart: unless-stopped
+    ports:
+      - "8085:80"
+    volumes:
+      - /opt/servidor:/srv/servidor
+      - /mnt/backups:/srv/disc_copies_sata
+      - ${HOST_USER_HOME:-/home/user}:/srv/home_user
+      - /opt/servidor/filebrowser/data:/database
+    networks:
+      - homelab-net
+
+  # ============================================================================
+  # 10. CADDY REVERSE PROXY (HTTPS Automàtic Let's Encrypt i Seguretat Pública)
+  # ============================================================================
+  caddy:
+    image: caddy:alpine
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "7880:7880"
+    volumes:
+      - /opt/servidor/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - /opt/servidor/caddy/data:/data
+      - /opt/servidor/caddy/config:/config
+      - /opt/servidor/caddy/logs:/var/log/caddy
+      - /opt/servidor/goaccess/report:/srv/goaccess:ro
+    networks:
+      - homelab-net
+
+  # ============================================================================
+  # 11. GOACCESS (Panell d'Analítica i Monitoratge d'Accessos Web en Temps Real)
+  # ============================================================================
+  goaccess:
+    image: allinurl/goaccess:latest
+    container_name: goaccess
+    restart: unless-stopped
+    command: >
+      /var/log/caddy/access.log
+      -o /srv/goaccess/index.html
+      --log-format=CADDY
+      --real-time-html
+      --addr=0.0.0.0
+      --port=7890
+    volumes:
+      - /opt/servidor/caddy/logs:/var/log/caddy:ro
+      - /opt/servidor/goaccess/report:/srv/goaccess
+    ports:
+      - "7890:7890"
+    networks:
+      - homelab-net
+
 
 networks:
   homelab-net:
