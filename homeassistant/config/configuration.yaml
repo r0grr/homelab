@@ -4,27 +4,272 @@
 
 default_config:
 
-# Soporte para túnel de Cloudflare / Proxy Inverso
-http:
-  use_x_forwarded_for: true
-  trusted_proxies:
-    - 127.0.0.1
-    - ::1
-    - 172.16.0.0/12      # Rango de redes internas de Docker
-    - 192.168.2.0/24     # Red local
 
 frontend:
+  extra_module_url:
+    - /local/dynamic-iframe.js?v=11
 
-# Dashboard de Terminal en el menú lateral de Home Assistant
+# Dashboards en el menú lateral de Home Assistant
 lovelace:
   mode: storage
+  resource_mode: yaml
+  resources:
+    - url: /local/dynamic-iframe.js?v=11
+      type: module
   dashboards:
+    system-ui:
+      mode: yaml
+      title: Estat Mini PC
+      icon: mdi:server
+      show_in_sidebar: true
+      filename: system_dashboard.yaml
+    filemanager-ui:
+      mode: yaml
+      title: Gestor de fitxers
+      icon: mdi:folder-edit
+      show_in_sidebar: true
+      filename: filemanager_dashboard.yaml
     terminal-ui:
       mode: yaml
       title: Terminal
       icon: mdi:console
       show_in_sidebar: true
       filename: terminal_dashboard.yaml
+    station-setup-ui:
+      mode: yaml
+      title: Config web estació
+      icon: mdi:tune-vertical
+      show_in_sidebar: true
+      filename: station_settings_dashboard.yaml
+    cumulusmx-ui:
+      mode: yaml
+      title: Cummulus MX
+      icon: mdi:weather-partly-cloudy
+      show_in_sidebar: true
+      filename: cumulusmx_dashboard.yaml
+    weather34-ui:
+      mode: yaml
+      title: MeteoSallent
+      icon: mdi:weather-sunny
+      show_in_sidebar: true
+      filename: weather34_dashboard.yaml
+    goaccess-ui:
+      mode: yaml
+      title: Analítica Web (GoAccess)
+      icon: mdi:chart-line
+      show_in_sidebar: true
+      filename: goaccess_dashboard.yaml
+    solar-ui:
+      mode: yaml
+      title: Web plaques solars
+      icon: mdi:solar-power
+      show_in_sidebar: true
+      filename: solar_dashboard.yaml
+    vera-router-ui:
+      mode: yaml
+      title: Router Vera (Fibra)
+      icon: mdi:router-wireless
+      show_in_sidebar: true
+      filename: router_vera_dashboard.yaml
+    asus-router-ui:
+      mode: yaml
+      title: Routers ASUS & AiMesh
+      icon: mdi:router-network
+      show_in_sidebar: true
+      filename: router_asus_dashboard.yaml
+
+# ------------------------------------------------------------------------------
+# Sensors de maquinari del Mini PC (Temperatures NVMe i Placa Base)
+# ------------------------------------------------------------------------------
+command_line:
+  - sensor:
+      name: "Mini PC - Temperatura NVMe SSD"
+      unique_id: "minipc_temp_nvme"
+      command: "awk '{printf \"%.1f\", $1/1000}' /sys/class/hwmon/hwmon1/temp1_input 2>/dev/null || echo 0"
+      unit_of_measurement: "°C"
+      device_class: "temperature"
+      state_class: "measurement"
+      scan_interval: 30
+      value_template: "{{ value | float }}"
+
+  - sensor:
+      name: "Mini PC - Temperatura Placa Base"
+      unique_id: "minipc_temp_placa_base"
+      command: "awk '{printf \"%.1f\", $1/1000}' /sys/class/hwmon/hwmon0/temp1_input 2>/dev/null || echo 0"
+      unit_of_measurement: "°C"
+      device_class: "temperature"
+      state_class: "measurement"
+      scan_interval: 30
+      value_template: "{{ value | float }}"
+
+  - sensor:
+      name: "Mini PC - Consum Potència CPU"
+      unique_id: "minipc_consum_potencia_cpu"
+      command: "python3 /config/read_power.py"
+      unit_of_measurement: "W"
+      device_class: "power"
+      state_class: "measurement"
+      scan_interval: 15
+      value_template: "{{ value_json.cpu_pkg_w }}"
+      json_attributes:
+        - cpu_pkg_w
+        - cpu_core_w
+        - cpu_uncore_w
+        - system_est_w
+
+  - sensor:
+      name: "Mini PC - Temperatura SSD Backup SATA"
+      unique_id: "minipc_temp_ssd_backup"
+      command: "cat /config/ssd_backup_stats.json 2>/dev/null || echo '{}'"
+      unit_of_measurement: "°C"
+      device_class: "temperature"
+      state_class: "measurement"
+      scan_interval: 15
+      value_template: "{{ value_json.temperature | default(0) }}"
+      json_attributes:
+        - life_percent
+        - health
+        - power_on_hours
+        - disk_total_gb
+        - disk_used_gb
+        - disk_free_gb
+        - disk_used_percent
+        - model
+        - device
+        - mountpoint
+
+  - sensor:
+      name: "Dades Router Vera Huawei"
+      unique_id: "dades_router_vera_huawei"
+      command: "python3 /config/check_routers.py vera"
+      value_template: "{{ value_json.state }}"
+      scan_interval: 30
+      json_attributes:
+        - model
+        - lan_ip
+        - wan_ip
+        - cgnat_status
+        - port_mapping
+
+  - sensor:
+      name: "Dades Router ASUS Principal"
+      unique_id: "dades_router_asus_principal"
+      command: "python3 /config/check_routers.py asus_master"
+      value_template: "{{ value_json.state }}"
+      scan_interval: 30
+      json_attributes:
+        - model
+        - lan_ip
+        - wan_ip
+        - dyndns
+        - port_forwarding
+
+  - sensor:
+      name: "Dades Node AiMesh ASUS"
+      unique_id: "dades_node_aimesh_asus"
+      command: "python3 /config/check_routers.py asus_aimesh"
+      value_template: "{{ value_json.state }}"
+      scan_interval: 30
+      json_attributes:
+        - model
+        - role
+        - lan_ip
+        - master_ip
+
+template:
+  - sensor:
+      - name: "Mini PC - Potència Nuclis CPU"
+        unique_id: "minipc_potencia_nuclis_cpu"
+        unit_of_measurement: "W"
+        device_class: "power"
+        state_class: "measurement"
+        state: "{{ state_attr('sensor.mini_pc_consum_potencia_cpu', 'cpu_core_w') }}"
+
+      - name: "Mini PC - Potència Gràfica i Uncore"
+        unique_id: "minipc_potencia_uncore"
+        unit_of_measurement: "W"
+        device_class: "power"
+        state_class: "measurement"
+        state: "{{ state_attr('sensor.mini_pc_consum_potencia_cpu', 'cpu_uncore_w') }}"
+
+      - name: "Mini PC - Potència Total Estimada del Sistema"
+        unique_id: "minipc_potencia_total_sistema"
+        unit_of_measurement: "W"
+        device_class: "power"
+        state_class: "measurement"
+        state: "{{ state_attr('sensor.mini_pc_consum_potencia_cpu', 'system_est_w') }}"
+
+      - name: "Mini PC - Salut SSD Backup"
+        unique_id: "minipc_salut_ssd_backup"
+        unit_of_measurement: "%"
+        state_class: "measurement"
+        icon: "mdi:heart-pulse"
+        state: "{{ state_attr('sensor.mini_pc_temperatura_ssd_backup_sata', 'life_percent') }}"
+
+      - name: "Mini PC - Espai Ocupat SSD Backup"
+        unique_id: "minipc_espai_ocupat_ssd_backup"
+        unit_of_measurement: "%"
+        state_class: "measurement"
+        icon: "mdi:harddisk"
+        state: "{{ state_attr('sensor.mini_pc_temperatura_ssd_backup_sata', 'disk_used_percent') }}"
+
+      - name: "Mini PC - Espai Lliure SSD Backup"
+        unique_id: "minipc_espai_lliure_ssd_backup"
+        unit_of_measurement: "GB"
+        state_class: "measurement"
+        icon: "mdi:folder-download"
+        state: "{{ state_attr('sensor.mini_pc_temperatura_ssd_backup_sata', 'disk_free_gb') }}"
+
+      - name: "Mini PC - Espai Utilitzat SSD Backup"
+        unique_id: "minipc_espai_utilitzat_ssd_backup"
+        unit_of_measurement: "GB"
+        state_class: "measurement"
+        icon: "mdi:folder-upload"
+        state: "{{ state_attr('sensor.mini_pc_temperatura_ssd_backup_sata', 'disk_used_gb') }}"
+
+      - name: "Mini PC - Estat SMART SSD Backup"
+        unique_id: "minipc_estat_smart_ssd_backup"
+        icon: "mdi:check-decagram"
+        state: "{{ state_attr('sensor.mini_pc_temperatura_ssd_backup_sata', 'health') }}"
+
+      - name: "Mini PC - Hores d'Ús SSD Backup"
+        unique_id: "minipc_hores_us_ssd_backup"
+        unit_of_measurement: "h"
+        icon: "mdi:clock-outline"
+        state: "{{ state_attr('sensor.mini_pc_temperatura_ssd_backup_sata', 'power_on_hours') }}"
+
+  - binary_sensor:
+      - name: "Estat Router Vera Huawei"
+        unique_id: "estat_router_vera_huawei"
+        state: "{{ states('sensor.dades_router_vera_huawei') == 'ON' }}"
+        device_class: connectivity
+        attributes:
+          model: "{{ state_attr('sensor.dades_router_vera_huawei', 'model') }}"
+          lan_ip: "{{ state_attr('sensor.dades_router_vera_huawei', 'lan_ip') }}"
+          wan_ip: "{{ state_attr('sensor.dades_router_vera_huawei', 'wan_ip') }}"
+          cgnat_status: "{{ state_attr('sensor.dades_router_vera_huawei', 'cgnat_status') }}"
+          port_mapping: "{{ state_attr('sensor.dades_router_vera_huawei', 'port_mapping') }}"
+
+      - name: "Estat Router ASUS Principal"
+        unique_id: "estat_router_asus_principal"
+        state: "{{ states('sensor.dades_router_asus_principal') == 'ON' }}"
+        device_class: connectivity
+        attributes:
+          model: "{{ state_attr('sensor.dades_router_asus_principal', 'model') }}"
+          lan_ip: "{{ state_attr('sensor.dades_router_asus_principal', 'lan_ip') }}"
+          wan_ip: "{{ state_attr('sensor.dades_router_asus_principal', 'wan_ip') }}"
+          dyndns: "{{ state_attr('sensor.dades_router_asus_principal', 'dyndns') }}"
+          port_forwarding: "{{ state_attr('sensor.dades_router_asus_principal', 'port_forwarding') }}"
+
+      - name: "Estat Node AiMesh ASUS"
+        unique_id: "estat_node_aimesh_asus"
+        state: "{{ states('sensor.dades_node_aimesh_asus') == 'ON' }}"
+        device_class: connectivity
+        attributes:
+          model: "{{ state_attr('sensor.dades_node_aimesh_asus', 'model') }}"
+          role: "{{ state_attr('sensor.dades_node_aimesh_asus', 'role') }}"
+          lan_ip: "{{ state_attr('sensor.dades_node_aimesh_asus', 'lan_ip') }}"
+          master_ip: "{{ state_attr('sensor.dades_node_aimesh_asus', 'master_ip') }}"
 
 shell_command: {}
 

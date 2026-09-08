@@ -1,0 +1,11 @@
+title: Cumulus MX
+views:
+  - title: Cumulus MX
+    path: cumulusmx
+    icon: mdi:weather-partly-cloudy
+    type: panel
+    cards:
+      - type: custom:dynamic-iframe
+        title: Panell de Control Cumulus MX
+        port: 8998
+        path: /ai2/index.html

@@ -1,0 +1,11 @@
+title: MeteoSallent
+views:
+  - title: MeteoSallent
+    path: meteosallent
+    icon: mdi:weather-sunny
+    type: panel
+    cards:
+      - type: custom:dynamic-iframe
+        title: MeteoSallent (Weather34)
+        port: 8090
+        path: /

@@ -119,7 +119,19 @@ function Dashboard({ siteId, apiKey, onReset }: DashboardProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
-  const [weather, setWeather] = useState<{temp: number, desc: string, gradient: string, shadow: string, code: number, isDay: boolean} | null>(null);
+  const [weather, setWeather] = useState<{
+    temp: number;
+    desc: string;
+    gradient: string;
+    shadow: string;
+    code: number;
+    isDay: boolean;
+    solarRad?: number;
+    solarPercent?: number;
+    uv?: number;
+    hum?: number;
+    stationName?: string;
+  } | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -127,57 +139,84 @@ function Dashboard({ siteId, apiKey, onReset }: DashboardProps) {
     try {
       let weatherData = null;
       try {
-        // Coordenadas locales para tu panel (Sallent)
-        const WEATHER_LAT = "41.8260"; 
-        const WEATHER_LON = "1.8955";
-        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${WEATHER_LAT}&longitude=${WEATHER_LON}&current=temperature_2m,is_day,weather_code`);
-        const wJson = await weatherRes.json();
-        const current = wJson.current;
-        
-        let desc = "Desconegut";
-        let gradient = "linear-gradient(135deg, #ffde00, #ffb800)";
-        let shadow = "rgba(255,184,0,0.5)";
-
-        const code = current.weather_code;
-        const isDay = current.is_day === 1;
-
-        if (code === 0) {
-           desc = isDay ? "Assolellat" : "Nit Sereníssima";
-           gradient = isDay ? "linear-gradient(135deg, #ffde00, #ffb800)" : "linear-gradient(135deg, #4a5568, #1a202c)";
-           shadow = isDay ? "rgba(255,184,0,0.5)" : "rgba(26,32,44,0.5)";
-        } else if (code === 1 || code === 2) {
-           desc = isDay ? "Pocs Núvols" : "Nit Ennuvolada";
-           gradient = isDay ? "linear-gradient(135deg, #ffde00, #a0aec0)" : "linear-gradient(135deg, #718096, #2d3748)";
-           shadow = isDay ? "rgba(255,222,0,0.5)" : "rgba(113,128,150,0.5)";
-        } else if (code === 3) {
-           desc = "Ennuvolat";
-           gradient = "linear-gradient(135deg, #cbd5e0, #718096)";
-           shadow = "rgba(113,128,150,0.5)";
-        } else if (code === 45 || code === 48) {
-           desc = "Boira";
-           gradient = "linear-gradient(135deg, #e2e8f0, #a0aec0)";
-           shadow = "rgba(160,174,192,0.5)";
-        } else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) {
-           desc = "Pluja";
-           gradient = "linear-gradient(135deg, #4299e1, #2b6cb0)";
-           shadow = "rgba(66,153,225,0.5)";
-        } else if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) {
-           desc = "Neu";
-           gradient = "linear-gradient(135deg, #e6fffa, #81e6d9)";
-           shadow = "rgba(129,230,217,0.5)";
-        } else if (code === 95) {
-           desc = "Tempesta";
-           gradient = "linear-gradient(135deg, #805ad5, #4c51bf)";
-           shadow = "rgba(128,90,213,0.5)";
-        } else if (code === 96 || code === 99) {
-           desc = "Calamarsa";
-           gradient = "linear-gradient(135deg, #9f7aea, #4fd1c5)";
-           shadow = "rgba(159,122,234,0.5)";
+        // 1. Telemetria real i directa de l'estació Davis Vantage Pro2+ (Sallent)
+        const stationRes = await fetch('/weather-station/station_weather.php');
+        if (stationRes.ok) {
+          const sJson = await stationRes.json();
+          if (sJson && sJson.success) {
+            weatherData = {
+              temp: sJson.temp,
+              desc: sJson.desc,
+              gradient: sJson.gradient,
+              shadow: sJson.shadow,
+              code: sJson.code,
+              isDay: sJson.is_day,
+              solarRad: sJson.solar_rad,
+              solarPercent: sJson.solar_percent,
+              uv: sJson.uv,
+              hum: sJson.hum,
+              stationName: sJson.station
+            };
+          }
         }
+      } catch (stErr) {
+        console.warn("No s'ha pogut obtenir la telemetria local de la Davis, utilitzant Open-Meteo", stErr);
+      }
 
-        weatherData = { temp: current.temperature_2m, desc, gradient, shadow, code, isDay };
-      } catch (err) {
-        console.error("Error fetching weather", err);
+      if (!weatherData) {
+        try {
+          // Alternativa externa via Open-Meteo
+          const WEATHER_LAT = (import.meta.env.VITE_WEATHER_LAT as string) || "41.3851"; 
+          const WEATHER_LON = (import.meta.env.VITE_WEATHER_LON as string) || "2.1734";
+          const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${WEATHER_LAT}&longitude=${WEATHER_LON}&current=temperature_2m,is_day,weather_code`);
+          const wJson = await weatherRes.json();
+          const current = wJson.current;
+          
+          let desc = "Desconegut";
+          let gradient = "linear-gradient(135deg, #ffde00, #ffb800)";
+          let shadow = "rgba(255,184,0,0.5)";
+
+          const code = current.weather_code;
+          const isDay = current.is_day === 1;
+
+          if (code === 0) {
+             desc = isDay ? "Assolellat" : "Nit Serena";
+             gradient = isDay ? "linear-gradient(135deg, #ffde00, #ffb800)" : "linear-gradient(135deg, #4a5568, #1a202c)";
+             shadow = isDay ? "rgba(255,184,0,0.5)" : "rgba(26,32,44,0.5)";
+          } else if (code === 1 || code === 2) {
+             desc = isDay ? "Pocs Núvols" : "Nit Ennuvolada";
+             gradient = isDay ? "linear-gradient(135deg, #ffde00, #a0aec0)" : "linear-gradient(135deg, #718096, #2d3748)";
+             shadow = isDay ? "rgba(255,222,0,0.5)" : "rgba(113,128,150,0.5)";
+          } else if (code === 3) {
+             desc = "Ennuvolat";
+             gradient = "linear-gradient(135deg, #cbd5e0, #718096)";
+             shadow = "rgba(113,128,150,0.5)";
+          } else if (code === 45 || code === 48) {
+             desc = "Boira";
+             gradient = "linear-gradient(135deg, #e2e8f0, #a0aec0)";
+             shadow = "rgba(160,174,192,0.5)";
+          } else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) {
+             desc = "Pluja";
+             gradient = "linear-gradient(135deg, #4299e1, #2b6cb0)";
+             shadow = "rgba(66,153,225,0.5)";
+          } else if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) {
+             desc = "Neu";
+             gradient = "linear-gradient(135deg, #e6fffa, #81e6d9)";
+             shadow = "rgba(129,230,217,0.5)";
+          } else if (code === 95) {
+             desc = "Tempesta";
+             gradient = "linear-gradient(135deg, #805ad5, #4c51bf)";
+             shadow = "rgba(128,90,213,0.5)";
+          } else if (code === 96 || code === 99) {
+             desc = "Calamarsa";
+             gradient = "linear-gradient(135deg, #9f7aea, #4fd1c5)";
+             shadow = "rgba(159,122,234,0.5)";
+          }
+
+          weatherData = { temp: current.temperature_2m, desc, gradient, shadow, code, isDay };
+        } catch (err) {
+          console.error("Error fetching weather fallback", err);
+        }
       }
 
       if (weatherData) setWeather(weatherData);
@@ -351,10 +390,21 @@ function Dashboard({ siteId, apiKey, onReset }: DashboardProps) {
             <div className="glass-panel widget-card">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '100%' }}>
                 <div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: '1.2rem', marginBottom: '10px' }}>{weather?.desc || 'Assolellat'}</div>
-                  <div style={{ fontSize: '2.5rem', fontWeight: 600 }}>{weather?.temp !== undefined ? `${weather.temp}°C` : '21.7°C'}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#01a4b4', textTransform: 'uppercase', letterSpacing: '0.8px', fontWeight: 600 }}>
+                      ⚡ Davis VP2+ Telemetry
+                    </span>
+                  </div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: '1.15rem', marginBottom: '6px' }}>{weather?.desc || 'Assolellat'}</div>
+                  <div style={{ fontSize: '2.4rem', fontWeight: 600, lineHeight: 1.1 }}>{weather?.temp !== undefined ? `${weather.temp}°C` : '21.7°C'}</div>
+                  {weather?.solarRad !== undefined && (
+                    <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '8px', display: 'flex', gap: '10px' }}>
+                      <span>☀️ {weather.solarRad} W/m² {weather.solarPercent !== undefined ? `(${weather.solarPercent}%)` : ''}</span>
+                      {weather.uv !== undefined && <span>🔆 UV {weather.uv}</span>}
+                    </div>
+                  )}
                 </div>
-                <div style={{ position: 'relative', width: '80px', height: '80px', borderRadius: '50%', background: weather?.gradient || 'linear-gradient(135deg, #ffde00, #ffb800)', boxShadow: `0 0 20px ${weather?.shadow || 'rgba(255,184,0,0.5)'}` }}>
+                <div style={{ position: 'relative', width: '80px', height: '80px', borderRadius: '50%', flexShrink: 0, background: weather?.gradient || 'linear-gradient(135deg, #ffde00, #ffb800)', boxShadow: `0 0 20px ${weather?.shadow || 'rgba(255,184,0,0.5)'}` }}>
                   {weather && <WeatherGraphics code={weather.code} isDay={weather.isDay} />}
                 </div>
               </div>
