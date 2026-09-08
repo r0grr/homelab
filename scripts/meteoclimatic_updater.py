@@ -173,8 +173,23 @@ def generate_meteoclimatic():
 
 def main():
     ensure_symlinks()
+    try:
+        from noaa_sync import sync_noaa
+        sync_noaa()
+    except Exception as e:
+        print(f"Initial NOAA sync notice: {e}", file=sys.stderr)
+
+    loop_count = 0
     while True:
         generate_meteoclimatic()
+        loop_count += 1
+        # Run NOAA report sync every hour (every 12 cycles of 5 min)
+        if loop_count % 12 == 0:
+            try:
+                from noaa_sync import sync_noaa
+                sync_noaa()
+            except Exception as e:
+                print(f"Hourly NOAA sync error: {e}", file=sys.stderr)
         time.sleep(300) # Every 5 minutes
 
 if __name__ == '__main__':
