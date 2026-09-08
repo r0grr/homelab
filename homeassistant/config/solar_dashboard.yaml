@@ -1,0 +1,11 @@
+title: Plaques Solars
+views:
+  - title: Plaques Solars
+    path: solar
+    icon: mdi:solar-power
+    type: panel
+    cards:
+      - type: custom:dynamic-iframe
+        title: Control Plaques Solars (SolarEdge)
+        port: 5173
+        path: /

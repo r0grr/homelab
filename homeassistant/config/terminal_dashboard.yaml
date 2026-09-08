@@ -1,8 +1,11 @@
+title: Terminal
 views:
   - title: Terminal
     path: terminal
-    panel: true
+    icon: mdi:console
+    type: panel
     cards:
-      - type: iframe
-        url: http://192.168.2.200:7681
-        aspect_ratio: 100%
+      - type: custom:dynamic-iframe
+        title: Terminal (Web Console)
+        port: 7681
+        path: /

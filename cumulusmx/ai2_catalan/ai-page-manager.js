@@ -182,9 +182,7 @@ let getExtras = function() {
         data: data
     })
     .done( function (result) {
-        //  Ser any elements affected
-        $("[data-cmxdata='latitude']").html( result.Latitude);
-        $("[data-cmxdata='longitude']").html( result.Longitude );
+        //  Set any elements affected
         $("[data-cmxdata='altitude']").html( result.Altitude );
         $("[data-cmxData='Date']").html( result.CurrentDate );
         $("[data-cmxData='update']").html(result.update );

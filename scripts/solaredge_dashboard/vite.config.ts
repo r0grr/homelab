@@ -11,6 +11,11 @@ export default defineConfig({
         target: 'https://monitoringapi.solaredge.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/solaredge-api/, '')
+      },
+      '/weather-station': {
+        target: 'http://weather34:80',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/weather-station/, '')
       }
     }
   }

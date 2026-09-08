@@ -1,0 +1,11 @@
+title: Gestor de Fitxers
+views:
+  - title: Gestor de Fitxers
+    path: filemanager
+    icon: mdi:folder-edit
+    type: panel
+    cards:
+      - type: custom:dynamic-iframe
+        title: Gestor de Fitxers (/opt/servidor)
+        port: 8085
+        path: /files/

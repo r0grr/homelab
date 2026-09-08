@@ -348,7 +348,7 @@ if (!TELEGRAM_TOKEN || !CHAT_ID) {
   checkAlerts();
   setInterval(checkAlerts, POLL_INTERVAL_MS);
 
-  // Monitorització meteorològica en temps real des de Cumulus MX (cada 15s)
+  // Monitorització meteorològica des de Cumulus MX (cada 10 minuts / 600000 ms)
   fetchWeatherFromCumulus();
-  setInterval(fetchWeatherFromCumulus, 15000);
+  setInterval(fetchWeatherFromCumulus, 600000);
 }
