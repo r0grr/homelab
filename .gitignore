@@ -19,9 +19,12 @@ mosquitto/log/
 # Cumulus MX runtime state, configs & data
 cumulusmx/data/
 cumulusmx/config/
+cumulusmx/web/
 cumulusmx/backup/
 cumulusmx/MXdiags/
 cumulusmx/reports/
+cuhws/chartswudata/
+cuhws/jsondata/
 
 # Home Assistant dynamic databases and internal storage
 homeassistant/config/.storage/
@@ -33,6 +36,28 @@ homeassistant/config/blueprints/
 homeassistant/config/tts/
 homeassistant/config/backups/
 
+# Databases and Storage
+*.db
+*.sqlite3
+filebrowser/data/
+
+# Backup archives
+backups/
+*.tar.gz
+*.zip
+
+# Web Server & Proxy Runtime State
+caddy/config/
+caddy/data/
+caddy/logs/
+goaccess/report/
+
+# Python cache & runtime stats
+__pycache__/
+*.py[cod]
+*$py.class
+homeassistant/config/ssd_backup_stats.json
+
 # General OS & editor files
 .DS_Store
 *.swp
@@ -40,3 +65,6 @@ homeassistant/config/backups/
 *~
 scripts/solaredge_dashboard/node_modules/
 homeassistant/config/.cache/
+
+# Weather web station (maintained as separate upstream repository)
+cuhws/

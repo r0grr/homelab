@@ -1,0 +1,41 @@
+# ==============================================================================
+# CADDY WEBSERVER & REVERSE PROXY
+# TempsCat & MeteoSallent (Weather34)
+# ==============================================================================
+
+# Domini públic oficial i DynDNS (HTTP per a bots meteorològics i HTTPS Let's Encrypt)
+http://tempscat.com, http://www.tempscat.com, http://sallent.dyndns.org, tempscat.com, www.tempscat.com, sallent.dyndns.org {
+    log {
+        output file /var/log/caddy/access.log {
+            roll_size 10mb
+            roll_keep 5
+        }
+    }
+    # Bloqueig de seguretat: fitxers de configuració i claus des d'Internet
+    @blocked {
+        path /easyweathersetup.php* /settings.php* /settings1.php*
+    }
+    respond @blocked "Accés prohibit" 403
+
+    # Eliminació de capçaleres per seguretat (ocultar programari, proxy i versió)
+    header {
+        -Server
+        -Via
+        -X-Powered-By
+    }
+
+    # Redirecció cap a la web de l'estació meteorològica
+    reverse_proxy weather34:80 {
+        header_down -Server
+        header_down -Via
+        header_down -X-Powered-By
+    }
+}
+
+# ==============================================================================
+# PANELL PRIVAT D'ANALÍTICA WEB GOACCESS (Intern: LAN / Tailscale)
+# ==============================================================================
+:7880 {
+    root * /srv/goaccess
+    file_server
+}
