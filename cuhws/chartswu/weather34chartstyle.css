@@ -1,0 +1,202 @@
+/* Weather34 Chart Styles - Responsive Modern Dark Theme */
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    font-size: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    overflow-x: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+}
+
+/* Custom responsive scrollbar for mobile / landscape */
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(18, 22, 28, 0.85);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+    background: #01a4b4;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #00d2e8;
+}
+
+a {
+    color: #aaa;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #00A4B4;
+}
+
+.weather34darkbrowser {
+    position: relative;
+    background: 0;
+    width: 100% !important;
+    max-width: 780px;
+    max-height: 35px;
+    margin: 0 auto;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    padding-top: 36px;
+    background-image: 
+        radial-gradient(circle, #EB7061 5px, transparent 6px), 
+        radial-gradient(circle, #F5D160 5px, transparent 6px), 
+        radial-gradient(circle, #81D982 5px, transparent 6px), 
+        linear-gradient(to bottom, rgba(45, 48, 53, 0.9) 32px, transparent 0);
+    background-position: 8px 10px, 24px 10px, 40px 10px, 0 0;
+    background-size: 12px 12px, 12px 12px, 12px 12px, 100%;
+    background-repeat: no-repeat;
+}
+
+.weather34darkbrowser[url]:after {
+    content: attr(url);
+    color: #ddd;
+    font-size: 12px;
+    line-height: 20px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 6px;
+    margin: 0 10px 0 60px;
+    padding: 0 10px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    height: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.chart-nav-bar {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 6px auto 6px auto;
+    max-width: 780px;
+    padding: 0 10px;
+}
+
+.chart-nav-btn {
+    padding: 4px 14px;
+    background: rgba(45, 48, 53, 0.9);
+    border: 1px solid rgba(80, 85, 95, 0.6);
+    color: #cbd5e0;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.chart-nav-btn:hover {
+    background: rgba(60, 65, 72, 0.9);
+    color: #fff;
+    border-color: #00A4B4;
+}
+
+.chart-nav-btn.active {
+    background: #00A4B4;
+    color: #ffffff;
+    border-color: #00A4B4;
+    box-shadow: 0 2px 6px rgba(0, 164, 180, 0.4);
+}
+
+.chartContainer {
+    height: 330px;
+    width: 100% !important;
+    max-width: 780px;
+    margin: 0 auto;
+    font-size: 12px;
+    color: #fff;
+    border: 0;
+}
+
+.weather34browser-footer {
+    height: 36px;
+    background: rgba(45, 48, 53, 0.95);
+    border: 1px solid rgba(65, 70, 78, 0.6);
+    border-top: 0;
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 100% !important;
+    max-width: 780px;
+    margin: 0 auto;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    padding: 0 12px;
+}
+
+.weather34browser-footerlogo {
+    position: absolute;
+    right: 12px;
+    top: 6px;
+}
+
+@media screen and (max-width: 640px) {
+    body {
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    .chartContainer {
+        height: 280px;
+        min-width: 520px;
+    }
+    .weather34darkbrowser[url]:after {
+        font-size: 11px;
+        margin-left: 55px;
+        margin-right: 6px;
+    }
+    .weather34browser-footerlogo {
+        display: none;
+    }
+    .weather34browser-footer span {
+        font-size: 9px !important;
+    }
+}
+
+@media screen and (orientation: landscape) and (max-height: 540px) {
+    html, body {
+        overflow-x: auto !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    .weather34darkbrowser {
+        max-width: 100% !important;
+        padding-top: 30px;
+    }
+    .weather34darkbrowser[url]:after {
+        top: 3px;
+        font-size: 11px;
+    }
+    .chart-nav-bar {
+        margin: 2px auto !important;
+        gap: 5px;
+    }
+    .chart-nav-btn {
+        padding: 2px 8px !important;
+        font-size: 10px !important;
+    }
+    .chartContainer {
+        height: 220px !important;
+        min-width: 580px;
+    }
+    .weather34browser-footer {
+        height: 28px;
+    }
+}
