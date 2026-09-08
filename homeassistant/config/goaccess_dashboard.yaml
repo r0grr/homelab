@@ -1,0 +1,11 @@
+title: Analítica Web (GoAccess)
+views:
+  - title: Analítica Web
+    path: analitica-web
+    icon: mdi:chart-line
+    type: panel
+    cards:
+      - type: custom:dynamic-iframe
+        title: Analítica Web en Temps Real (GoAccess)
+        port: 7880
+        path: /
