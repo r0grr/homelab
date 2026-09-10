@@ -13,10 +13,10 @@ date_default_timezone_set($TZ);
   <title><?php echo $stationlocation; ?> &bull; MeteoSallent Smart Weather Station</title>
   <meta content="Estació meteorològica Davis Vantage Pro2 Plus en temps real a <?php echo $stationlocation;?>" name="description">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, viewport-fit=cover">
-  <link rel="icon" type="image/png" href="img/favicon-32x32.png?v=2" sizes="32x32">
-  <link rel="icon" type="image/png" href="img/favicon-196x196.png?v=2" sizes="196x196">
-  <link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=2">
-  <link rel="shortcut icon" href="favicon.ico?v=2">
+  <link rel="icon" type="image/png" href="img/favicon-32x32.png?v=3" sizes="32x32">
+  <link rel="icon" type="image/png" href="img/favicon-196x196.png?v=3" sizes="196x196">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=3">
+  <link rel="shortcut icon" href="favicon.ico?v=3">
   <link href="css/main.<?php echo $theme;?>.css?version=<?php echo filemtime('css/main.'.$theme.'.css');?>" rel="stylesheet prefetch">
   <script src="js/jquery.js"></script>
 </head>
