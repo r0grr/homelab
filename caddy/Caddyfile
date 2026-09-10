@@ -3,8 +3,8 @@
 # TempsCat & MeteoSallent (Weather34)
 # ==============================================================================
 
-# Domini públic oficial i DynDNS (HTTP per a bots meteorològics i HTTPS Let's Encrypt)
-http://tempscat.com, http://www.tempscat.com, http://sallent.dyndns.org, tempscat.com, www.tempscat.com, sallent.dyndns.org {
+# Dominis públics oficials: MeteoSallent, TempsCat i DynDNS (HTTP per a bots meteorològics i HTTPS Let's Encrypt)
+http://meteosallent.com, http://www.meteosallent.com, meteosallent.com, www.meteosallent.com, http://tempscat.com, http://www.tempscat.com, http://sallent.dyndns.org, tempscat.com, www.tempscat.com, sallent.dyndns.org {
     log {
         output file /var/log/caddy/access.log {
             roll_size 10mb
