@@ -20,7 +20,7 @@ $trend_color = ($baro_trend >= 0 ? "#4FFC37" : "#f37867");
 <div class="PWS_body">
     <!-- Left values -->
     <div class="PWS_left">
-        <div class="PWS_div_left" style="border-right-color: #01a4b4;">Mín Avui<br><b><?php echo number_format($baro_min, 1); ?> hPa</b></div>
+        <div class="PWS_div_left" style="border-right-color: #d65b4a;">Màx Avui<br><b><?php echo number_format($baro_max, 1); ?> hPa</b></div>
         <div class="PWS_div_left" style="border-right-color: #9aba2f;">Tendència<br><b><?php echo ($baro_trend >= 0 ? '+' : '') . number_format($baro_trend, 1); ?> hPa</b></div>
     </div>
 
@@ -62,7 +62,7 @@ $trend_color = ($baro_trend >= 0 ? "#4FFC37" : "#f37867");
 
     <!-- Right values -->
     <div class="PWS_right">
-        <div class="PWS_div_right" style="border-left-color: #d65b4a;">Màx Avui<br><b><?php echo number_format($baro_max, 1); ?> hPa</b></div>
+        <div class="PWS_div_right" style="border-left-color: #01a4b4;">Mín Avui<br><b><?php echo number_format($baro_min, 1); ?> hPa</b></div>
         <div class="PWS_div_right" style="border-left-color: <?php echo $trend_color; ?>;"><?php echo $trend_txt; ?><br><b><?php echo abs($baro_trend); ?> hPa/h</b></div>
     </div>
 </div>
