@@ -444,6 +444,77 @@ else{
 	$sky_icon='offline.svg';
 	$sky_desc='Data Offline';
 };
-//end weather34 metar aviation script API	 
 
+// ============================================================================
+// MAPATGE UNIFICAT EN CATALÀ (Per a Estat del Cel i Popup Metar LEBL)
+// ============================================================================
+$is_daytime = !($now > $suns2 || $now < $sunrs2);
+
+if (in_array($metar34conditions, ['-SHRA', 'SHRA', '+SHRA', '-RA', 'RA', '+RA', 'DZ', '-DZ'])) {
+    $sky_title_cat = 'Pluja';
+    $sky_desc_cat = 'Precipitació de pluja';
+    $sky_coverage_pct = '90%';
+} elseif (in_array($metar34conditions, ['TS', '-TS', '+TS', 'TSRA', 'SCTTSRA', 'NTSRA'])) {
+    $sky_title_cat = 'Tempesta';
+    $sky_desc_cat = 'Activitat tempestuosa';
+    $sky_coverage_pct = '95%';
+} elseif (in_array($metar34conditions, ['-SN', 'SN', '+SN'])) {
+    $sky_title_cat = 'Neu';
+    $sky_desc_cat = 'Precipitació de neu';
+    $sky_coverage_pct = '90%';
+} elseif (in_array($metar34conditions, ['GR', 'GS', 'PL', 'IC'])) {
+    $sky_title_cat = 'Calamarsa';
+    $sky_desc_cat = 'Precipitació sòlida';
+    $sky_coverage_pct = '90%';
+} elseif (in_array($metar34conditions, ['FG', 'NFG'])) {
+    $sky_title_cat = 'Boira';
+    $sky_desc_cat = 'Visibilitat reduïda';
+    $sky_coverage_pct = '100%';
+} elseif (in_array($metar34conditions, ['BR', 'NBR', 'HZ'])) {
+    $sky_title_cat = 'Boirina / Calitja';
+    $sky_desc_cat = 'Boirina o calitja humida';
+    $sky_coverage_pct = '50%';
+} else {
+    switch ($metar34clouds) {
+        case 'SKC':
+        case 'CLR':
+            $sky_title_cat = $is_daytime ? 'Cel Serè' : 'Nit Serena';
+            $sky_desc_cat = 'Sense nuvolositat';
+            $sky_coverage_pct = '0%';
+            break;
+        case 'CAVOK':
+            $sky_title_cat = $is_daytime ? 'Cel Serè' : 'Nit Serena';
+            $sky_desc_cat = 'Sostre i visibilitat òptims';
+            $sky_coverage_pct = '0%';
+            break;
+        case 'FEW':
+            $sky_title_cat = $is_daytime ? 'Poc Ennuvolat' : 'Nit Poc Ennuvolada';
+            $sky_desc_cat = 'Núvols dispersos (1-2 octes)';
+            $sky_coverage_pct = '20%';
+            break;
+        case 'SCT':
+            $sky_title_cat = $is_daytime ? 'Parcialment Ennuvolat' : 'Claraboies';
+            $sky_desc_cat = 'Intervals de núvols (3-4 octes)';
+            $sky_coverage_pct = '45%';
+            break;
+        case 'BKN':
+            $sky_title_cat = 'Molt Ennuvolat';
+            $sky_desc_cat = 'Predomini de núvols (5-7 octes)';
+            $sky_coverage_pct = '75%';
+            break;
+        case 'OVC':
+        case 'OVX':
+            $sky_title_cat = 'Cobert';
+            $sky_desc_cat = 'Cel completament cobert (8 octes)';
+            $sky_coverage_pct = '100%';
+            break;
+        default:
+            $sky_title_cat = $is_daytime ? 'Cel Serè' : 'Nit Serena';
+            $sky_desc_cat = 'Sense nuvolositat';
+            $sky_coverage_pct = '0%';
+            break;
+    }
+}
+$sky_desc = $sky_title_cat . ' <br>' . $sky_desc_cat;
+//end weather34 metar aviation script API	 
 ?>
