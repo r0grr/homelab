@@ -141,13 +141,13 @@ spancalm{postion:relative;font-family:weathertext,Arial;font-size:26px;}.weather
 	echo "<green>",$metar34dewpointf . "</value>";} 		
 	else if ($tempunit=='F' && $metar34dewpointf>=1) {
 	echo "<blue>",$metar34dewpointf . "</value>";}		
-	echo "<sup><unit>&deg;",$weather["temp_units"]," Dewpoint";
+	echo "<sup><unit>&deg;",$weather["temp_units"]," Punt Rosada";
 ?>
-<div class="lotemp"><yellow><?php echo $metar34humidity ,"</yellow><sup><unit>% <sup><unit> Humidity"; 	?></sup></unit></span></div>
+<div class="lotemp"><yellow><?php echo $metar34humidity ,"</yellow><sup><unit>% Humitat"; 	?></sup></unit></span></div>
 <div class="icon"><img src=css/icons/temp34.svg width=25px></div></div></div>
 <div class="weather34card__count-container">  <div class="weather34card__count-text"> </div> </div><div class="weather34card__stuff-container">            
 <div class="weather34card__stuff-text"></div></div>
-<actual>Temperature</actual>
+<actual>Temperatura i Humitat</actual>
 </div></div></div> </div>      
 <div class="weather34card weather34card--earthquake2">  <div class="weather34card_weather34-container"> <div class="weather34card_weather34-wrapper"><span class="weather34card__count-text--big">
 <?php //kmh
@@ -162,26 +162,26 @@ else if ($tempunit=='F'){echo "<orange>",$metar34windspeedkmh  . "</value>";echo
 echo "<green>",$metar34windspeedkts."</value>";echo "<sup><unit> KTS</sup></unit><br>";?>    
 <div class="metar34compass1"><div class="metar34compass-line1"><div class="thearrow2"></div></div>
 <div class="text1"><div class="windvalue1" id="windvalue"><?php 
-if( $metar34windir==0){echo "<spancalm>Calm</spancalm>";}else echo $metar34windir,"&deg;";?></div></div>
+if( $metar34windir==0){echo "<spancalm>Calma</spancalm>";}else echo $metar34windir,"&deg;";?></div></div>
 <div class="windirectiontext1">
 <?php 
-if($metar34windir<=11.25){echo "Due <span>North<br></span>";}
-else if($metar34windir<=33.75){echo "North North <br><span>East</span>";}
-else if($metar34windir<=56.25){echo "North <span> East<br></span>";}
-else if($metar34windir<=78.75){echo "East North<br><span>East</span>";}
-else if($metar34windir<=101.25){echo "Due <span> East<br></span>";}
-else if($metar34windir<=123.75){echo "East South<br><span>East</span>";}
-else if($metar34windir<=146.25){echo "South <span> East</span>";}
-else if($metar34windir<=168.75){echo "South South<br><span>East</span>";}
-else if($metar34windir<=191.25){echo "Due <span> South</span>";}
-else if($metar34windir<=213.75){echo "South South<br><span>West</span>";}
-else if($metar34windir<=236.25){echo "South <span> West</span>";}
-else if($metar34windir<=258.75){echo "West South<br><span>West</span>";}
-else if($metar34windir<=281.25){echo "Due <span> West</span>";}
-else if($metar34windir<=303.75){echo "West North<br><span>West</span>";}
-else if($metar34windir<=326.25){echo "North <span> West</span>";}
-else if($metar34windir<=348.75){echo "North North<br><span>West</span>";}
-else{echo "Due <span> North</span>";}?>
+if($metar34windir<=11.25){echo "<span>Nord<br></span>";}
+else if($metar34windir<=33.75){echo "Nord-nord-<span>est</span>";}
+else if($metar34windir<=56.25){echo "<span>Nord-est<br></span>";}
+else if($metar34windir<=78.75){echo "Est-nord-<span>est</span>";}
+else if($metar34windir<=101.25){echo "<span>Est<br></span>";}
+else if($metar34windir<=123.75){echo "Est-sud-<span>est</span>";}
+else if($metar34windir<=146.25){echo "<span>Sud-est</span>";}
+else if($metar34windir<=168.75){echo "Sud-sud-<span>est</span>";}
+else if($metar34windir<=191.25){echo "<span>Sud</span>";}
+else if($metar34windir<=213.75){echo "Sud-sud-<span>oest</span>";}
+else if($metar34windir<=236.25){echo "<span>Sud-oest</span>";}
+else if($metar34windir<=258.75){echo "Oest-sud-<span>oest</span>";}
+else if($metar34windir<=281.25){echo "<span>Oest</span>";}
+else if($metar34windir<=303.75){echo "Oest-nord-<span>oest</span>";}
+else if($metar34windir<=326.25){echo "<span>Nord-oest</span>";}
+else if($metar34windir<=348.75){echo "Nord-nord-<span>oest</span>";}
+else{echo "<span>Nord</span>";}?>
 </div></div>  </div>
 <div class="weather34card__count-container"> <div class="weather34card__count-textuv"><span class="weather34card__count-text--bigs"> </div>
 </div><br>
@@ -195,8 +195,10 @@ else{echo "Due <span> North</span>";}?>
 <div class="weather34card_weather34-wrapper"><span class="weather34card__count-text--big">
 <div class="weather34-uvrate-bar" style="margin-top:0;"></div></div> <?php 	echo "<img rel='prefetch' src='css/icons/".$sky_icon."' width='118px' height='91px' >";	
 ?></span> <div class="hitemp">
-<?php //min year 
- echo '<uppercase>',$sky_desc.'</uppercase> '; ?>
+<?php // sky condition 
+ echo '<uppercase>'.(!empty($sky_title_cat) ? $sky_title_cat : $sky_desc).'</uppercase>';
+ if (!empty($sky_desc_cat)) { echo '<br><span style="font-size:11px;color:#a0aec0;">'.$sky_desc_cat.'</span>'; }
+?>
 <div class="lotemp">
 <div class="hitemp">Pressió <green> <?php echo $metar34pressuremb ," </green>(hPa)"; 	?></span></div>
 <div class="hitemp">Visibilitat <yellow> <?php echo $metar34viskm  ," </yellow>(km)"; 	?></span></div>
