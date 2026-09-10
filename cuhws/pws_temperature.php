@@ -120,9 +120,9 @@ if ($cur_temp < -5) {
     <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="8" height="8" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('H:i'); ?></span>
 </div>
 <div class="PWS_body">
-    <!-- Left values: 1. Mín Avui, 2. Índex THSW, 3. Sensació, 4. Diferència tº 24h -->
+    <!-- Left values: 1. Màx Avui, 2. Índex THSW, 3. Sensació, 4. Diferència tº 24h -->
     <div class="PWS_left">
-        <div class="PWS_div_left PWS_div_temp" style="border-right-color: #007aff;" title="<?php echo $lowtemptime ? "Hora mínima: $lowtemptime" : "Mínima d'avui"; ?>">Mín Avui<br><b><?php echo number_format($min_temp, 1); ?>&deg;C</b></div>
+        <div class="PWS_div_left PWS_div_temp" style="border-right-color: #ff3b30;" title="<?php echo $maxtemptime ? "Hora màxima: $maxtemptime" : "Màxima d'avui"; ?>">Màx Avui<br><b><?php echo number_format($max_temp, 1); ?>&deg;C</b></div>
         <div class="PWS_div_left PWS_div_temp" style="border-right-color: #ffb703;" title="Índex THSW (Temperatura, Humitat, Sol i Vent)">Índex THSW<br><b><?php echo number_format($thsw, 1); ?>&deg;C</b></div>
         <div class="PWS_div_left PWS_div_temp" style="border-right-color: #40FC39;">Sensació<br><b><?php echo number_format($feel, 1); ?>&deg;C</b></div>
         <div class="PWS_div_left PWS_div_temp" style="border-right-color: #00d2d3;" title="Diferència de temperatura respecte a fa 24 hores (ahir a la mateixa hora)">Dif. 24h<br><b><?php echo ($diff_24h > 0 ? '+' : '') . number_format($diff_24h, 1); ?>&deg;C <?php echo ($diff_24h >= 0 ? '&uarr;' : '&darr;'); ?></b></div>
@@ -153,9 +153,9 @@ if ($cur_temp < -5) {
         </div>
     </div>
 
-    <!-- Right values: 1. Màx Avui, 2. Índex Calor, 3. Punt de Rosada, 4. Bulb humit -->
+    <!-- Right values: 1. Mín Avui, 2. Índex Calor, 3. Punt de Rosada, 4. Bulb humit -->
     <div class="PWS_right">
-        <div class="PWS_div_right PWS_div_temp" style="border-left-color: #ff3b30;" title="<?php echo $maxtemptime ? "Hora màxima: $maxtemptime" : "Màxima d'avui"; ?>">Màx Avui<br><b><?php echo number_format($max_temp, 1); ?>&deg;C</b></div>
+        <div class="PWS_div_right PWS_div_temp" style="border-left-color: #007aff;" title="<?php echo $lowtemptime ? "Hora mínima: $lowtemptime" : "Mínima d'avui"; ?>">Mín Avui<br><b><?php echo number_format($min_temp, 1); ?>&deg;C</b></div>
         <div class="PWS_div_right PWS_div_temp" style="border-left-color: #ff8841;">Índex Calor<br><b><?php echo number_format($heat_index, 1); ?>&deg;C</b></div>
         <div class="PWS_div_right PWS_div_temp" style="border-left-color: #48FB9E;">Punt Rosada<br><b><?php echo number_format($dew, 1); ?>&deg;C</b></div>
         <div class="PWS_div_right PWS_div_temp" style="border-left-color: #3EFB58;">Bulb Humit<br><b><?php echo number_format($wetbulb, 1); ?>&deg;C</b></div>
