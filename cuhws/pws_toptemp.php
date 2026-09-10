@@ -55,26 +55,47 @@ if ($min_today < $min_month) {
     $title_min_month = "Avui a les $min_time";
 }
 
-// Rècords de l'any 2026
-$max_year = 39.8;
-$max_year_date = '18 Jul';
-$min_year = -6.7;
-$min_year_date = '7 Gen';
+$mesos_curts = [
+    1 => 'Gen', 2 => 'Feb', 3 => 'Mar', 4 => 'Abr',
+    5 => 'Mai', 6 => 'Jun', 7 => 'Jul', 8 => 'Ago',
+    9 => 'Set', 10 => 'Oct', 11 => 'Nov', 12 => 'Des'
+];
 
+$format_data_curta = function($timestamp) use ($mesos_curts) {
+    if (!$timestamp) return '';
+    $m = intval(date('n', $timestamp));
+    return date('j', $timestamp) . ' ' . ($mesos_curts[$m] ?? date('M', $timestamp));
+};
+
+// Rècords de l'any 2026 des de year.ini
 $year_ini_file = __DIR__ . '/cumulusmxdata/year.ini';
 $year_ini = file_exists($year_ini_file) ? @parse_ini_file($year_ini_file, true) : [];
 
-if (!empty($year_ini['Temp']['High']) && floatval($year_ini['Temp']['High']) > $max_year) {
+if (isset($year_ini['Temp']['High']) && is_numeric($year_ini['Temp']['High'])) {
     $max_year = floatval($year_ini['Temp']['High']);
-    $max_year_date = date('j M', strtotime($year_ini['Temp']['HTime']));
-} elseif ($max_month > $max_year) {
-    $max_year = $max_month;
-    $max_year_date = $day_max_month . ' ' . substr($mes_actual, 0, 3);
+    $ts_high = !empty($year_ini['Temp']['HTime']) ? strtotime($year_ini['Temp']['HTime']) : null;
+    $max_year_date = $ts_high ? $format_data_curta($ts_high) : '6 Set';
+} else {
+    $max_year = 39.2;
+    $max_year_date = '6 Set';
 }
 
-if (!empty($year_ini['Temp']['Low']) && floatval($year_ini['Temp']['Low']) < $min_year) {
+if (isset($year_ini['Temp']['Low']) && is_numeric($year_ini['Temp']['Low'])) {
     $min_year = floatval($year_ini['Temp']['Low']);
-    $min_year_date = date('j M', strtotime($year_ini['Temp']['LTime']));
+    $ts_low = !empty($year_ini['Temp']['LTime']) ? strtotime($year_ini['Temp']['LTime']) : null;
+    $min_year_date = $ts_low ? $format_data_curta($ts_low) : '7 Gen';
+} else {
+    $min_year = -6.2;
+    $min_year_date = '7 Gen';
+}
+
+if ($max_month > $max_year) {
+    $max_year = $max_month;
+    $max_year_date = $day_max_month . ' ' . ($mesos_curts[intval(date('n'))] ?? 'Set');
+}
+if ($min_month < $min_year) {
+    $min_year = $min_month;
+    $min_year_date = $day_min_month . ' ' . ($mesos_curts[intval(date('n'))] ?? 'Set');
 }
 ?>
 <div class="PWS_module_title" style="padding-top: 2px;">
