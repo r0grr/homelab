@@ -13578,12 +13578,12 @@ header.top-navbar {
 }
 @media screen and (min-width: 1280px) and (max-width: 1459px) {
     .PWS_weather_container { width: 1280px; }
-    .PWS_weather_item_s { width: 250px; }
+    .PWS_weather_item_s { width: 207px; }
     .PWS_weather_item { width: 314px; min-width: 314px; }
     .PWS_weather_item_w { width: 634px; }
-    header.top-navbar { max-width: 1280px !important; }
-    .top-summary-wrapper { max-width: 1280px !important; }
-    .pws_footer_card { max-width: 1280px !important; }
+    header.top-navbar { max-width: 1274px !important; }
+    .top-summary-wrapper { max-width: 1274px !important; }
+    .pws_footer_card { max-width: 1274px !important; }
 }
 @media screen and (min-width: 1460px) {
     .PWS_weather_container { width: 1460px; }
@@ -13598,9 +13598,9 @@ header.top-navbar {
     .PWS_middle {
         max-width: 145px;
     }
-    header.top-navbar { max-width: 1460px !important; }
-    .top-summary-wrapper { max-width: 1460px !important; }
-    .pws_footer_card { max-width: 1460px !important; }
+    header.top-navbar { max-width: 1454px !important; }
+    .top-summary-wrapper { max-width: 1454px !important; }
+    .pws_footer_card { max-width: 1454px !important; }
 }
 
 header.top-navbar {
@@ -13609,7 +13609,7 @@ header.top-navbar {
     left: auto !important;
     right: auto !important;
     width: 100% !important;
-    max-width: 1460px !important;
+    max-width: 1454px !important;
     margin: 8px auto !important;
     clear: both !important;
     z-index: 100 !important;
@@ -13709,7 +13709,7 @@ header.top-navbar {
     opacity: 1 !important;
     height: auto !important;
     min-height: 48px !important;
-    max-width: 1460px !important;
+    max-width: 1454px !important;
     margin: 8px auto 6px auto !important;
     background: linear-gradient(180deg, #1e3d47 0%, #162b32 100%) !important;
     border: 1px solid rgba(255, 255, 255, 0.14) !important;
@@ -13851,7 +13851,7 @@ header.top-navbar {
     align-items: center !important;
     justify-content: center !important;
     width: 100% !important;
-    max-width: 1460px !important;
+    max-width: 1454px !important;
     height: auto !important;
     background: rgba(25, 30, 36, 0.92) !important;
     backdrop-filter: blur(6px) !important;
@@ -13953,6 +13953,25 @@ header.top-navbar {
     background: rgba(255, 255, 255, 0.15);
     color: #fff;
     border-color: #00A4B4;
+}
+
+/* ==========================================================================
+   DESKTOP RESPONSIVE CONTAINER ALIGNMENTS (Outer flush width: Container - 6px)
+   ========================================================================== */
+@media screen and (min-width: 960px) and (max-width: 1279px) {
+    header.top-navbar, .top-summary-wrapper, .pws_footer_card {
+        max-width: 954px !important;
+    }
+}
+@media screen and (min-width: 1280px) and (max-width: 1459px) {
+    header.top-navbar, .top-summary-wrapper, .pws_footer_card {
+        max-width: 1274px !important;
+    }
+}
+@media screen and (min-width: 1460px) {
+    header.top-navbar, .top-summary-wrapper, .pws_footer_card {
+        max-width: 1454px !important;
+    }
 }
 
 /* ==========================================================================
