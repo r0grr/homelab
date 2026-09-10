@@ -101,30 +101,60 @@ if ($min_month < $min_year) {
 <div class="PWS_module_title" style="padding-top: 2px;">
     <span>Temp. Màx - Mín &deg;C</span>
 </div>
-<div style="padding: 4px 8px; box-sizing: border-box;">
-<table style="width: 100%; height: 80px; font-size: 12px; border-collapse: collapse; text-align: center;">
+<div style="padding: 4px 6px; box-sizing: border-box;">
+<table style="width: 100%; height: 80px; font-size: 12px; border-collapse: collapse; text-align: center; table-layout: fixed;">
     <thead>
         <tr style="color: #94a3b8; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.08); height: 18px;">
-            <th style="font-weight: 600; width: 28%; text-align: left; padding-left: 4px; white-space: nowrap;">Període</th>
-            <th style="font-weight: 600; width: 36%; white-space: nowrap;">Màxima</th>
-            <th style="font-weight: 600; width: 36%; text-align: right; padding-right: 4px; white-space: nowrap;">Mínima</th>
+            <th style="font-weight: 600; width: 56px; text-align: left; padding-left: 2px; white-space: nowrap;">Període</th>
+            <th style="font-weight: 600; text-align: center; white-space: nowrap;">Màxima</th>
+            <th style="font-weight: 600; text-align: center; white-space: nowrap;">Mínima</th>
         </tr>
     </thead>
     <tbody>
         <tr style="height: 21px;">
-            <td style="text-align: left; padding-left: 4px; font-weight: 700; color: #cbd5e1; white-space: nowrap;">Avui</td>
-            <td style="white-space: nowrap;"><span class="<?php echo get_temp_badge($max_today); ?>" style="padding: 2px 5px; border-radius: 4px; font-weight: 600;"><?php echo number_format($max_today, 1); ?>&deg;</span> <small style="font-size: 10.5px; color: #a0aec0;"><?php echo $max_time; ?></small></td>
-            <td style="text-align: right; padding-right: 4px; white-space: nowrap;"><span class="<?php echo get_temp_badge($min_today); ?>" style="padding: 2px 5px; border-radius: 4px; font-weight: 600;"><?php echo number_format($min_today, 1); ?>&deg;</span> <small style="font-size: 10.5px; color: #a0aec0;"><?php echo $min_time; ?></small></td>
+            <td style="text-align: left; padding-left: 2px; font-weight: 700; color: #cbd5e1; white-space: nowrap;">Avui</td>
+            <td style="white-space: nowrap;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                    <span class="<?php echo get_temp_badge($max_today); ?>" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 19px; border-radius: 4px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo number_format($max_today, 1); ?>&deg;</span>
+                    <small style="width: 36px; text-align: left; font-size: 10px; color: #a0aec0; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;"><?php echo $max_time; ?></small>
+                </div>
+            </td>
+            <td style="white-space: nowrap;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                    <span class="<?php echo get_temp_badge($min_today); ?>" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 19px; border-radius: 4px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo number_format($min_today, 1); ?>&deg;</span>
+                    <small style="width: 36px; text-align: left; font-size: 10px; color: #a0aec0; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;"><?php echo $min_time; ?></small>
+                </div>
+            </td>
         </tr>
         <tr style="height: 21px;">
-            <td style="text-align: left; padding-left: 4px; font-weight: 700; color: #cbd5e1; white-space: nowrap;"><?php echo $mes_actual; ?></td>
-            <td style="white-space: nowrap;"><span class="<?php echo get_temp_badge($max_month); ?>" style="padding: 2px 5px; border-radius: 4px; font-weight: 600;" title="<?php echo $title_max_month; ?>"><?php echo number_format($max_month, 1); ?>&deg;</span> <small style="font-size: 10.5px; color: #a0aec0;"><?php echo $day_max_month; ?> <?php echo substr($mes_actual, 0, 3); ?></small></td>
-            <td style="text-align: right; padding-right: 4px; white-space: nowrap;"><span class="<?php echo get_temp_badge($min_month); ?>" style="padding: 2px 5px; border-radius: 4px; font-weight: 600;" title="<?php echo $title_min_month; ?>"><?php echo number_format($min_month, 1); ?>&deg;</span> <small style="font-size: 10.5px; color: #a0aec0;"><?php echo $day_min_month; ?> <?php echo substr($mes_actual, 0, 3); ?></small></td>
+            <td style="text-align: left; padding-left: 2px; font-weight: 700; color: #cbd5e1; white-space: nowrap;"><?php echo $mes_actual; ?></td>
+            <td style="white-space: nowrap;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                    <span class="<?php echo get_temp_badge($max_month); ?>" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 19px; border-radius: 4px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;" title="<?php echo $title_max_month; ?>"><?php echo number_format($max_month, 1); ?>&deg;</span>
+                    <small style="width: 36px; text-align: left; font-size: 10px; color: #a0aec0; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;"><?php echo $day_max_month; ?> <?php echo substr($mes_actual, 0, 3); ?></small>
+                </div>
+            </td>
+            <td style="white-space: nowrap;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                    <span class="<?php echo get_temp_badge($min_month); ?>" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 19px; border-radius: 4px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;" title="<?php echo $title_min_month; ?>"><?php echo number_format($min_month, 1); ?>&deg;</span>
+                    <small style="width: 36px; text-align: left; font-size: 10px; color: #a0aec0; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;"><?php echo $day_min_month; ?> <?php echo substr($mes_actual, 0, 3); ?></small>
+                </div>
+            </td>
         </tr>
         <tr style="height: 21px;">
-            <td style="text-align: left; padding-left: 4px; font-weight: 700; color: #cbd5e1; white-space: nowrap;"><?php echo $any_actual; ?></td>
-            <td style="white-space: nowrap;"><span class="<?php echo get_temp_badge($max_year); ?>" style="padding: 2px 5px; border-radius: 4px; font-weight: 600;"><?php echo number_format($max_year, 1); ?>&deg;</span> <small style="font-size: 10.5px; color: #a0aec0;"><?php echo $max_year_date; ?></small></td>
-            <td style="text-align: right; padding-right: 4px; white-space: nowrap;"><span class="<?php echo get_temp_badge($min_year); ?>" style="padding: 2px 5px; border-radius: 4px; font-weight: 600;"><?php echo number_format($min_year, 1); ?>&deg;</span> <small style="font-size: 10.5px; color: #a0aec0;"><?php echo $min_year_date; ?></small></td>
+            <td style="text-align: left; padding-left: 2px; font-weight: 700; color: #cbd5e1; white-space: nowrap;"><?php echo $any_actual; ?></td>
+            <td style="white-space: nowrap;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                    <span class="<?php echo get_temp_badge($max_year); ?>" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 19px; border-radius: 4px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo number_format($max_year, 1); ?>&deg;</span>
+                    <small style="width: 36px; text-align: left; font-size: 10px; color: #a0aec0; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;"><?php echo $max_year_date; ?></small>
+                </div>
+            </td>
+            <td style="white-space: nowrap;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                    <span class="<?php echo get_temp_badge($min_year); ?>" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 19px; border-radius: 4px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo number_format($min_year, 1); ?>&deg;</span>
+                    <small style="width: 36px; text-align: left; font-size: 10px; color: #a0aec0; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;"><?php echo $min_year_date; ?></small>
+                </div>
+            </td>
         </tr>
     </tbody>
 </table>

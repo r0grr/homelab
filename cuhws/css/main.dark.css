@@ -13578,16 +13578,16 @@ header.top-navbar {
 }
 @media screen and (min-width: 1280px) and (max-width: 1459px) {
     .PWS_weather_container { width: 1280px; }
-    .PWS_weather_item_s { width: 207px; }
     .PWS_weather_item { width: 314px; min-width: 314px; }
     .PWS_weather_item_w { width: 634px; }
     header.top-navbar { max-width: 1274px !important; }
-    .top-summary-wrapper { max-width: 1274px !important; }
+    .top-summary-wrapper { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+    .top-summary-content > .PWS_weather_container { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: space-between !important; }
+    .top-summary-content .PWS_weather_item_s { flex: 1 1 0 !important; width: auto !important; max-width: none !important; min-width: 0 !important; margin: 3px !important; box-sizing: border-box !important; }
     .pws_footer_card { max-width: 1274px !important; }
 }
 @media screen and (min-width: 1460px) {
     .PWS_weather_container { width: 1460px; }
-    .PWS_weather_item_s { width: 236px; }
     .PWS_weather_item { width: 359px; min-width: 359px; }
     .PWS_weather_item_w { width: 724px; }
     .PWS_left, .PWS_right {
@@ -13599,7 +13599,9 @@ header.top-navbar {
         max-width: 145px;
     }
     header.top-navbar { max-width: 1454px !important; }
-    .top-summary-wrapper { max-width: 1454px !important; }
+    .top-summary-wrapper { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
+    .top-summary-content > .PWS_weather_container { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: space-between !important; }
+    .top-summary-content .PWS_weather_item_s { flex: 1 1 0 !important; width: auto !important; max-width: none !important; min-width: 0 !important; margin: 3px !important; box-sizing: border-box !important; }
     .pws_footer_card { max-width: 1454px !important; }
 }
 
@@ -13959,17 +13961,17 @@ header.top-navbar {
    DESKTOP RESPONSIVE CONTAINER ALIGNMENTS (Outer flush width: Container - 6px)
    ========================================================================== */
 @media screen and (min-width: 960px) and (max-width: 1279px) {
-    header.top-navbar, .top-summary-wrapper, .pws_footer_card {
+    header.top-navbar, .pws_footer_card {
         max-width: 954px !important;
     }
 }
 @media screen and (min-width: 1280px) and (max-width: 1459px) {
-    header.top-navbar, .top-summary-wrapper, .pws_footer_card {
+    header.top-navbar, .pws_footer_card {
         max-width: 1274px !important;
     }
 }
 @media screen and (min-width: 1460px) {
-    header.top-navbar, .top-summary-wrapper, .pws_footer_card {
+    header.top-navbar, .pws_footer_card {
         max-width: 1454px !important;
     }
 }
