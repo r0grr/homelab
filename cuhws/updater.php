@@ -50,10 +50,10 @@ $(document).ready(function() {
     setTimeout(function() { updateModule("pws_solaruv", "pws_solaruv.php", 600000); }, 600000);
     setTimeout(function() { updateModule("pws_indoor", "pws_indoor.php", 600000); }, 600000);
 
-    // Serveis externs i astronòmics (conserven els seus intervals predeterminats)
-    setTimeout(function() { updateModule("pws_topeq", "pws_topeq.php", 60000); }, 60000);           // Terratrèmols USGS
-    setTimeout(function() { updateModule("pws_currentsky", "pws_currentsky.php", 30000); }, 30000);   // Condicions de cel METAR
-    setTimeout(function() { updateModule("pws_aqi", "pws_aqi.php", 60000); }, 60000);                 // Qualitat de l'aire AQI
+    // Serveis externs i astronòmics
+    setTimeout(function() { updateModule("pws_topeq", "pws_topeq.php", 300000); }, 300000);           // Terratrèmols USGS (5 minuts)
+    setTimeout(function() { updateModule("pws_currentsky", "pws_currentsky.php", 60000); }, 60000);   // Condicions de cel METAR (60 segons)
+    setTimeout(function() { updateModule("pws_aqi", "pws_aqi.php", 300000); }, 300000);                 // Qualitat de l'aire AQI (5 minuts)
     setTimeout(function() { updateModule("pws_sun", "pws_sun.php", 120000); }, 120000);               // Posició del Sol
     setTimeout(function() { updateModule("pws_moon", "pws_moon.php", 300000); }, 300000);             // Fase lunar
     setTimeout(function() { updateModule("pws_forecast", "pws_forecast.php", 300000); }, 300000);     // Previsió meteorològica
