@@ -75,8 +75,20 @@ def generate_meteoclimatic():
         azi = round(float(rt[7]), 1)
         bar = round(float(rt[10]), 1)
         hum = int(float(rt[3]))
-        sun = round(float(rt[42]), 1) if len(rt) > 42 and rt[42] else 0.0
+        # Cumulus MX realtime.txt field mapping:
+        # rt[43] = UV Index (<#UV>)
+        # rt[45] = Solar Radiation in W/m² (<#SolarRad>) (index 42 is Humidex!)
+        # rt[49] = Daylight flag (<#isdaylight>: 1 = day, 0 = night)
         uvi = round(float(rt[43]), 1) if len(rt) > 43 and rt[43] else 0.0
+        sun = round(float(rt[45]), 1) if len(rt) > 45 and rt[45] else 0.0
+
+        is_daylight = (rt[49] == '1') if len(rt) > 49 and rt[49] else False
+        if not is_daylight:
+            sun = 0.0
+            uvi = 0.0
+        else:
+            sun = max(0.0, sun)
+            uvi = max(0.0, uvi)
 
         dhtm = round(float(today.get('Temp', 'High', fallback=str(tmp))), 1)
         dltm = round(float(today.get('Temp', 'Low', fallback=str(tmp))), 1)
@@ -166,7 +178,7 @@ def generate_meteoclimatic():
         with open(tmp_file, 'w') as f:
             f.write(content)
         os.replace(tmp_file, TARGET_FILE)
-        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] meteoclimatic.htm generated. Temp={tmp:.1f}°C, Hum={hum}%, Bar={bar:.1f}hPa", flush=True)
+        print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] meteoclimatic.htm generated. Temp={tmp:.1f}°C, Hum={hum}%, Bar={bar:.1f}hPa, Sun={sun:.1f}W/m², UVI={uvi:.1f}", flush=True)
 
     except Exception as e:
         print(f"Error generating meteoclimatic.htm: {e}", file=sys.stderr, flush=True)
