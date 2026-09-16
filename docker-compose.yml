@@ -199,11 +199,13 @@ services:
       - "80:80"
       - "443:443"
       - "7880:7880"
+      - "8443:8443"
     volumes:
       - /opt/servidor/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - /opt/servidor/caddy/data:/data
       - /opt/servidor/caddy/config:/config
       - /opt/servidor/caddy/logs:/var/log/caddy
+      - /opt/servidor/caddy/certs:/etc/caddy/certs:ro
       - /opt/servidor/goaccess/report:/srv/goaccess:ro
     networks:
       - homelab-net
@@ -230,6 +232,42 @@ services:
     networks:
       - homelab-net
 
+  # ============================================================================
+  # 12. VAULTWARDEN (Gestor de Contrasenyes Bitwarden)
+  # ============================================================================
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - TZ=${TZ:-Europe/Madrid}
+      - WEBSOCKET_ENABLED=true
+      - SIGNUPS_ALLOWED=true
+      - ALLOWED_IFRAME_ANCESTORS=*
+    volumes:
+      - /opt/servidor/vaultwarden/data:/data
+    networks:
+      - homelab-net
+
+  # ============================================================================
+  # 13. UPTIME KUMA (Monitoratge de Serveis, Xarxa i Alertes)
+  # ============================================================================
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - TZ=${TZ:-Europe/Madrid}
+      - UPTIME_KUMA_DISABLE_FRAME_SAMEORIGIN=1
+    volumes:
+      - /opt/servidor/uptime-kuma/data:/app/data
+    networks:
+      - homelab-net
+
 
 networks:
   homelab-net:
@@ -237,3 +275,4 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/16
+

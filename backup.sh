@@ -44,7 +44,17 @@ if [ -d "/opt/servidor/mosquitto/data" ]; then
     rsync -a --delete /opt/servidor/mosquitto/data/ "$DEST/mosquitto_data/"
 fi
 
-# 4. Archivo .env con permisos restringidos
+# 4. Datos persistentes de Vaultwarden (Gestor de Contraseñas)
+if [ -d "/opt/servidor/vaultwarden/data" ]; then
+    rsync -a --delete /opt/servidor/vaultwarden/data/ "$DEST/vaultwarden_data/"
+fi
+
+# 5. Datos persistentes de Uptime Kuma (Monitores y Estado)
+if [ -d "/opt/servidor/uptime-kuma/data" ]; then
+    rsync -a --delete /opt/servidor/uptime-kuma/data/ "$DEST/uptime_kuma_data/"
+fi
+
+# 6. Archivo .env con permisos restringidos
 if [ -f "/opt/servidor/.env" ]; then
     cp /opt/servidor/.env "$DEST/.env"
     chmod 600 "$DEST/.env"

@@ -38,6 +38,8 @@ homeassistant/config/backups/
 *.db
 *.sqlite3
 filebrowser/data/
+vaultwarden/data/
+uptime-kuma/data/
 
 # Backup archives
 backups/
@@ -48,6 +50,7 @@ backups/
 caddy/config/
 caddy/data/
 caddy/logs/
+caddy/certs/
 goaccess/report/
 
 # Python cache & runtime stats
