@@ -31,14 +31,16 @@ class DynamicIframeCard extends HTMLElement {
     const port = this._config.port || 80;
     const path = this._config.path || "";
     const title = this._config.title || "Servei";
-    const protocol = window.location.protocol;
+    const rawProto = this._config.protocol || window.location.protocol;
+    const protocol = rawProto.endsWith(":") ? rawProto : `${rawProto}:`;
     const host = window.location.hostname;
-    const isHttps = protocol === "https:";
+    const isBrowserHttps = window.location.protocol === "https:";
+    const isTargetHttps = protocol === "https:";
     
     // Dynamic URLs
     const targetUrl = `${protocol}//${host}:${port}${path}`;
-    const lanUrl = `http://192.168.2.200:${port}${path}`;
-    const tailscaleUrl = `http://100.122.161.66:${port}${path}`;
+    const lanUrl = `${protocol}//192.168.2.200:${port}${path}`;
+    const tailscaleUrl = `${protocol}//100.122.161.66:${port}${path}`;
 
     if (this._renderedUrl === targetUrl) return;
     this._renderedUrl = targetUrl;
@@ -193,7 +195,7 @@ class DynamicIframeCard extends HTMLElement {
           </div>
         </div>
         <div class="frame-wrapper">
-          ${isHttps ? `
+          ${(isBrowserHttps && !isTargetHttps) ? `
             <div class="warning-box">
               <h3 style="margin-top:0; color:#fbbf24; font-size:18px;">⚠️ Connexió HTTPS Detectada</h3>
               <p style="margin-bottom:20px; font-size:14px; line-height:1.5; color:#f1f5f9;">

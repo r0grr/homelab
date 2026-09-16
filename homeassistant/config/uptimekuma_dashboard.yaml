@@ -1,0 +1,11 @@
+title: Estat Serveis (Uptime Kuma)
+views:
+  - title: Uptime Kuma
+    path: uptime-kuma
+    icon: mdi:heart-pulse
+    type: panel
+    cards:
+      - type: custom:dynamic-iframe
+        title: Uptime Kuma (Monitoratge d'Estat)
+        port: 3001
+        path: /

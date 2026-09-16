@@ -1,0 +1,12 @@
+title: Gestor de Contrasenyes
+views:
+  - title: Gestor de Contrasenyes
+    path: vaultwarden
+    icon: mdi:shield-key
+    type: panel
+    cards:
+      - type: custom:dynamic-iframe
+        title: Vaultwarden (Gestor de Contrasenyes)
+        port: 8443
+        protocol: https
+        path: /

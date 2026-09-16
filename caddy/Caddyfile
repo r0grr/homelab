@@ -26,6 +26,12 @@ http://tempscat.com, http://www.tempscat.com, http://sallent.dyndns.org, tempsca
     }
     respond @blocked "Accés prohibit" 403
 
+    # Bloqueig d'escanejadors i bots maliciosos (drop immediat per estalviar recursos)
+    @scanners {
+        path /.git* /.env* /wp-* /wordpress* /blog* /xmlrpc.php* /phpmyadmin* /pma* /.vscode* /.aws*
+    }
+    abort @scanners
+
     # Eliminació de capçaleres per seguretat (ocultar programari, proxy i versió)
     header {
         -Server
@@ -40,7 +46,7 @@ http://tempscat.com, http://www.tempscat.com, http://sallent.dyndns.org, tempsca
     redir @sqv https://sqv.tempscat.com/meteoclimatic.html 301
 
     @legacy_vws {
-        path /sallent/dades/vws/UV_solar.htm* /sallent/dades/vws/temperatura.htm*
+        path /sallent/dades/vws/UV_solar.htm* /sallent/dades/vws/temperatura.htm* /sallent/dades/vws/pluja.htm* /sallent/dades/vws/detalls_MSCC.htm*
     }
     redir @legacy_vws / 301
 
@@ -59,3 +65,12 @@ http://tempscat.com, http://www.tempscat.com, http://sallent.dyndns.org, tempsca
     root * /srv/goaccess
     file_server
 }
+
+# ==============================================================================
+# VAULTWARDEN HTTPS REVERSE PROXY (Subtle Crypto / Context Segur)
+# ==============================================================================
+:8443 {
+    tls /etc/caddy/certs/vaultwarden.crt /etc/caddy/certs/vaultwarden.key
+    reverse_proxy vaultwarden:80
+}
+

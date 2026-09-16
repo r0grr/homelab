@@ -7,14 +7,14 @@ default_config:
 
 frontend:
   extra_module_url:
-    - /local/dynamic-iframe.js?v=11
+    - /local/dynamic-iframe.js?v=12
 
 # Dashboards en el menú lateral de Home Assistant
 lovelace:
   mode: storage
   resource_mode: yaml
   resources:
-    - url: /local/dynamic-iframe.js?v=11
+    - url: /local/dynamic-iframe.js?v=12
       type: module
   dashboards:
     system-ui:
@@ -23,12 +23,24 @@ lovelace:
       icon: mdi:server
       show_in_sidebar: true
       filename: system_dashboard.yaml
+    uptime-kuma-ui:
+      mode: yaml
+      title: Estat Serveis (Uptime Kuma)
+      icon: mdi:heart-pulse
+      show_in_sidebar: true
+      filename: uptimekuma_dashboard.yaml
     filemanager-ui:
       mode: yaml
       title: Gestor de fitxers
       icon: mdi:folder-edit
       show_in_sidebar: true
       filename: filemanager_dashboard.yaml
+    vaultwarden-ui:
+      mode: yaml
+      title: Gestor de contrasenyes
+      icon: mdi:shield-key
+      show_in_sidebar: true
+      filename: vaultwarden_dashboard.yaml
     terminal-ui:
       mode: yaml
       title: Terminal
