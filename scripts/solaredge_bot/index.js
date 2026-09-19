@@ -809,5 +809,5 @@ if (!TELEGRAM_TOKEN || !CHAT_ID) {
   setInterval(mainCycle, POLL_INTERVAL_MS);
 
   fetchWeatherFromCumulus();
-  setInterval(fetchWeatherFromCumulus, 600000);
+  setInterval(fetchWeatherFromCumulus, 30000);
 }

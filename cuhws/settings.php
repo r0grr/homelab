@@ -34,12 +34,12 @@ $theme              = $theme1;
 ####################################################################################################
 
 $indoorRefresh      = 120; // 2 minutes
-$notifyRefresh      = 17; // 17 seconds
-$tempRefresh        = 60; // 60 secondss
+$notifyRefresh      = 30; // 30 seconds
+$tempRefresh        = 60; // 60 seconds
 $skyRefresh         = 300; // 5 minutes 
-$windSpeedRefresh   = 10; // 10 seconds
+$windSpeedRefresh   = 30; // 30 seconds
 $baroRefresh        = 900; // 15 minutes
-$windDirRefresh     = 10; // 10 seconds
+$windDirRefresh     = 30; // 30 seconds
 $moonRefresh    	= 1800; // 30 minutes 
 $rainRefresh        = 50; // 50 seconds 
 $solarRefresh       = 120; // 1 minutes 
