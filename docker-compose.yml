@@ -270,6 +270,24 @@ services:
     networks:
       - homelab-net
 
+  # ============================================================================
+  # 14. PORTAL TAILSCALE INDEX (Índex Centralitzat Exclusiu VPN Tailscale)
+  # Accés directe a tots els panells i webs sense restriccions d'iframe d'HA.
+  # ============================================================================
+  tailscale-portal:
+    image: nginx:alpine
+    container_name: tailscale-portal
+    restart: unless-stopped
+    ports:
+      - "100.122.161.66:8088:80"
+      - "[fd7a:115c:a1e0::1939:a143]:8088:80"
+    volumes:
+      - /opt/servidor/portal/html:/usr/share/nginx/html:ro
+      - /opt/servidor/portal/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - homelab-net
+
+
 
 networks:
   homelab-net:

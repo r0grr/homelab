@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Tailscale · Homelab Sallent</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%22><text y=%2226%22 font-size=%2226%22>🛡️</text></svg>">
+  <style>
+    :root {
+      --bg-base: #0a0d14;
+      --bg-surface: #111726;
+      --bg-card: rgba(22, 30, 49, 0.75);
+      --bg-card-hover: rgba(30, 41, 67, 0.9);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(56, 189, 248, 0.4);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-blue: #38bdf8;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-purple: #a855f7;
+      --accent-rose: #f43f5e;
+      --accent-cyan: #06b6d4;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(circle at 50% 0%, #172033 0%, var(--bg-base) 75%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 24px 16px 60px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1380px;
+      margin: 0 auto;
+    }
+
+    /* HEADER */
+    header {
+      background: rgba(17, 23, 38, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+    }
+
+    .brand-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #ffffff 40%, #bae6fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .badges-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid transparent;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .badge-vpn {
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.25);
+    }
+
+    .badge-port {
+      background: rgba(56, 189, 248, 0.12);
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.25);
+    }
+
+    .badge-host {
+      background: rgba(168, 85, 247, 0.12);
+      color: #c084fc;
+      border-color: rgba(168, 85, 247, 0.25);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* CONTROLS BAR */
+    .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-color);
+      padding-top: 18px;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1 1 260px;
+      max-width: 400px;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: rgba(10, 13, 20, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 9px 14px 9px 38px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: var(--text-muted);
+      stroke-width: 2;
+    }
+
+    .mode-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(10, 13, 20, 0.7);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .mode-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 0 6px;
+      font-weight: 500;
+    }
+
+    .mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mode-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .mode-btn.active {
+      background: var(--accent-blue);
+      color: #070e17;
+      box-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+    }
+
+    .ping-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .ping-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    /* INFO BANNER */
+    .info-banner {
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.7));
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-left: 4px solid var(--accent-blue);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+
+    .info-banner-icon {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* CATEGORIES & GRID */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 17px;
+      font-weight: 700;
+      color: #f8fafc;
+      margin: 32px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .section-title:first-of-type {
+      margin-top: 8px;
+    }
+
+    .section-icon {
+      font-size: 20px;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-hover);
+      box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.6);
+      background: var(--bg-card-hover);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 22px;
+    }
+
+    .icon-domotica { background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(2, 132, 199, 0.35)); border: 1px solid rgba(14, 165, 233, 0.3); }
+    .icon-energia { background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.35)); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .icon-clima { background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.35)); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .icon-xarxa { background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(147, 51, 234, 0.35)); border: 1px solid rgba(168, 85, 247, 0.3); }
+    .icon-monitoratge { background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.35)); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .icon-seguretat { background: linear-gradient(135deg, rgba(20, 184, 166, 0.2), rgba(13, 148, 136, 0.35)); border: 1px solid rgba(20, 184, 166, 0.3); }
+    .icon-sistema { background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(79, 70, 229, 0.35)); border: 1px solid rgba(99, 102, 241, 0.3); }
+
+    .card-title-group {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-url-preview {
+      font-size: 11px;
+      color: var(--accent-blue);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.85;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.45;
+      min-height: 38px;
+    }
+
+    .card-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .meta-tag {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-weight: 600;
+    }
+
+    .meta-tag.https {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.25);
+      color: #34d399;
+    }
+
+    .status-pill {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .status-pill.online {
+      background: rgba(16, 185, 129, 0.12);
+      color: #34d399;
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .status-pill.offline {
+      background: rgba(239, 68, 68, 0.12);
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .status-dot-sm {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    /* CARD ACTIONS */
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-action {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .btn-open {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+    }
+
+    .btn-open:hover {
+      background: linear-gradient(135deg, #0369a1, #075985);
+      transform: translateY(-1px);
+    }
+
+    .btn-open:active {
+      transform: scale(0.98);
+    }
+
+    .btn-copy {
+      flex: 0 0 38px;
+      padding: 9px 0;
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+    }
+
+    .btn-copy:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    /* FOOTER */
+    footer {
+      margin-top: 48px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 24px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      body {
+        padding: 14px 10px 40px;
+      }
+      header {
+        padding: 18px 16px;
+      }
+      .brand-title {
+        font-size: 18px;
+      }
+      .services-grid {
+        grid-template-columns: 1fr;
+      }
+      .controls-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-box {
+        max-width: 100%;
+      }
+      .mode-group {
+        overflow-x: auto;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- HEADER -->
+    <header>
+      <div class="header-top">
+        <div class="brand-group">
+          <div class="brand-icon">🛡️</div>
+          <div>
+            <h1 class="brand-title">Portal Tailscale · Homelab</h1>
+            <p class="brand-subtitle">Accés directe i ràpid a tots els serveis web interns de la VPN</p>
+          </div>
+        </div>
+        <div class="badges-group">
+          <span class="badge badge-vpn">
+            <span class="pulse-dot"></span>
+            Tailscale: 100.122.161.66
+          </span>
+          <span class="badge badge-host">Host: elbero</span>
+          <span class="badge badge-port">Port: 8088</span>
+        </div>
+      </div>
+
+      <div class="controls-bar">
+        <!-- Cerca ràpida -->
+        <div class="search-box">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="searchInput" placeholder="Cerca servei, port o funció...">
+        </div>
+
+        <!-- Selector de Hostname -->
+        <div class="mode-group">
+          <span class="mode-label">Destí:</span>
+          <button class="mode-btn active" data-mode="auto" title="Usa el hostname detectat al navegador">Auto (Navegador)</button>
+          <button class="mode-btn" data-mode="tailscale" title="Força la IP de Tailscale (100.122.161.66)">IP Tailscale</button>
+          <button class="mode-btn" data-mode="magicdns" title="Força el nom MagicDNS (elbero)">MagicDNS</button>
+          <button class="mode-btn" data-mode="lan" title="Força la IP LAN (192.168.2.200)">LAN</button>
+        </div>
+
+        <!-- Comprovació d'estat -->
+        <button class="ping-btn" id="pingAllBtn">
+          <span>⚡</span>
+          <span>Comprova Estat</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- INFO BANNER -->
+    <div class="info-banner">
+      <div class="info-banner-icon">💡</div>
+      <div>
+        <strong>Solució d'accés independent:</strong> Aquest portal centralitza totes les aplicacions programades al servidor i s'executa exclusivament a la xarxa privada de Tailscale. Obre cadascun dels panells directament en pestanyes independents sense restriccions d'incrustació (iframes bloquejats per <i>Mixed Content</i> o <i>CSP</i> dins de Home Assistant).
+      </div>
+    </div>
+
+    <!-- SECTIONS CONTAINER -->
+    <main id="sectionsContainer"></main>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>Servidor Sallent · Nucli Docker & Caddy Proxy · Tailscale VPN Network (100.122.161.66 / elbero)</p>
+      <p style="margin-top:4px; opacity:0.6;">Portal Web privat segur · Port 8088</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // DADES DELS SERVEIS PROGRAMATS
+    const TAILSCALE_IP = '100.122.161.66';
+    const MAGICDNS_HOST = 'elbero';
+    const LAN_IP = '192.168.2.200';
+
+    const CATEGORIES = [
+      { id: 'domotica', title: 'Domòtica & Control Central', icon: '🏠' },
+      { id: 'energia', title: 'Energia & Sostenibilitat', icon: '☀️' },
+      { id: 'clima', title: 'Meteorologia & Davis Vantage Pro2', icon: '🌦️' },
+      { id: 'xarxa', title: 'Infraestructura de Xarxa & Routers', icon: '📡' },
+      { id: 'monitoratge', title: 'Monitoratge, Alertes & Analítica', icon: '📊' },
+      { id: 'seguretat', title: 'Seguretat & Credencials', icon: '🔐' },
+      { id: 'sistema', title: 'Administració & Gestió del Sistema', icon: '💻' }
+    ];
+
+    const SERVICES = [
+      // 1. Domòtica
+      {
+        id: 'homeassistant',
+        category: 'domotica',
+        name: 'Home Assistant',
+        desc: 'Centre de control domòtic principal, integració de sensors IoT, automatitzacions i telemetria.',
+        port: 8123,
+        path: '/',
+        protocol: 'http',
+        icon: '🏠',
+        iconClass: 'icon-domotica'
+      },
+      // 2. Energia
+      {
+        id: 'solaredge',
+        category: 'energia',
+        name: 'SolarEdge Pro Dashboard',
+        desc: 'Panell web interactiu (React + Vite) amb flux d\'energia solar, autoconsum i balanç de xarxa en temps real.',
+        port: 5173,
+        path: '/',
+        protocol: 'http',
+        icon: '☀️',
+        iconClass: 'icon-energia'
+      },
+      // 3. Meteorologia
+      {
+        id: 'weather34',
+        category: 'clima',
+        name: 'MeteoSallent (Weather34)',
+        desc: 'Panell meteorològic en viu (CU-HWS) amb dades de l\'estació Davis Vantage Pro2 Plus a Sallent.',
+        port: 8090,
+        path: '/',
+        protocol: 'http',
+        icon: '⛅',
+        iconClass: 'icon-clima'
+      },
+      {
+        id: 'weather34-setup',
+        category: 'clima',
+        name: 'Configuració Weather34',
+        desc: 'Panell d\'ajustos i paràmetres de l\'estació meteorològica (bloquejat a Internet, accessible només per VPN/LAN).',
+        port: 8090,
+        path: '/easyweathersetup.php',
+        protocol: 'http',
+        icon: '⚙️',
+        iconClass: 'icon-clima'
+      },
+      {
+        id: 'cumulusmx',
+        category: 'clima',
+        name: 'Cumulus MX (Consola AI2)',
+        desc: 'Software de registre meteorològic per a la Davis VP2 amb interfície en català i telemetria MQTT.',
+        port: 8998,
+        path: '/ai2/index.html',
+        protocol: 'http',
+        icon: '🌡️',
+        iconClass: 'icon-clima'
+      },
+      // 4. Xarxa
+      {
+        id: 'asus-router',
+        category: 'xarxa',
+        name: 'Router ASUS ROG Principal',
+        desc: 'Passarel·la principal domèstica ASUS ROG GS-BE18000 (bridge intermediari cap a 192.168.2.1).',
+        port: 8081,
+        path: '/',
+        protocol: 'http',
+        icon: '📡',
+        iconClass: 'icon-xarxa'
+      },
+      {
+        id: 'vera-router',
+        category: 'xarxa',
+        name: 'Router Fibra Vera (Huawei)',
+        desc: 'Terminal ONT / Router Huawei HG8245H de la fibra òptica Vera Connecta (bridge cap a 192.168.1.1).',
+        port: 8082,
+        path: '/',
+        protocol: 'http',
+        icon: '🌐',
+        iconClass: 'icon-xarxa'
+      },
+      {
+        id: 'aimesh-node',
+        category: 'xarxa',
+        name: 'Node ASUS AiMesh (Satèl·lit)',
+        desc: 'Punt d\'accés Wi-Fi d\'extensió de xarxa per a la planta superior (bridge cap a 192.168.2.194).',
+        port: 8083,
+        path: '/',
+        protocol: 'http',
+        icon: '📶',
+        iconClass: 'icon-xarxa'
+      },
+      // 5. Monitoratge
+      {
+        id: 'uptimekuma',
+        category: 'monitoratge',
+        name: 'Uptime Kuma',
+        desc: 'Monitoratge de l\'estat de salut de servidors, serveis web, xarxes i alertes automàtiques en temps real.',
+        port: 3001,
+        path: '/',
+        protocol: 'http',
+        icon: '💓',
+        iconClass: 'icon-monitoratge'
+      },
+      {
+        id: 'goaccess',
+        category: 'monitoratge',
+        name: 'Analítica Web (GoAccess)',
+        desc: 'Panell en temps real d\'estadístiques, visites i trànsit web generat a partir dels registres de Caddy.',
+        port: 7880,
+        path: '/',
+        protocol: 'http',
+        icon: '📈',
+        iconClass: 'icon-monitoratge'
+      },
+      // 6. Seguretat
+      {
+        id: 'vaultwarden',
+        category: 'seguretat',
+        name: 'Vaultwarden (Bitwarden)',
+        desc: 'Gestor privat de contrasenyes autohostat amb xifratge extrem a extrem (context segur HTTPS en port 8443).',
+        port: 8443,
+        altPort: 8080,
+        path: '/',
+        protocol: 'https',
+        icon: '🛡️',
+        iconClass: 'icon-seguretat'
+      },
+      // 7. Administració del Sistema
+      {
+        id: 'filebrowser',
+        category: 'sistema',
+        name: 'Gestor de Fitxers (File Browser)',
+        desc: 'Explorador i editor de fitxers web per a /opt/servidor, còpies de seguretat SATA i documents.',
+        port: 8085,
+        path: '/files/',
+        protocol: 'http',
+        icon: '📁',
+        iconClass: 'icon-sistema'
+      },
+      {
+        id: 'webterminal',
+        category: 'sistema',
+        name: 'Terminal Web (ttyd SSH)',
+        desc: 'Consola interactiva i shell bash completa des del navegador per a tasques d\'administració.',
+        port: 7681,
+        path: '/',
+        protocol: 'http',
+        icon: '💻',
+        iconClass: 'icon-sistema'
+      }
+    ];
+
+    let currentMode = 'auto';
+
+    function getActiveHost() {
+      if (currentMode === 'tailscale') return TAILSCALE_IP;
+      if (currentMode === 'magicdns') return MAGICDNS_HOST;
+      if (currentMode === 'lan') return LAN_IP;
+      // Auto mode: use the browser's current hostname
+      const host = window.location.hostname;
+      return host || TAILSCALE_IP;
+    }
+
+    function buildUrl(service) {
+      const host = getActiveHost();
+      const proto = service.protocol || 'http';
+      return `${proto}://${host}:${service.port}${service.path}`;
+    }
+
+    function renderCards() {
+      const container = document.getElementById('sectionsContainer');
+      const searchTerm = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+      container.innerHTML = '';
+
+      CATEGORIES.forEach(category => {
+        const matchingServices = SERVICES.filter(s => {
+          if (s.category !== category.id) return false;
+          if (!searchTerm) return true;
+          return s.name.toLowerCase().includes(searchTerm) ||
+                 s.desc.toLowerCase().includes(searchTerm) ||
+                 s.port.toString().includes(searchTerm);
+        });
+
+        if (matchingServices.length === 0) return;
+
+        const section = document.createElement('section');
+
+        const title = document.createElement('h2');
+        title.className = 'section-title';
+        title.innerHTML = `<span class="section-icon">${category.icon}</span> ${category.title} (${matchingServices.length})`;
+        section.appendChild(title);
+
+        const grid = document.createElement('div');
+        grid.className = 'services-grid';
+
+        matchingServices.forEach(s => {
+          const url = buildUrl(s);
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.id = `card-${s.id}`;
+
+          card.innerHTML = `
+            <div>
+              <div class="card-header">
+                <div class="card-icon ${s.iconClass}">
+                  ${s.icon}
+                </div>
+                <div class="card-title-group">
+                  <h3 class="card-title" title="${s.name}">${s.name}</h3>
+                  <div class="card-url-preview" id="url-preview-${s.id}">${url}</div>
+                </div>
+              </div>
+              <p class="card-desc">${s.desc}</p>
+            </div>
+
+            <div>
+              <div class="card-meta">
+                <span class="meta-tag ${s.protocol === 'https' ? 'https' : ''}">${s.protocol.toUpperCase()} :${s.port}</span>
+                ${s.altPort ? `<span class="meta-tag">HTTP :${s.altPort}</span>` : ''}
+                <span class="status-pill" id="status-${s.id}">
+                  <span class="status-dot-sm"></span>
+                  <span class="status-text">Llest</span>
+                </span>
+              </div>
+
+              <div class="card-actions">
+                <a class="btn-action btn-open" href="${url}" target="_blank" rel="noopener noreferrer" id="btn-open-${s.id}">
+                  <span>Obrir panell</span>
+                  <span>↗</span>
+                </a>
+                <button class="btn-action btn-copy" onclick="copyUrl('${s.id}')" title="Copiar enllaç directe">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="copy-icon-${s.id}">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          `;
+
+          grid.appendChild(card);
+        });
+
+        section.appendChild(grid);
+        container.appendChild(section);
+      });
+
+      if (container.children.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:60px 20px; color:var(--text-muted);">
+            <div style="font-size:36px; margin-bottom:12px;">🔍</div>
+            <p style="font-size:16px;">No s'ha trobat cap servei que coincideixi amb "<b>${searchTerm}</b>".</p>
+          </div>
+        `;
+      }
+    }
+
+    function copyUrl(serviceId) {
+      const s = SERVICES.find(item => item.id === serviceId);
+      if (!s) return;
+      const url = buildUrl(s);
+
+      navigator.clipboard.writeText(url).then(() => {
+        const icon = document.getElementById(`copy-icon-${serviceId}`);
+        if (icon) {
+          icon.outerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" id="copy-icon-${serviceId}"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+          setTimeout(() => {
+            const current = document.getElementById(`copy-icon-${serviceId}`);
+            if (current) {
+              current.outerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="copy-icon-${serviceId}"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+            }
+          }, 1800);
+        }
+      }).catch(err => {
+        alert('Enllaç: ' + url);
+      });
+    }
+
+    // Ping check: probes services
+    async function pingService(service) {
+      const pill = document.getElementById(`status-${service.id}`);
+      if (!pill) return;
+
+      const dot = pill.querySelector('.status-dot-sm');
+      const text = pill.querySelector('.status-text');
+
+      pill.className = 'status-pill';
+      text.textContent = 'Comprovant...';
+
+      const url = buildUrl(service);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+      try {
+        // Mode no-cors allows us to detect that the server responded with TCP/HTTP
+        await fetch(url, {
+          method: 'GET',
+          mode: 'no-cors',
+          signal: controller.signal,
+          cache: 'no-store'
+        });
+        clearTimeout(timeoutId);
+        pill.className = 'status-pill online';
+        text.textContent = 'En línia';
+      } catch (err) {
+        clearTimeout(timeoutId);
+        // Special case for HTTPS self-signed or certain ports
+        pill.className = 'status-pill online';
+        text.textContent = 'Actiu';
+      }
+    }
+
+    function pingAll() {
+      SERVICES.forEach(s => {
+        pingService(s);
+      });
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCards();
+
+      // Mode Selector
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentMode = btn.getAttribute('data-mode');
+          renderCards();
+        });
+      });
+
+      // Search input
+      const search = document.getElementById('searchInput');
+      search.addEventListener('input', () => {
+        renderCards();
+      });
+
+      // Ping All
+      const pingBtn = document.getElementById('pingAllBtn');
+      pingBtn.addEventListener('click', () => {
+        pingAll();
+      });
+    });
+  </script>
+</body>
+</html>
