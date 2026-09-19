@@ -161,16 +161,18 @@
 
     .search-box {
       position: relative;
-      flex: 1 1 260px;
-      max-width: 400px;
+      flex: 1 1 240px;
+      min-width: 200px;
+      max-width: 380px;
     }
 
     .search-box input {
       width: 100%;
+      box-sizing: border-box;
       background: rgba(10, 13, 20, 0.8);
       border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 10px;
-      padding: 9px 14px 9px 38px;
+      padding: 10px 36px 10px 38px;
       color: #fff;
       font-size: 14px;
       outline: none;
@@ -182,7 +184,7 @@
       box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
     }
 
-    .search-box svg {
+    .search-box svg.search-icon {
       position: absolute;
       left: 12px;
       top: 50%;
@@ -192,40 +194,75 @@
       fill: none;
       stroke: var(--text-muted);
       stroke-width: 2;
+      pointer-events: none;
     }
 
-    .mode-group {
+    .clear-search-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: #e2e8f0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+      transition: background 0.2s;
+    }
+
+    .clear-search-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .mode-wrapper {
       display: flex;
       align-items: center;
       gap: 8px;
-      background: rgba(10, 13, 20, 0.7);
-      padding: 4px;
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     .mode-label {
       font-size: 12px;
       color: var(--text-muted);
-      padding: 0 6px;
-      font-weight: 500;
+      padding: 0 4px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .mode-group {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(10, 13, 20, 0.75);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .mode-btn {
       background: transparent;
       border: none;
       color: var(--text-muted);
-      padding: 6px 12px;
+      padding: 7px 12px;
       font-size: 12px;
       font-weight: 600;
       border-radius: 7px;
       cursor: pointer;
       transition: all 0.2s;
+      white-space: nowrap;
+      text-align: center;
     }
 
     .mode-btn:hover {
       color: #fff;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.06);
     }
 
     .mode-btn.active {
@@ -241,12 +278,13 @@
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.12);
       color: var(--text-main);
-      padding: 8px 14px;
+      padding: 9px 16px;
       border-radius: 10px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
+      white-space: nowrap;
     }
 
     .ping-btn:hover {
@@ -502,29 +540,115 @@
     }
 
     /* RESPONSIVE */
-    @media (max-width: 768px) {
+    @media (max-width: 960px) {
+      .controls-bar {
+        gap: 12px;
+      }
+      .search-box {
+        max-width: none;
+        flex: 1 1 100%;
+      }
+      .mode-wrapper {
+        flex: 1 1 auto;
+      }
+    }
+
+    @media (max-width: 680px) {
       body {
-        padding: 14px 10px 40px;
+        padding: 12px 10px 40px;
       }
       header {
-        padding: 18px 16px;
+        padding: 16px 14px;
+        margin-bottom: 16px;
+      }
+      .header-top {
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .brand-group {
+        gap: 10px;
+      }
+      .brand-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
       }
       .brand-title {
         font-size: 18px;
       }
-      .services-grid {
-        grid-template-columns: 1fr;
+      .brand-subtitle {
+        font-size: 12px;
+      }
+      .badges-group {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .badge {
+        font-size: 11px;
+        padding: 4px 8px;
       }
       .controls-bar {
         flex-direction: column;
         align-items: stretch;
+        gap: 12px;
+        padding-top: 14px;
       }
       .search-box {
+        width: 100%;
         max-width: 100%;
+        flex: 1 1 100%;
+        margin: 0;
+      }
+      .search-box input {
+        font-size: 16px;
+        padding: 11px 36px 11px 38px;
+      }
+      .mode-wrapper {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+      }
+      .mode-label {
+        padding: 0 2px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
       .mode-group {
-        overflow-x: auto;
-        justify-content: space-between;
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        padding: 6px;
+        box-sizing: border-box;
+      }
+      .mode-btn {
+        width: 100%;
+        padding: 10px 6px;
+        font-size: 12px;
+        white-space: normal;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+      .ping-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 11px 14px;
+        font-size: 13px;
+        box-sizing: border-box;
+      }
+      .services-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .card {
+        padding: 16px;
       }
     }
   </style>
@@ -555,17 +679,20 @@
       <div class="controls-bar">
         <!-- Cerca ràpida -->
         <div class="search-box">
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <input type="text" id="searchInput" placeholder="Cerca servei, port o funció...">
+          <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="searchInput" placeholder="Cerca servei, port o funció..." autocomplete="off">
+          <button id="clearSearchBtn" class="clear-search-btn" title="Neteja la cerca" style="display:none;">✕</button>
         </div>
 
         <!-- Selector de Hostname -->
-        <div class="mode-group">
+        <div class="mode-wrapper">
           <span class="mode-label">Destí:</span>
-          <button class="mode-btn active" data-mode="auto" title="Usa el hostname detectat al navegador">Auto (Navegador)</button>
-          <button class="mode-btn" data-mode="tailscale" title="Força la IP de Tailscale (100.122.161.66)">IP Tailscale</button>
-          <button class="mode-btn" data-mode="magicdns" title="Força el nom MagicDNS (elbero)">MagicDNS</button>
-          <button class="mode-btn" data-mode="lan" title="Força la IP LAN (192.168.2.200)">LAN</button>
+          <div class="mode-group">
+            <button class="mode-btn active" data-mode="auto" title="Usa el hostname detectat al navegador">Auto (Navegador)</button>
+            <button class="mode-btn" data-mode="tailscale" title="Força la IP de Tailscale (100.122.161.66)">IP Tailscale</button>
+            <button class="mode-btn" data-mode="magicdns" title="Força el nom MagicDNS (elbero)">MagicDNS</button>
+            <button class="mode-btn" data-mode="lan" title="Força la IP LAN (192.168.2.200)">LAN</button>
+          </div>
         </div>
 
         <!-- Comprovació d'estat -->
@@ -947,9 +1074,19 @@
 
       // Search input
       const search = document.getElementById('searchInput');
+      const clearBtn = document.getElementById('clearSearchBtn');
       search.addEventListener('input', () => {
+        if (clearBtn) clearBtn.style.display = search.value ? 'flex' : 'none';
         renderCards();
       });
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          search.value = '';
+          clearBtn.style.display = 'none';
+          search.focus();
+          renderCards();
+        });
+      }
 
       // Ping All
       const pingBtn = document.getElementById('pingAllBtn');
