@@ -90,15 +90,16 @@ date_default_timezone_set($TZ);
   </div>
 </div>
 
-<!-- ROW 2: TELEMETRIA (1. Temperatura, 2. Precipitació, 3. Baròmetre, 4. Vent) -->
+<!-- ROW 2: TELEMETRIA (1. Temperatura, 2. Humitat, 3. Precipitació, 4. Baròmetre, 5. Vent) -->
 <div class="PWS_weather_container">
   <div class="PWS_weather_item"><div id="pws_temperature"><?php include('pws_temperature.php'); ?></div></div>
+  <div class="PWS_weather_item"><div id="pws_humidity"><?php include('pws_humidity.php'); ?></div></div>
   <div class="PWS_weather_item"><div id="pws_rainfall"><?php include('pws_rainfall.php'); ?></div></div>
   <div class="PWS_weather_item"><div id="pws_barometer"><?php include('pws_barometer.php'); ?></div></div>
   <div class="PWS_weather_item"><div id="pws_wind"><?php include('pws_wind.php'); ?></div></div>
 </div>
 
-<!-- ROW 3: QUALITAT DE L'AIRE, RADIACIÓ SOLAR I LLUNA (5. Qualitat Aire, 6. Posició Solar, 7. Solar UV, 8. Fase Lunar) -->
+<!-- ROW 3: QUALITAT DE L'AIRE, RADIACIÓ SOLAR I LLUNA (6. Qualitat Aire, 7. Posició Solar, 8. Solar UV, 9. Fase Lunar) -->
 <div class="PWS_weather_container">
   <div class="PWS_weather_item"><div id="pws_aqi"><?php include('pws_aqi.php'); ?></div></div>
   <div class="PWS_weather_item"><div id="pws_sun"><?php include('pws_sun.php'); ?></div></div>
@@ -106,7 +107,7 @@ date_default_timezone_set($TZ);
   <div class="PWS_weather_item"><div id="pws_moon"><?php include('pws_moon.php'); ?></div></div>
 </div>
 
-<!-- ROW 4: ASTRONOMIA, PREVISIÓ I INTERIOR (9. Estat del Cel, 10. Previsió, 11. Pla Alfa, 12. Interior) -->
+<!-- ROW 4: ASTRONOMIA, PREVISIÓ I INTERIOR (10. Estat del Cel, 11. Previsió, 12. Pla Alfa, 13. Interior) -->
 <div class="PWS_weather_container">
   <div class="PWS_weather_item"><div id="pws_currentsky"><?php include('pws_currentsky.php'); ?></div></div>
   <div class="PWS_weather_item"><div id="pws_forecast"><?php include('pws_forecast.php'); ?></div></div>
@@ -114,10 +115,11 @@ date_default_timezone_set($TZ);
   <div class="PWS_weather_item"><div id="pws_indoor"><?php include('pws_indoor.php'); ?></div></div>
 </div>
 
-<!-- ROW 5: CLIMATOLOGIA I RÈCORDS (13. Mitjanes, 14. Rècoords) -->
+<!-- ROW 5: CLIMATOLOGIA, RÈCORDS I CÀMERA (14. Mitjanes, 15. Rècords, 16. Càmera Web) -->
 <div class="PWS_weather_container">
   <div class="PWS_weather_item"><div id="pws_monthlytemps"><?php include('pws_monthlytemps.php'); ?></div></div>
   <div class="PWS_weather_item"><div id="pws_records"><?php include('pws_records.php'); ?></div></div>
+  <div class="PWS_weather_item"><div id="pws_webcam"><?php include('pws_webcam.php'); ?></div></div>
 </div>
 
 <!-- ROW 6: TARGETES AMPLES (17. Compte enrere & 18. Xarxa Sísmica ICGC) -->

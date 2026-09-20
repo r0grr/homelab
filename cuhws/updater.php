@@ -36,6 +36,7 @@ function updateModule(id, scriptUrl, intervalMs) {
 $(document).ready(function() {
     // Telemetria de l'estació meteorològica Davis Vantage Pro2 (Actualització cada 10 minuts / 600000 ms)
     setTimeout(function() { updateModule("pws_temperature", "pws_temperature.php", 600000); }, 600000);
+    setTimeout(function() { updateModule("pws_humidity", "pws_humidity.php", 600000); }, 600000);
     setTimeout(function() { updateModule("pws_wind", "pws_wind.php", 600000); }, 600000);
     setTimeout(function() { updateModule("pws_rainfall", "pws_rainfall.php", 600000); }, 600000);
     setTimeout(function() { updateModule("pws_barometer", "pws_barometer.php", 600000); }, 600000);
