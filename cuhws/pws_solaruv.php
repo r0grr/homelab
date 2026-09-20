@@ -14,7 +14,7 @@ elseif ($uv >= 3) $uv_color = "#ecb454";
 ?>
 <div class="PWS_module_title">
     <span>Solar &bull; Índex UV &bull; Lux</span>
-    <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('H:i'); ?></span>
+    <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('d/m H:i'); ?></span>
 </div>
 <div class="PWS_body" style="display: flex; flex-direction: column; justify-content: flex-start; height: 180px; padding: 8px 8px 6px 8px; box-sizing: border-box;">
     <!-- Top row: 3 data blocks aligned at the exact same height and baseline -->

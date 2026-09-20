@@ -9,7 +9,7 @@ $feel_in = isset($weather["temp_indoor_feel"]) ? floatval($weather["temp_indoor_
 ?>
 <div class="PWS_module_title">
     <span>Temperatura Interior &deg;C</span>
-    <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('H:i'); ?></span>
+    <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('d/m H:i'); ?></span>
 </div>
 <div class="PWS_body">
     <!-- Left: Feels like -->

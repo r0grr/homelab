@@ -12,15 +12,20 @@ $baro_trend = isset($weather["barometer_trend"]) ? floatval($weather["barometer_
 $baro_angle = round(($baro - 1000) * 5 - 90, 1);
 $trend_txt = ($baro_trend >= 0 ? "Pujant &uarr;" : "Baixant &darr;");
 $trend_color = ($baro_trend >= 0 ? "#4FFC37" : "#f37867");
+$baromaxtime = isset($weather["thb0seapressmaxtime"]) ? $weather["thb0seapressmaxtime"] : '';
+$baromintime = isset($weather["thb0seapressmintime"]) ? $weather["thb0seapressmintime"] : '';
 ?>
 <div class="PWS_module_title">
     <span>Baròmetre - hPa</span>
-    <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('H:i'); ?></span>
+    <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('d/m H:i'); ?></span>
 </div>
 <div class="PWS_body">
     <!-- Left values -->
     <div class="PWS_left">
-        <div class="PWS_div_left" style="border-right-color: #d65b4a;">Màx Avui<br><b><?php echo number_format($baro_max, 1); ?> hPa</b></div>
+        <div class="PWS_div_left" style="border-right-color: #d65b4a;" title="<?php echo $baromaxtime ? "Hora pressió màxima: $baromaxtime" : "Pressió màxima d'avui"; ?>">
+            Màx Avui<br><b><?php echo number_format($baro_max, 1); ?> hPa</b>
+            <span style="display: block; font-size: 9.5px; color: #a0aec0; margin-top: 1px; font-weight: 500;"><?php echo $baromaxtime ? $baromaxtime . ' h' : '--:--'; ?></span>
+        </div>
         <div class="PWS_div_left" style="border-right-color: #9aba2f;">Tendència<br><b><?php echo ($baro_trend >= 0 ? '+' : '') . number_format($baro_trend, 1); ?> hPa</b></div>
     </div>
 
@@ -62,7 +67,10 @@ $trend_color = ($baro_trend >= 0 ? "#4FFC37" : "#f37867");
 
     <!-- Right values -->
     <div class="PWS_right">
-        <div class="PWS_div_right" style="border-left-color: #01a4b4;">Mín Avui<br><b><?php echo number_format($baro_min, 1); ?> hPa</b></div>
+        <div class="PWS_div_right" style="border-left-color: #01a4b4;" title="<?php echo $baromintime ? "Hora pressió mínima: $baromintime" : "Pressió mínima d'avui"; ?>">
+            Mín Avui<br><b><?php echo number_format($baro_min, 1); ?> hPa</b>
+            <span style="display: block; font-size: 9.5px; color: #a0aec0; margin-top: 1px; font-weight: 500;"><?php echo $baromintime ? $baromintime . ' h' : '--:--'; ?></span>
+        </div>
         <div class="PWS_div_right" style="border-left-color: <?php echo $trend_color; ?>;"><?php echo $trend_txt; ?><br><b><?php echo abs($baro_trend); ?> hPa/h</b></div>
     </div>
 </div>

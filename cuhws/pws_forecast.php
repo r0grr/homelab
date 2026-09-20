@@ -113,7 +113,7 @@ if (empty($cmx_status_text)) {
     <div style="display: flex; align-items: center; gap: 5px;">
         <button id="btn_fct_tab_table" onclick="pwsSwitchForecastTab('table')" class="pws_fct_tab_btn active" type="button" title="Previsió 4 dies">Previsió</button>
         <button id="btn_fct_tab_map" onclick="pwsSwitchForecastTab('map')" class="pws_fct_tab_btn" type="button" title="Mapa Ensembles GFS Wetterzentrale">Ensembles</button>
-        <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('H:i'); ?></span>
+        <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('d/m H:i'); ?></span>
     </div>
 </div>
 

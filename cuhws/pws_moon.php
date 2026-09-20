@@ -94,7 +94,7 @@ if (isset($Moon) && is_object($Moon)) {
 ?>
 <div class="PWS_module_title">
     <span>Fase Lunar</span>
-    <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('H:i'); ?></span>
+    <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('d/m H:i'); ?></span>
 </div>
 <div class="PWS_body">
     <!-- Left values -->

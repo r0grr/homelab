@@ -53,7 +53,7 @@ if (empty($max_rain_time)) {
 ?>
 <div class="PWS_module_title">
     <span>Precipitació - mm</span>
-    <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('H:i'); ?></span>
+    <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('d/m H:i'); ?></span>
 </div>
 <div class="PWS_body">
     <!-- Left values -->
@@ -89,7 +89,10 @@ if (empty($max_rain_time)) {
     <!-- Right values -->
     <div class="PWS_right">
         <div class="PWS_div_right" style="border-left-color: #718096;">Darrera Hora<br><b><?php echo number_format($rain_lasthour, 1); ?> mm</b></div>
-        <div class="PWS_div_right" style="border-left-color: #718096;">Intensitat<br><b><?php echo number_format($rain_rate, 1); ?> mm/h</b></div>
+        <div class="PWS_div_right" style="border-left-color: #718096;" title="Intensitat màxima de pluja avui">
+            Intensitat<br><b><?php echo number_format($rain_rate, 1); ?> mm/h</b>
+            <span style="display: block; font-size: 9.5px; color: #a0aec0; margin-top: 1px; font-weight: 500;"><?php echo !empty($max_rain_time) ? $max_rain_time . ' h' : '--:--'; ?></span>
+        </div>
         <div class="PWS_div_right" style="border-left-color: #718096;">Darrera Pluja<br><b><?php echo $last_rain_display; ?></b></div>
     </div>
 </div>
