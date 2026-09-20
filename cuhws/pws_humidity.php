@@ -69,9 +69,9 @@ if ($hum < 30) {
     $confort_color = "#3b82f6";
 }
 
-// Càlcul alçada del líquid dins la gota SVG (escala 0-100% sobre 109px d'alçada útil)
+// Càlcul alçada del líquid dins la gota SVG (escala 0-100% sobre 107px d'alçada útil)
 $clamped_hum = max(0, min(100, $hum));
-$fill_y = 115 - ($clamped_hum / 100.0 * 109.0);
+$fill_y = 113 - ($clamped_hum / 100.0 * 107.0);
 ?>
 <div class="PWS_module_title">
     <span>Humitat Relativa %</span>
@@ -89,18 +89,18 @@ $fill_y = 115 - ($clamped_hum / 100.0 * 109.0);
         </div>
     </div>
 
-    <!-- Middle dynamic water droplet (Flat 2D, wide shape) -->
+    <!-- Middle dynamic water droplet (Flat 2D, slightly narrower shape) -->
     <div class="PWS_middle">
         <div style="position: relative; width: 124px; height: 124px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;">
             <svg width="114" height="120" viewBox="0 0 114 120" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <clipPath id="pws_droplet_clip">
-                        <path d="M 57 6 C 57 6, 10 42, 10 68 A 47 47 0 0 0 104 68 C 104 42, 57 6, 57 6 Z" />
+                        <path d="M 57 6 C 57 6, 12 42, 12 68 A 45 45 0 0 0 102 68 C 102 42, 57 6, 57 6 Z" />
                     </clipPath>
                 </defs>
 
                 <!-- Fons buit de la gota (pla 2D) -->
-                <path d="M 57 6 C 57 6, 10 42, 10 68 A 47 47 0 0 0 104 68 C 104 42, 57 6, 57 6 Z" 
+                <path d="M 57 6 C 57 6, 12 42, 12 68 A 45 45 0 0 0 102 68 C 102 42, 57 6, 57 6 Z" 
                       fill="rgba(30, 41, 59, 0.75)" />
 
                 <!-- Aigua que s'omple dinàmicament (color pla 2D) -->
@@ -109,7 +109,7 @@ $fill_y = 115 - ($clamped_hum / 100.0 * 109.0);
                 </g>
 
                 <!-- Contorn exterior fi i nítid de la gota -->
-                <path d="M 57 6 C 57 6, 10 42, 10 68 A 47 47 0 0 0 104 68 C 104 42, 57 6, 57 6 Z" 
+                <path d="M 57 6 C 57 6, 12 42, 12 68 A 45 45 0 0 0 102 68 C 102 42, 57 6, 57 6 Z" 
                       fill="none" stroke="rgba(56, 189, 248, 0.6)" stroke-width="2" />
 
                 <!-- Text pla amb percentatge central -->
