@@ -672,6 +672,18 @@ async function sendDailySummary() {
 
     await bot.sendMessage(CHAT_ID, text, opts);
     console.log(`📊 [SUMMARY] Resum diari de generació enviat correctament a les 21:00h.`);
+
+    // Esborra el panell viu que s'anava actualitzant cada 10 min per deixar el xat net amb només el resum
+    if (state.liveMessageId) {
+      try {
+        await bot.deleteMessage(CHAT_ID, state.liveMessageId);
+        console.log(`🧹 [LIVE] Panell viu #${state.liveMessageId} esborrat correctament per deixar el xat net.`);
+      } catch (delErr) {
+        console.warn(`⚠️ [LIVE] No s'ha pogut esborrar el panell viu #${state.liveMessageId}:`, delErr.message);
+      }
+      state.liveMessageId = null;
+      saveMemory();
+    }
   } catch (err) {
     console.error('Error enviant el resum diari:', err.message);
   }
