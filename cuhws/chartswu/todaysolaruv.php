@@ -18,11 +18,10 @@ $dateStr = date('d/m/Y');
     <script src="moments.js"></script>
 </head>
 <body>
-<div class="weather34darkbrowser" url="Radiació Solar (W/m&sup2;) i Índex UV &bull; <?php echo $dateStr; ?>"></div>
+<div class="weather34darkbrowser" url="Radiació Solar (Watts) i Índex UV &bull; <?php echo $dateStr; ?>"></div>
 
 <div style="display:flex; justify-content:center; gap:8px; margin:4px auto; max-width:820px; padding:0 8px;">
-    <a href="todaysolar.php" class="chart-nav-btn">Només Radiació Solar</a>
-    <a href="todaysolaruv.php" class="chart-nav-btn active">Solar + UV + Watts Combinat</a>
+    <a href="todaysolaruv.php" class="chart-nav-btn active">Radiació Solar (Groc) + Índex UV (Lila) + Watts</a>
     <a href="../uvindexds.php" class="chart-nav-btn">Guia UV Oficial</a>
 </div>
 
@@ -118,55 +117,55 @@ $dateStr = date('d/m/Y');
                 interval: 12
             },
             axisY: {
-                title: "Radiació Solar (W/m&sup2;)",
-                titleFontColor: "#ecb454",
+                title: "Radiació Solar (Watts • W/m²)",
+                titleFontColor: "#facc15",
                 titleFontSize: 12,
                 titleFontWeight: "bold",
-                labelFontColor: "#ecb454",
+                labelFontColor: "#facc15",
                 labelFontSize: 11,
                 gridColor: "rgba(255, 255, 255, 0.06)",
-                suffix: " W/m&sup2;",
-                lineColor: "#ecb454",
-                tickColor: "#ecb454",
+                suffix: " W/m²",
+                lineColor: "#facc15",
+                tickColor: "#facc15",
                 minimum: 0
             },
             axisY2: {
-                title: "Índex UV",
-                titleFontColor: "#ff4757",
+                title: "Índex Ultraviolat (UV)",
+                titleFontColor: "#a855f7",
                 titleFontSize: 12,
                 titleFontWeight: "bold",
-                labelFontColor: "#ff4757",
+                labelFontColor: "#c084fc",
                 labelFontSize: 11,
                 gridColor: "transparent",
                 suffix: " UV",
-                lineColor: "#ff4757",
-                tickColor: "#ff4757",
+                lineColor: "#a855f7",
+                tickColor: "#a855f7",
                 maximum: 16,
                 minimum: 0
             },
             data: [
                 {
                     type: "splineArea",
-                    name: "Radiació Solar",
+                    name: "Radiació Solar (Watts)",
                     showInLegend: true,
                     axisYType: "primary",
-                    color: "rgba(236, 180, 84, 0.35)",
-                    lineColor: "#ecb454",
-                    lineThickness: 2.2,
+                    color: "rgba(250, 204, 21, 0.28)",
+                    lineColor: "#facc15",
+                    lineThickness: 2.4,
                     markerSize: 0,
-                    yValueFormatString: "#0 W/m&sup2;",
+                    yValueFormatString: "#0 W/m² (Watts)",
                     dataPoints: dataSolar
                 },
                 {
                     type: "spline",
-                    name: "Màxim Teòric",
+                    name: "Màxim Teòric (Watts)",
                     showInLegend: true,
                     axisYType: "primary",
                     color: "#94a3b8",
                     lineDashType: "dot",
                     lineThickness: 1.5,
                     markerSize: 0,
-                    yValueFormatString: "#0 W/m&sup2;",
+                    yValueFormatString: "#0 W/m² (Watts)",
                     dataPoints: dataSolarMax
                 },
                 {
@@ -174,8 +173,8 @@ $dateStr = date('d/m/Y');
                     name: "Índex UV",
                     showInLegend: true,
                     axisYType: "secondary",
-                    color: "#ff4757",
-                    lineThickness: 2.5,
+                    color: "#a855f7",
+                    lineThickness: 2.8,
                     markerSize: 0,
                     yValueFormatString: "#0.0 UV",
                     dataPoints: dataUv

@@ -150,9 +150,6 @@ if ($cur_temp < -5) {
                 <span style="font-size: 10px; font-weight: 700; margin-top: 2px; opacity: 0.9;">&uarr;<?php echo number_format($max_temp, 1); ?>&deg; &darr;<?php echo number_format($min_temp, 1); ?>&deg;</span>
             </div>
         </div>
-        <div style="text-align: center; margin-top: 3px; font-size: 12.5px; font-weight: 700; color: #cbd5e1;">
-            Humitat: <b style="color: #01a4b4;"><?php echo $hum; ?>%</b>
-        </div>
     </div>
 
     <!-- Right values: 1. Mín Avui, 2. Índex Calor, 3. Índex THSW -->
@@ -166,9 +163,7 @@ if ($cur_temp < -5) {
     </div>
 </div>
 <div class="PWS_module_footer">
-    <a href="chartswu/todaytemperature.php" data-featherlight="iframe"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Gr&agrave;fiques</a>
-    <span style="color: #4a5568;"> | </span>
-    <a href="chartswu/todaytemphum.php" data-featherlight="iframe"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Temp + Hum</a>
+    <a href="chartswu/todaytemphum.php" data-featherlight="iframe" title="Gràfica combinada Temperatura + Rosada + Humitat"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Gr&agrave;fiques (Temp + Hum)</a>
     <span style="color: #4a5568;"> | </span>
     <a href="meteocat_modal.php" data-featherlight="iframe" title="Predicció oficial per a Sallent (Meteocat)"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Meteocat</a>
 </div>

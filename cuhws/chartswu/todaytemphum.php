@@ -21,9 +21,8 @@ $dateStr = date('d/m/Y');
 <div class="weather34darkbrowser" url="Temperatura i Humitat &bull; <?php echo $dateStr; ?>"></div>
 
 <div style="display:flex; justify-content:center; gap:8px; margin:4px auto; max-width:820px; padding:0 8px;">
-    <a href="todaytemperature.php" class="chart-nav-btn">Només Temperatura</a>
+    <a href="todaytemphum.php" class="chart-nav-btn active">Temperatura + Humitat + Rosada</a>
     <a href="humidity.php" class="chart-nav-btn">Només Humitat</a>
-    <a href="todaytemphum.php" class="chart-nav-btn active">Temp + Humitat Combinat</a>
 </div>
 
 <div class="chart-scroll-wrapper">

@@ -72,41 +72,40 @@ if ($rainRate >= 25.4) {
     ];
 }
 
-// Llista de missatges i Easter Eggs de la consola Davis
+// Llista controlada: el pronòstic oficial és l'eix central permanent, alternat pausadament amb un Easter Egg
 $all_messages = [];
 
 if ($is_emergency && $emergency_message) {
     $all_messages[] = $emergency_message;
 } else {
-    // 1. Pronòstic baromètric oficial
-    $all_messages[] = [
+    $msg_forecast = [
         'icons' => ['📡'],
         'title' => "Pronòstic de l'estació",
         'subtitle' => $davisForecast,
         'accent' => '#38bdf8'
     ];
-    // 2. Easter Egg: It's raining cats and dogs
+    $all_messages[] = $msg_forecast;
     $all_messages[] = [
         'icons' => ['🐱', '🐶'],
         'title' => "Missatge Davis • Cats & Dogs",
         'subtitle' => "It's raining cats and dogs: plou a bots i barrals si supera 25.4 mm/h (actual: " . number_format($rainRate, 1) . " mm/h)",
         'accent' => '#38bdf8'
     ];
-    // 3. Easter Egg: Hold on to your hat
+    $all_messages[] = $msg_forecast;
     $all_messages[] = [
         'icons' => ['🎩', '💨'],
         'title' => "Missatge Davis • Hold on to your hat",
         'subtitle' => "Hold on to your hat!: aguanta't el barret si el vent supera 45 km/h (ràfega màx avui: " . number_format($windGust, 0) . " km/h)",
         'accent' => '#fbbf24'
     ];
-    // 4. Easter Egg: Good kite flying weather
+    $all_messages[] = $msg_forecast;
     $all_messages[] = [
         'icons' => ['🪁', '💨'],
         'title' => "Missatge Davis • Kite flying",
         'subtitle' => "Good kite flying weather: condicions per volar estels amb vent sostingut 15-26 km/h (actual: " . number_format($windSpeed, 0) . " km/h)",
         'accent' => '#34d399'
     ];
-    // 5. Easter Egg: Freezing rain warning
+    $all_messages[] = $msg_forecast;
     $all_messages[] = [
         'icons' => ['❄️', '⚠️'],
         'title' => "Missatge Davis • Freezing rain",
@@ -138,7 +137,7 @@ $first = $all_messages[0];
     font-weight: 600;
     font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
     padding-left: 100%;
-    animation: davisTickerMarquee 15s linear infinite;
+    animation: davisTickerMarquee 16s linear infinite;
 }
 @keyframes davisTickerMarquee {
     0% { transform: translateX(0); }
@@ -175,32 +174,39 @@ $first = $all_messages[0];
 </div>
 <script>
 (function() {
+    // 1. Neteja absoluta de temporitzadors previs per evitar acumulació per AJAX d'updater.php
+    if (window._davisTickerTimer) {
+        clearInterval(window._davisTickerTimer);
+        window._davisTickerTimer = null;
+    }
+    
     var messages = <?php echo json_encode($all_messages); ?>;
     if (!messages || messages.length <= 1) return;
     
     var isEmergency = <?php echo $is_emergency ? 'true' : 'false'; ?>;
     if (isEmergency) return;
     
-    // Manté l'índex entre recàrregues AJAX d'updater.php
-    var idx = (window._davisTickerIdx !== undefined) ? window._davisTickerIdx : 0;
+    if (window._davisTickerIdx === undefined) {
+        window._davisTickerIdx = 0;
+    }
+    
+    var iconBoxEl = document.getElementById('davis_top_icon_box');
     var titleEl = document.getElementById('davis_top_title');
     var dotEl = document.getElementById('davis_top_dot');
     var trackEl = document.getElementById('davis_top_track');
-    var boxEl = document.getElementById('davis_top_icon_box');
-    var lastAdvance = Date.now();
     
     function setItem(i) {
         var msg = messages[i];
         if (!msg) return;
-        if (boxEl && msg.icons) {
+        if (iconBoxEl && msg.icons) {
             var iconHtml = '';
             var sz = msg.icons.length > 1 ? '19px' : '24px';
             for (var j = 0; j < msg.icons.length; j++) {
                 iconHtml += '<span style="font-size: ' + sz + '; line-height: 1;">' + msg.icons[j] + '</span>';
             }
-            boxEl.innerHTML = iconHtml;
-            boxEl.style.borderColor = msg.accent + '60';
-            boxEl.style.boxShadow = 'inset 0 1px 4px rgba(0,0,0,0.5), 0 0 8px ' + msg.accent + '25';
+            iconBoxEl.innerHTML = iconHtml;
+            iconBoxEl.style.borderColor = msg.accent + '60';
+            iconBoxEl.style.boxShadow = 'inset 0 1px 4px rgba(0,0,0,0.5), 0 0 8px ' + msg.accent + '25';
         }
         if (titleEl) titleEl.textContent = msg.title;
         if (dotEl) {
@@ -213,33 +219,14 @@ $first = $all_messages[0];
         }
     }
     
-    function advanceNext() {
-        var now = Date.now();
-        // Evita canvis massa ràpids: el missatge rota sencer per la tira (mínim 8 segons)
-        if (now - lastAdvance < 8000) return;
-        lastAdvance = now;
-        idx = (idx + 1) % messages.length;
-        window._davisTickerIdx = idx;
-        setItem(idx);
-    }
+    // Sincronitza l'índex
+    window._davisTickerIdx = window._davisTickerIdx % messages.length;
+    setItem(window._davisTickerIdx);
     
-    // Si tenim un estat previ guardat, sincronitzem-lo
-    if (idx > 0 && idx < messages.length) {
-        setItem(idx);
-    }
-    
-    // El missatge canvia de forma natural quan acaba de rodar completament per la tira
-    if (trackEl) {
-        ['animationiteration', 'webkitAnimationIteration'].forEach(function(evt) {
-            trackEl.addEventListener(evt, advanceNext);
-        });
-    }
-    
-    // Fallback de seguretat per si l'animació CSS no suporta l'esdeveniment (15.5s)
-    setInterval(function() {
-        if (Date.now() - lastAdvance >= 15500) {
-            advanceNext();
-        }
-    }, 4000);
+    // Rotació pausada i controlada: 1 canvi cada 18 segons, alternant amb el pronòstic
+    window._davisTickerTimer = setInterval(function() {
+        window._davisTickerIdx = (window._davisTickerIdx + 1) % messages.length;
+        setItem(window._davisTickerIdx);
+    }, 18000);
 })();
 </script>

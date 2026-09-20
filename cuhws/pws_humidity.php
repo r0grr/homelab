@@ -103,9 +103,9 @@ $fill_y = 113 - ($clamped_hum / 100.0 * 107.0);
                 <path d="M 57 6 C 57 6, 12 42, 12 68 A 45 45 0 0 0 102 68 C 102 42, 57 6, 57 6 Z" 
                       fill="rgba(30, 41, 59, 0.75)" />
 
-                <!-- Aigua que s'omple dinàmicament (color pla 2D) -->
+                <!-- Aigua que s'omple dinàmicament (color segons nivell de confort d'humitat) -->
                 <g clip-path="url(#pws_droplet_clip)">
-                    <rect x="0" y="<?php echo sprintf('%.1f', $fill_y); ?>" width="114" height="120" fill="#0284c7" />
+                    <rect x="0" y="<?php echo sprintf('%.1f', $fill_y); ?>" width="114" height="120" fill="<?php echo $confort_color; ?>" />
                 </g>
 
                 <!-- Contorn exterior fi i nítid de la gota -->
