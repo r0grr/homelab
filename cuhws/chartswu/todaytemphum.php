@@ -19,7 +19,7 @@ $dateStr = date('d/m/Y');
 <body>
 <div class="weather34darkbrowser" url="<?php echo $stationlocation;?> &bull; Temperatura, Humitat i Punt de Rosada &bull; <?php echo $dateStr; ?>"></div>
 
-<div style="display:flex; justify-content:center; gap:8px; margin:4px auto; max-width:820px; padding:0 8px; flex-wrap:wrap;">
+<div style="display:flex; justify-content:center; gap:6px; margin:2px auto 2px auto; max-width:820px; padding:0 6px; flex-wrap:wrap;">
     <a href="todaytemphum.php" class="chart-nav-btn active">Temperatura + Humitat + Rosada</a>
     <a href="todaytemperature.php" class="chart-nav-btn">Temperatura + Rosada (Històric)</a>
 </div>
