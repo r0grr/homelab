@@ -41,7 +41,7 @@ $emergency_message = null;
 if ($rainRate >= 25.4) {
     $is_emergency = true;
     $emergency_message = [
-        'icon' => '🐱',
+        'icons' => ['🐱', '🐶'],
         'title' => 'Plou a bots i barrals!',
         'subtitle' => "IT'S RAINING CATS AND DOGS! (" . number_format($rainRate, 1) . " mm/h en directe)",
         'accent' => '#38bdf8'
@@ -49,7 +49,7 @@ if ($rainRate >= 25.4) {
 } elseif ($windGust >= 45 || $windSpeed >= 35) {
     $is_emergency = true;
     $emergency_message = [
-        'icon' => '🎩',
+        'icons' => ['🎩', '💨'],
         'title' => "Aguanta't el barret!",
         'subtitle' => "HOLD ON TO YOUR HAT! (Ràfega " . number_format($windGust, 0) . " km/h en directe)",
         'accent' => '#fbbf24'
@@ -57,7 +57,7 @@ if ($rainRate >= 25.4) {
 } elseif ($temp <= 0.5 && ($rainRate > 0 || $rainToday > 0)) {
     $is_emergency = true;
     $emergency_message = [
-        'icon' => '❄️',
+        'icons' => ['❄️', '⚠️'],
         'title' => "Risc de pluja engelant",
         'subtitle' => "FREEZING RAIN POSSIBLE (" . number_format($temp, 1) . "°C en directe)",
         'accent' => '#c084fc'
@@ -65,14 +65,14 @@ if ($rainRate >= 25.4) {
 } elseif ($heatIndex >= 40) {
     $is_emergency = true;
     $emergency_message = [
-        'icon' => '🔥',
+        'icons' => ['🔥', '⚠️'],
         'title' => "Alerta calor extrema",
         'subtitle' => "DANGER! EXTREME HEAT (" . number_format($heatIndex, 1) . "°C)",
         'accent' => '#f87171'
     ];
 }
 
-// Llista de missatges i Easter Eggs de la consola Davis (cadascun amb EXACTAMENT 1 emoji)
+// Llista de missatges i Easter Eggs de la consola Davis
 $all_messages = [];
 
 if ($is_emergency && $emergency_message) {
@@ -80,35 +80,35 @@ if ($is_emergency && $emergency_message) {
 } else {
     // 1. Pronòstic baromètric oficial
     $all_messages[] = [
-        'icon' => '📡',
+        'icons' => ['📡'],
         'title' => "Pronòstic de l'estació",
         'subtitle' => $davisForecast,
         'accent' => '#38bdf8'
     ];
     // 2. Easter Egg: It's raining cats and dogs
     $all_messages[] = [
-        'icon' => '🐱',
+        'icons' => ['🐱', '🐶'],
         'title' => "Missatge Davis • Cats & Dogs",
         'subtitle' => "It's raining cats and dogs: plou a bots i barrals si supera 25.4 mm/h (actual: " . number_format($rainRate, 1) . " mm/h)",
         'accent' => '#38bdf8'
     ];
     // 3. Easter Egg: Hold on to your hat
     $all_messages[] = [
-        'icon' => '🎩',
+        'icons' => ['🎩', '💨'],
         'title' => "Missatge Davis • Hold on to your hat",
         'subtitle' => "Hold on to your hat!: aguanta't el barret si el vent supera 45 km/h (ràfega màx avui: " . number_format($windGust, 0) . " km/h)",
         'accent' => '#fbbf24'
     ];
     // 4. Easter Egg: Good kite flying weather
     $all_messages[] = [
-        'icon' => '🪁',
+        'icons' => ['🪁', '💨'],
         'title' => "Missatge Davis • Kite flying",
         'subtitle' => "Good kite flying weather: condicions per volar estels amb vent sostingut 15-26 km/h (actual: " . number_format($windSpeed, 0) . " km/h)",
         'accent' => '#34d399'
     ];
     // 5. Easter Egg: Freezing rain warning
     $all_messages[] = [
-        'icon' => '❄️',
+        'icons' => ['❄️', '⚠️'],
         'title' => "Missatge Davis • Freezing rain",
         'subtitle' => "Freezing rain warning: avís de pluja engelant si la temp <= 0.5°C (temp actual: " . number_format($temp, 1) . "°C)",
         'accent' => '#c084fc'
@@ -152,10 +152,12 @@ $first = $all_messages[0];
     <span>Consola Davis &bull; Ticker</span>
     <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('d/m H:i'); ?></span>
 </div>
-<div class="davis-ticker-box" style="padding: 6px 8px; display: flex; align-items: center; justify-content: space-between; height: 80px; box-sizing: border-box;" title="<?php echo htmlspecialchars($first['title'] . ': ' . $first['subtitle']); ?>">
-    <!-- Icona amb EXACTAMENT 1 emoji per estat -->
-    <div id="davis_top_icon_box" style="width: 48px; height: 50px; background: rgba(15, 23, 42, 0.85); border: 1px solid <?php echo $first['accent']; ?>60; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; box-shadow: inset 0 1px 4px rgba(0,0,0,0.5), 0 0 8px <?php echo $first['accent']; ?>25; transition: all 0.4s ease;">
-        <span id="davis_top_icon"><?php echo $first['icon']; ?></span>
+<div class="davis-ticker-box" style="padding: 4px 8px; display: flex; align-items: center; justify-content: space-between; height: 82px; box-sizing: border-box;" title="<?php echo htmlspecialchars($first['title'] . ': ' . $first['subtitle']); ?>">
+    <!-- Quadre d'icona més alt perquè càpiguen còmodament els dos emojis -->
+    <div id="davis_top_icon_box" style="width: 46px; height: 68px; background: rgba(15, 23, 42, 0.85); border: 1px solid <?php echo $first['accent']; ?>60; border-radius: 7px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; flex-shrink: 0; box-shadow: inset 0 1px 4px rgba(0,0,0,0.5), 0 0 8px <?php echo $first['accent']; ?>25; transition: all 0.4s ease;">
+        <?php foreach ($first['icons'] as $ic): ?>
+            <span style="font-size: <?php echo count($first['icons']) > 1 ? '19px' : '24px'; ?>; line-height: 1;"><?php echo $ic; ?></span>
+        <?php endforeach; ?>
     </div>
 
     <!-- Informació neta de la consola Davis -->
@@ -181,7 +183,6 @@ $first = $all_messages[0];
     
     // Manté l'índex entre recàrregues AJAX d'updater.php
     var idx = (window._davisTickerIdx !== undefined) ? window._davisTickerIdx : 0;
-    var iconEl = document.getElementById('davis_top_icon');
     var titleEl = document.getElementById('davis_top_title');
     var dotEl = document.getElementById('davis_top_dot');
     var trackEl = document.getElementById('davis_top_track');
@@ -191,15 +192,20 @@ $first = $all_messages[0];
     function setItem(i) {
         var msg = messages[i];
         if (!msg) return;
-        if (iconEl) iconEl.textContent = msg.icon;
+        if (boxEl && msg.icons) {
+            var iconHtml = '';
+            var sz = msg.icons.length > 1 ? '19px' : '24px';
+            for (var j = 0; j < msg.icons.length; j++) {
+                iconHtml += '<span style="font-size: ' + sz + '; line-height: 1;">' + msg.icons[j] + '</span>';
+            }
+            boxEl.innerHTML = iconHtml;
+            boxEl.style.borderColor = msg.accent + '60';
+            boxEl.style.boxShadow = 'inset 0 1px 4px rgba(0,0,0,0.5), 0 0 8px ' + msg.accent + '25';
+        }
         if (titleEl) titleEl.textContent = msg.title;
         if (dotEl) {
             dotEl.style.background = msg.accent;
             dotEl.style.boxShadow = '0 0 5px ' + msg.accent;
-        }
-        if (boxEl) {
-            boxEl.style.borderColor = msg.accent + '60';
-            boxEl.style.boxShadow = 'inset 0 1px 4px rgba(0,0,0,0.5), 0 0 8px ' + msg.accent + '25';
         }
         if (trackEl) {
             trackEl.style.color = msg.accent;

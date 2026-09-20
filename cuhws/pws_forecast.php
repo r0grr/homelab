@@ -48,13 +48,13 @@ if (file_exists($rt_file)) {
         $f_rfall = isset($rt_json['rfall']) ? floatval($rt_json['rfall']) : 0.0;
         
         if ($f_rrate >= 25.4) {
-            $cmx_status_text = "🐱 Plou a bots i barrals! (IT'S RAINING CATS AND DOGS - " . number_format($f_rrate, 1) . " mm/h)";
+            $cmx_status_text = "🐱🐶 Plou a bots i barrals! (IT'S RAINING CATS AND DOGS - " . number_format($f_rrate, 1) . " mm/h)";
         } elseif ($f_wgust >= 45 || $f_wspeed >= 35) {
-            $cmx_status_text = "🎩 Aguanta't el barret! (HOLD ON TO YOUR HAT - Ràfega " . number_format($f_wgust, 0) . " km/h)";
+            $cmx_status_text = "🎩💨 Aguanta't el barret! (HOLD ON TO YOUR HAT - Ràfega " . number_format($f_wgust, 0) . " km/h)";
         } elseif ($f_wspeed >= 15 && $f_wspeed <= 26 && $f_rrate == 0 && $f_rfall == 0) {
             $cmx_status_text = "🪁 Temps per volar estels (GOOD KITE FLYING WEATHER - " . number_format($f_wspeed, 0) . " km/h)";
         } elseif ($f_temp <= 0.5 && ($f_rrate > 0 || $f_rfall > 0)) {
-            $cmx_status_text = "❄️ Risc de pluja engelant (FREEZING RAIN POSSIBLE - " . number_format($f_temp, 1) . "°C)";
+            $cmx_status_text = "❄️⚠️ Risc de pluja engelant (FREEZING RAIN POSSIBLE - " . number_format($f_temp, 1) . "°C)";
         } elseif (!empty($rt_json['forecast'])) {
             $cmx_status_text = trim(html_entity_decode($rt_json['forecast'], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
         }
