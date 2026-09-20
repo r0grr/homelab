@@ -168,7 +168,7 @@ include('../common.php');
 
     </script>
     
-<link rel="stylesheet" href="weather34chartstyle.css?ver=3.0">
+<link rel="stylesheet" href="weather34chartstyle.css?ver=<?php echo filemtime(__DIR__ . "/weather34chartstyle.css"); ?>">
 </head>
 <body>
 <div class="weather34darkbrowser" url="<?php echo $stationlocation ;?> <?php echo $lang['Temperature'] ;?> - <?php echo $lang['Dewpoint'] ;?> (<?php echo $tempunit ;?>) <?php echo $lang['Today'];?>"></div>

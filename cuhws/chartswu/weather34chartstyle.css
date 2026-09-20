@@ -134,7 +134,7 @@ a:hover {
 }
 
 .chartContainer {
-    height: 500px;
+    height: 440px;
     width: 100% !important;
     max-width: 820px;
     min-width: 100%;
@@ -153,7 +153,7 @@ a:hover {
     gap: 8px;
     width: 100%;
     max-width: 780px;
-    margin: 4px auto 0 auto;
+    margin: 4px auto 4px auto;
     padding: 3px 10px;
     background: rgba(30, 34, 40, 0.95);
     border: 1px solid rgba(80, 85, 95, 0.4);
@@ -270,7 +270,7 @@ a:hover {
 
 @media screen and (max-width: 768px) {
     .chartContainer {
-        height: 375px;
+        height: 385px;
         min-width: 620px; /* Spacious width on mobile so data points and hour labels do not crowd */
     }
     .weather34darkbrowser[url]:after {

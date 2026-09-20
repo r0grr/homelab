@@ -12,7 +12,7 @@ $dateStr = date('d/m/Y');
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <title>Gràfic Radiació Solar i Índex UV - MeteoSallent</title>
-    <link rel="stylesheet" href="weather34chartstyle.css?v=2">
+    <link rel="stylesheet" href="weather34chartstyle.css?ver=<?php echo filemtime(__DIR__ . "/weather34chartstyle.css"); ?>">
     <script src="../js/jquery.js"></script>
     <script src="canvasJs.js"></script>
     <script src="moments.js"></script>

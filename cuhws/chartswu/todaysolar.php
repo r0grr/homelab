@@ -149,7 +149,7 @@ echo '
 
     </script>
     
-<link rel="stylesheet" href="weather34chartstyle.css?ver=3.0">
+<link rel="stylesheet" href="weather34chartstyle.css?ver=<?php echo filemtime(__DIR__ . "/weather34chartstyle.css"); ?>">
 </head>
 <body>
 <div class="weather34darkbrowser" url="<?php echo $stationlocation;?> <?php echo $lang['Solarradiation'] ;?> (w/m2)  <?php echo $lang['Today'];?>"></div>

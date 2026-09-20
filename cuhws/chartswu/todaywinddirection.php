@@ -154,7 +154,7 @@
 
     </script>
     
-<link rel="stylesheet" href="weather34chartstyle.css?ver=3.0">
+<link rel="stylesheet" href="weather34chartstyle.css?ver=<?php echo filemtime(__DIR__ . "/weather34chartstyle.css"); ?>">
 </head>
 <body>
 <div class="weather34darkbrowser" url="<?php echo $stationlocation;?> Wind-Gusts Recorded (<?php echo 'Wind Direction °' ;?>) <?php echo $lang['Today'];?>"></div>

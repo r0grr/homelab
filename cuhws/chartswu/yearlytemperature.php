@@ -174,7 +174,7 @@
     </script>
     
 </head>
- <link rel="stylesheet" href="weather34chartstyle.css?ver=3.0">
+ <link rel="stylesheet" href="weather34chartstyle.css?ver=<?php echo filemtime(__DIR__ . "/weather34chartstyle.css"); ?>">
 <body>
 <div class="weather34darkbrowser" url="<?php echo $stationlocation ;?> <?php echo $lang['Temperature'] ;?>  (<?php echo $tempunit ;?>) <?php echo $selectedYear ;?>"></div>
 <?php include_once("chart_nav.php"); render_chart_nav("temperature", "yearly", $selectedYear); ?>
