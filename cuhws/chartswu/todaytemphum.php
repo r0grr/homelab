@@ -22,7 +22,6 @@ $dateStr = date('d/m/Y');
 <div style="display:flex; justify-content:center; gap:8px; margin:4px auto; max-width:820px; padding:0 8px; flex-wrap:wrap;">
     <a href="todaytemphum.php" class="chart-nav-btn active">Temperatura + Humitat + Rosada</a>
     <a href="todaytemperature.php" class="chart-nav-btn">Temperatura + Rosada (Històric)</a>
-    <a href="humidity.php" class="chart-nav-btn">Només Humitat</a>
 </div>
 
 <div class="chart-scroll-wrapper" id="chartScrollWrapper">
