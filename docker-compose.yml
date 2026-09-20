@@ -92,6 +92,7 @@ services:
       - /opt/servidor/scripts/solaredge_bot/memoria.json:/app/memoria.json
     depends_on:
       - mosquitto
+      - cumulusmx
     networks:
       - homelab-net
 
@@ -113,6 +114,8 @@ services:
     volumes:
       - /opt/servidor/scripts/solaredge_dashboard/src:/app/src
       - /opt/servidor/scripts/solaredge_dashboard/vite.config.ts:/app/vite.config.ts
+    depends_on:
+      - weather34
     networks:
       - homelab-net
 
@@ -169,6 +172,8 @@ services:
       - /opt/servidor/cuhws/custom-php.ini:/usr/local/etc/php/conf.d/custom.ini:ro
       - /opt/servidor/cuhws/apache-security.conf:/etc/apache2/conf-available/security.conf:ro
       - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - cumulusmx
     networks:
       - homelab-net
 
