@@ -35,14 +35,16 @@ $cloudbase_m = isset($weather["cloudbase"]) && floatval($weather["cloudbase"]) >
 ?>
 <div class="PWS_module_title">
     <span>Estat del Cel</span>
-    <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('H:i'); ?></span>
+    <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('d/m H:i'); ?></span>
 </div>
-<div style="height: 180px; padding: 16px 14px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-around; align-items: center; text-align: center;">
-    <div style="display: flex; align-items: center; justify-content: center; gap: 16px;">
-        <img src="<?php echo $icon_path; ?>" width="76" height="54" alt="<?php echo htmlspecialchars($title); ?>" style="vertical-align: middle; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));">
-        <div style="text-align: left; line-height: 1.4;">
+<div style="height: 180px; padding: 14px 12px; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-around; align-items: center; text-align: center;">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 14px; width: 100%;">
+        <div style="display: flex; align-items: center; justify-content: center; width: 68px; height: 54px; flex-shrink: 0;">
+            <img src="<?php echo $icon_path; ?>" style="max-width: 68px; max-height: 54px; object-fit: contain; vertical-align: middle; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));" alt="<?php echo htmlspecialchars($title); ?>">
+        </div>
+        <div style="text-align: left; line-height: 1.35;">
             <b style="color: #f7fafc; font-size: 16px; letter-spacing: 0.3px;"><?php echo $title; ?></b><br>
-            <span style="font-size: 13px; color: #a0aec0;"><?php echo $subtitle; ?></span>
+            <span style="font-size: 12.5px; color: #a0aec0;"><?php echo $subtitle; ?></span>
         </div>
     </div>
     <div style="width: 100%; display: flex; justify-content: space-around; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 10px 4px; margin-top: 8px;">

@@ -5,21 +5,21 @@ include_once('common.php');
 <div class="PWS_module_title">
     <span>Compte Enrere Estacions de l'Any</span>
 </div>
-<div style="height: 180px; padding: 18px 24px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-around; text-align: center;">
+<div style="height: 180px; padding: 14px 10px; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; text-align: center; gap: 8px;">
     <!-- Autumn -->
-    <div style="flex: 1; padding: 0 16px; border-right: 1px solid rgba(255,255,255,0.1);">
-        <div style="color: #ff8841; font-weight: 700; font-size: 14.5px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">🍂 Inici Tardor</div>
-        <div style="font-size: 12.5px; color: #a0aec0; margin: 6px 0 10px; white-space: nowrap;">23 Set 2026 &bull; 02:05 h</div>
-        <div id="pws_tardor_timer" style="color: #2ecc71; font-weight: 800; font-size: 18px; font-family: 'Courier New', monospace; background: rgba(0,0,0,0.35); padding: 7px 12px; border-radius: 6px; border: 1px solid rgba(46,204,113,0.35); display: inline-block; white-space: nowrap; letter-spacing: 0.5px;">
+    <div style="flex: 1; min-width: 0; padding: 0 6px; border-right: 1px solid rgba(255,255,255,0.1);">
+        <div style="color: #ff8841; font-weight: 700; font-size: 13.5px; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🍂 Inici Tardor</div>
+        <div style="font-size: 12px; color: #a0aec0; margin: 5px 0 8px; white-space: nowrap;">23 Set 2026 &bull; 02:05 h</div>
+        <div id="pws_tardor_timer" style="color: #2ecc71; font-weight: 800; font-size: 16px; font-family: 'Courier New', Courier, monospace; background: rgba(0,0,0,0.35); padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(46,204,113,0.35); display: inline-block; white-space: nowrap; letter-spacing: 0.3px; max-width: 100%; box-sizing: border-box;">
             --d --h --m
         </div>
     </div>
 
     <!-- Winter -->
-    <div style="flex: 1; padding: 0 16px;">
-        <div style="color: #01a4b4; font-weight: 700; font-size: 14.5px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">❄️ Inici Hivern</div>
-        <div style="font-size: 12.5px; color: #a0aec0; margin: 6px 0 10px; white-space: nowrap;">21 Des 2026 &bull; 21:50 h</div>
-        <div id="pws_hivern_timer" style="color: #57FAF9; font-weight: 800; font-size: 18px; font-family: 'Courier New', monospace; background: rgba(0,0,0,0.35); padding: 7px 12px; border-radius: 6px; border: 1px solid rgba(87,250,249,0.35); display: inline-block; white-space: nowrap; letter-spacing: 0.5px;">
+    <div style="flex: 1; min-width: 0; padding: 0 6px;">
+        <div style="color: #01a4b4; font-weight: 700; font-size: 13.5px; text-transform: uppercase; letter-spacing: 0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">❄️ Inici Hivern</div>
+        <div style="font-size: 12px; color: #a0aec0; margin: 5px 0 8px; white-space: nowrap;">21 Des 2026 &bull; 21:50 h</div>
+        <div id="pws_hivern_timer" style="color: #57FAF9; font-weight: 800; font-size: 16px; font-family: 'Courier New', Courier, monospace; background: rgba(0,0,0,0.35); padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(87,250,249,0.35); display: inline-block; white-space: nowrap; letter-spacing: 0.3px; max-width: 100%; box-sizing: border-box;">
             --d --h --m
         </div>
     </div>

@@ -14011,7 +14011,13 @@ header.top-navbar {
     }
 
     .top-navbar-left {
-        gap: 6px !important;
+        gap: 4px !important;
+    }
+    .top-navbar-left .nav-link-btn {
+        margin-right: 4px !important;
+        font-size: 11.5px !important;
+        gap: 3px !important;
+        padding: 2px 4px !important;
     }
 
     .top-navbar-mobile-sub {

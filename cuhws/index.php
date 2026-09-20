@@ -36,13 +36,14 @@ date_default_timezone_set($TZ);
       </a>
       <a class="nav-link-btn" href="https://sqv.tempscat.com" target="_blank" title="Estació Meteorològica Sant Quirze del Vallès">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-        <span class="desktop-only">Sant Quirze</span>
+        <span>Sant Quirze</span>
       </a>
     </div>
 
     <div class="navbar-brand-block">
       <div class="navbar-brand">
-        MeteoSallent
+        <img src="img/meteosallent_logo.svg" width="30" height="26" alt="MeteoSallent" style="vertical-align: middle; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.6)); flex-shrink: 0;">
+        <span>MeteoSallent</span>
       </div>
       <div class="navbar-brand-sub desktop-only">
         Davis Vantage Pro2 Plus (UV-Solar) &bull; 336m. snm. &bull; E08650 SALLENT (El Bages) CAT
