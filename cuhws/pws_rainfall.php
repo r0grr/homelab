@@ -50,6 +50,44 @@ if (empty($max_rain_time)) {
         }
     }
 }
+// Càlcul de nivell de precipitació (0 a 5 rectangles blaus segons plogui més o menys)
+$rain_level = 0;
+if ($rain_today > 0 || $rain_rate > 0) {
+    $rain_level = 1;
+    if ($rain_today >= 2.0 || $rain_rate >= 2.0) {
+        $rain_level = 2;
+    }
+    if ($rain_today >= 10.0 || $rain_rate >= 10.0) {
+        $rain_level = 3;
+    }
+    if ($rain_today >= 25.0 || $rain_rate >= 25.0) {
+        $rain_level = 4;
+    }
+    if ($rain_today >= 50.0 || $rain_rate >= 50.0) {
+        $rain_level = 5;
+    }
+}
+
+// Estils dels 5 rectangles blaus (de baix cap a dalt: 1 a 5)
+$blue_fill = '#0284c7';
+$blue_border = '#38bdf8';
+$empty_fill = 'rgba(30, 41, 59, 0.45)';
+$empty_border = 'rgba(255, 255, 255, 0.08)';
+
+$bg1 = ($rain_level >= 1) ? $blue_fill : $empty_fill;
+$bdr1 = ($rain_level >= 1) ? $blue_border : $empty_border;
+
+$bg2 = ($rain_level >= 2) ? $blue_fill : $empty_fill;
+$bdr2 = ($rain_level >= 2) ? $blue_border : $empty_border;
+
+$bg3 = ($rain_level >= 3) ? $blue_fill : $empty_fill;
+$bdr3 = ($rain_level >= 3) ? $blue_border : $empty_border;
+
+$bg4 = ($rain_level >= 4) ? $blue_fill : $empty_fill;
+$bdr4 = ($rain_level >= 4) ? $blue_border : $empty_border;
+
+$bg5 = ($rain_level >= 5) ? $blue_fill : $empty_fill;
+$bdr5 = ($rain_level >= 5) ? $blue_border : $empty_border;
 ?>
 <div class="PWS_module_title">
     <span>Precipitació - mm</span>
@@ -63,26 +101,40 @@ if (empty($max_rain_time)) {
         <div class="PWS_div_left" style="border-right-color: #01a4b4;">Ahir<br><b><?php echo number_format($rain_yesterday, 1); ?> mm</b></div>
     </div>
 
-    <!-- Middle counter -->
+    <!-- Middle counter amb 5 rectangles blaus que s'omplen gradualment -->
     <div class="PWS_middle">
-        <div style="margin-top: 18px;">
-            <div style="width: 112px; height: 86px; margin: 0 auto; background: rgba(0, 0, 0, 0.4); border: 2px solid #01a4b4; border-radius: 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.6);">
-                <span style="font-size: 30px; font-weight: 800; color: #01a4b4; font-family: 'Courier New', monospace;"><?php echo number_format($rain_today, 1); ?></span>
-                <span style="font-size: 12px; color: #a0aec0; text-transform: uppercase;">mm avui</span>
+        <div style="position: relative; width: 118px; height: 116px; margin: 0 auto; display: flex; flex-direction: column; justify-content: space-between; padding: 4px; box-sizing: border-box; background: rgba(15, 23, 42, 0.55); border: 1.5px solid rgba(56, 189, 248, 0.35); border-radius: 8px;">
+            <!-- 5 rectangles de baix cap a dalt (Rectangle 5 a dalt, Rectangle 1 a baix) -->
+            <div title="Nivell 5: Precipitació torrencial (≥ 50 mm)" style="height: 18px; border-radius: 4px; background: <?php echo $bg5; ?>; border: 1px solid <?php echo $bdr5; ?>; box-sizing: border-box; transition: all 0.3s;"></div>
+            <div title="Nivell 4: Precipitació abundant (≥ 25 mm)" style="height: 18px; border-radius: 4px; background: <?php echo $bg4; ?>; border: 1px solid <?php echo $bdr4; ?>; box-sizing: border-box; transition: all 0.3s;"></div>
+            <div title="Nivell 3: Precipitació moderada (≥ 10 mm)" style="height: 18px; border-radius: 4px; background: <?php echo $bg3; ?>; border: 1px solid <?php echo $bdr3; ?>; box-sizing: border-box; transition: all 0.3s;"></div>
+            <div title="Nivell 2: Precipitació feble (≥ 2 mm)" style="height: 18px; border-radius: 4px; background: <?php echo $bg2; ?>; border: 1px solid <?php echo $bdr2; ?>; box-sizing: border-box; transition: all 0.3s;"></div>
+            <div title="Nivell 1: Precipitació molt feble (> 0 mm)" style="height: 18px; border-radius: 4px; background: <?php echo $bg1; ?>; border: 1px solid <?php echo $bdr1; ?>; box-sizing: border-box; transition: all 0.3s;"></div>
+
+            <!-- Placa central amb el valor numèric de pluja -->
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90px; padding: 4px 0; background: rgba(15, 23, 42, 0.84); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); border: 1.5px solid rgba(56, 189, 248, 0.5); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.65); pointer-events: none;">
+                <span style="font-size: 24px; font-weight: 800; color: #38bdf8; line-height: 1.05; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;">
+                    <?php echo number_format($rain_today, 1); ?>
+                </span>
+                <span style="font-size: 10px; font-weight: 700; color: #cbd5e1; text-transform: uppercase; margin-top: 1px; letter-spacing: 0.5px;">
+                    mm avui
+                </span>
             </div>
-            <div style="font-size: 12px; color: #cbd5e0; margin-top: 8px;">
-                <?php 
-                if ($rain_today > 0) {
-                    if (!empty($max_rain_time)) {
-                        echo '<span style="color:#01a4b4; font-weight: 600;">Hora màx: ' . $max_rain_time . ' h</span>';
-                    } else {
-                        echo '<span style="color:#01a4b4; font-weight: 600;">' . number_format($rain_today, 1) . ' mm acumulats</span>';
-                    }
+        </div>
+        <div style="text-align: center; margin-top: 5px; font-size: 11.5px; font-weight: 700;">
+            <?php 
+            if ($rain_rate > 0) {
+                echo '<span style="color:#38bdf8;">Plou: ' . number_format($rain_rate, 1) . ' mm/h</span>';
+            } elseif ($rain_today > 0) {
+                if (!empty($max_rain_time)) {
+                    echo '<span style="color:#01a4b4;">Hora màx: ' . $max_rain_time . ' h</span>';
                 } else {
-                    echo '<span style="color:#a0aec0;">Sense pluja avui</span>';
+                    echo '<span style="color:#01a4b4;">' . number_format($rain_today, 1) . ' mm acumulats</span>';
                 }
-                ?>
-            </div>
+            } else {
+                echo '<span style="color:#a0aec0;">Sense pluja avui</span>';
+            }
+            ?>
         </div>
     </div>
 
