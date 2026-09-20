@@ -34,37 +34,52 @@ if (empty($davisForecast)) {
     $davisForecast = "Temps estable amb pocs canvis de temperatura.";
 }
 
-// Comprovació d'alertes meteorològiques actives en directe
-$is_emergency = false;
-$emergency_message = null;
+// Comprovació estricta de les condicions reals que activen els missatges/Easter Eggs a la consola Davis física
+$active_messages = [];
 
+// 1. Plou a bots i barrals (> 25.4 mm/h = 1 in/h)
 if ($rainRate >= 25.4) {
-    $is_emergency = true;
-    $emergency_message = [
+    $active_messages[] = [
         'icons' => ['🐱', '🐶'],
         'title' => 'Plou a bots i barrals!',
         'subtitle' => "IT'S RAINING CATS AND DOGS! (" . number_format($rainRate, 1) . " mm/h en directe)",
         'accent' => '#38bdf8'
     ];
-} elseif ($windGust >= 45 || $windSpeed >= 35) {
-    $is_emergency = true;
-    $emergency_message = [
+}
+
+// 2. Aguanta't el barret (ratxa >= 45 km/h o vent sostingut >= 35 km/h)
+if ($windGust >= 45 || $windSpeed >= 35) {
+    $active_messages[] = [
         'icons' => ['🎩', '💨'],
         'title' => "Aguanta't el barret!",
         'subtitle' => "HOLD ON TO YOUR HAT! (Ràfega " . number_format($windGust, 0) . " km/h en directe)",
         'accent' => '#fbbf24'
     ];
-} elseif ($temp <= 0.5 && ($rainRate > 0 || $rainToday > 0)) {
-    $is_emergency = true;
-    $emergency_message = [
+}
+
+// 3. Temps per volar estels (vent sostingut entre 15 i 26 km/h i sense pluja)
+if ($windSpeed >= 15 && $windSpeed <= 26 && $rainRate == 0 && $rainToday == 0) {
+    $active_messages[] = [
+        'icons' => ['🪁', '💨'],
+        'title' => "Temps per volar estels",
+        'subtitle' => "GOOD KITE FLYING WEATHER (Vent sostingut: " . number_format($windSpeed, 0) . " km/h)",
+        'accent' => '#34d399'
+    ];
+}
+
+// 4. Risc de pluja engelant (temperatura <= 0.5°C i precipitació)
+if ($temp <= 0.5 && ($rainRate > 0 || $rainToday > 0)) {
+    $active_messages[] = [
         'icons' => ['❄️', '⚠️'],
         'title' => "Risc de pluja engelant",
         'subtitle' => "FREEZING RAIN POSSIBLE (" . number_format($temp, 1) . "°C en directe)",
         'accent' => '#c084fc'
     ];
-} elseif ($heatIndex >= 40) {
-    $is_emergency = true;
-    $emergency_message = [
+}
+
+// 5. Alerta per calor extrema (índex de calor >= 40°C)
+if ($heatIndex >= 40) {
+    $active_messages[] = [
         'icons' => ['🔥', '⚠️'],
         'title' => "Alerta calor extrema",
         'subtitle' => "DANGER! EXTREME HEAT (" . number_format($heatIndex, 1) . "°C)",
@@ -72,46 +87,20 @@ if ($rainRate >= 25.4) {
     ];
 }
 
-// Llista controlada: el pronòstic oficial és l'eix central permanent, alternat pausadament amb un Easter Egg
+// Llista de missatges final:
+// El pronòstic oficial sempre hi és present com a eix base.
+// Si hi ha Easter Eggs realment activats per les dades meteorològiques del moment, s'afegeixen a la rotació.
+// Si NO hi ha cap condició activa, NOMÉS es mostra el pronòstic de l'estació de manera estable (sense rotar estats falsos).
 $all_messages = [];
+$all_messages[] = [
+    'icons' => ['📡'],
+    'title' => "Pronòstic de l'estació",
+    'subtitle' => $davisForecast,
+    'accent' => '#38bdf8'
+];
 
-if ($is_emergency && $emergency_message) {
-    $all_messages[] = $emergency_message;
-} else {
-    $msg_forecast = [
-        'icons' => ['📡'],
-        'title' => "Pronòstic de l'estació",
-        'subtitle' => $davisForecast,
-        'accent' => '#38bdf8'
-    ];
-    $all_messages[] = $msg_forecast;
-    $all_messages[] = [
-        'icons' => ['🐱', '🐶'],
-        'title' => "Missatge Davis • Cats & Dogs",
-        'subtitle' => "It's raining cats and dogs: plou a bots i barrals si supera 25.4 mm/h (actual: " . number_format($rainRate, 1) . " mm/h)",
-        'accent' => '#38bdf8'
-    ];
-    $all_messages[] = $msg_forecast;
-    $all_messages[] = [
-        'icons' => ['🎩', '💨'],
-        'title' => "Missatge Davis • Hold on to your hat",
-        'subtitle' => "Hold on to your hat!: aguanta't el barret si el vent supera 45 km/h (ràfega màx avui: " . number_format($windGust, 0) . " km/h)",
-        'accent' => '#fbbf24'
-    ];
-    $all_messages[] = $msg_forecast;
-    $all_messages[] = [
-        'icons' => ['🪁', '💨'],
-        'title' => "Missatge Davis • Kite flying",
-        'subtitle' => "Good kite flying weather: condicions per volar estels amb vent sostingut 15-26 km/h (actual: " . number_format($windSpeed, 0) . " km/h)",
-        'accent' => '#34d399'
-    ];
-    $all_messages[] = $msg_forecast;
-    $all_messages[] = [
-        'icons' => ['❄️', '⚠️'],
-        'title' => "Missatge Davis • Freezing rain",
-        'subtitle' => "Freezing rain warning: avís de pluja engelant si la temp <= 0.5°C (temp actual: " . number_format($temp, 1) . "°C)",
-        'accent' => '#c084fc'
-    ];
+foreach ($active_messages as $am) {
+    $all_messages[] = $am;
 }
 
 $first = $all_messages[0];
@@ -152,7 +141,7 @@ $first = $all_messages[0];
     <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('d/m H:i'); ?></span>
 </div>
 <div class="davis-ticker-box" style="padding: 4px 8px; display: flex; align-items: center; justify-content: space-between; height: 82px; box-sizing: border-box;" title="<?php echo htmlspecialchars($first['title'] . ': ' . $first['subtitle']); ?>">
-    <!-- Quadre d'icona més alt perquè càpiguen còmodament els dos emojis -->
+    <!-- Quadre d'icona més alt perquè càpiguen còmodament els dos emojis quan s'activen -->
     <div id="davis_top_icon_box" style="width: 46px; height: 68px; background: rgba(15, 23, 42, 0.85); border: 1px solid <?php echo $first['accent']; ?>60; border-radius: 7px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; flex-shrink: 0; box-shadow: inset 0 1px 4px rgba(0,0,0,0.5), 0 0 8px <?php echo $first['accent']; ?>25; transition: all 0.4s ease;">
         <?php foreach ($first['icons'] as $ic): ?>
             <span style="font-size: <?php echo count($first['icons']) > 1 ? '19px' : '24px'; ?>; line-height: 1;"><?php echo $ic; ?></span>
@@ -174,17 +163,15 @@ $first = $all_messages[0];
 </div>
 <script>
 (function() {
-    // 1. Neteja absoluta de temporitzadors previs per evitar acumulació per AJAX d'updater.php
+    // 1. Neteja de temporitzadors previs per evitar acumulacions d'updater.php
     if (window._davisTickerTimer) {
         clearInterval(window._davisTickerTimer);
         window._davisTickerTimer = null;
     }
     
     var messages = <?php echo json_encode($all_messages); ?>;
+    // Si només hi ha el pronòstic oficial (situació normal sense alertes/easter eggs actius), no cal rotar
     if (!messages || messages.length <= 1) return;
-    
-    var isEmergency = <?php echo $is_emergency ? 'true' : 'false'; ?>;
-    if (isEmergency) return;
     
     if (window._davisTickerIdx === undefined) {
         window._davisTickerIdx = 0;
@@ -219,11 +206,10 @@ $first = $all_messages[0];
         }
     }
     
-    // Sincronitza l'índex
+    // Si hi ha un estat actiu en temps real, alternem amb el pronòstic de manera pausada
     window._davisTickerIdx = window._davisTickerIdx % messages.length;
     setItem(window._davisTickerIdx);
     
-    // Rotació pausada i controlada: 1 canvi cada 18 segons, alternant amb el pronòstic
     window._davisTickerTimer = setInterval(function() {
         window._davisTickerIdx = (window._davisTickerIdx + 1) % messages.length;
         setItem(window._davisTickerIdx);
