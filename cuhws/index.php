@@ -42,8 +42,8 @@ date_default_timezone_set($TZ);
 
     <div class="navbar-brand-block">
       <div class="navbar-brand">
-        <img src="img/meteosallent_logo.svg" width="30" height="26" alt="MeteoSallent" style="vertical-align: middle; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.6)); flex-shrink: 0;">
-        <span>MeteoSallent</span>
+        <img src="img/meteosallent_logo.png" class="meteosallent-logo" width="34" height="30" alt="MeteoSallent">
+        <span class="navbar-brand-title">MeteoSallent</span>
       </div>
       <div class="navbar-brand-sub desktop-only">
         Davis Vantage Pro2 Plus (UV-Solar) &bull; 336m. snm. &bull; E08650 SALLENT (El Bages) CAT
