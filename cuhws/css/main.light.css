@@ -885,9 +885,9 @@ supmb {
     border: 1px solid rgba(80, 85, 95, 0.7);
     padding: 0 !important;
     width: 96vw !important;
-    max-width: 782px !important;
-    height: 490px !important;
-    max-height: 94vh !important;
+    max-width: 840px !important;
+    height: 680px !important;
+    max-height: 90vh !important;
     overflow: auto !important;
     -webkit-overflow-scrolling: touch;
     border-radius: 8px;
@@ -926,7 +926,7 @@ supmb {
     .featherlight-iframe .featherlight-content {
         width: 98vw !important;
         max-width: 98vw !important;
-        height: 445px !important;
+        height: 540px !important;
         max-height: 94vh !important;
         overflow: auto !important;
         -webkit-overflow-scrolling: touch;

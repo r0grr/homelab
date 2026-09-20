@@ -78,14 +78,16 @@ $dailyQuery = "
         Humidity,
         RainRate,
         RainToday,
-        SolarRad
+        SolarRad,
+        UV,
+        SolarMax
     FROM RecentData
     WHERE Timestamp >= '{$todayYmd} 00:00:00'
     ORDER BY Timestamp ASC
 ";
 
 $res = $db->query($dailyQuery);
-$dailyHeader = "Time,TemperatureC,DewpointC,PressurehPa,WindDirection,WindDirectionDegrees,WindSpeedKMH,WindSpeedGustKMH,Humidity,HourlyPrecipMM,Conditions,Clouds,dailyrainMM,SolarRadiationWatts/m^2,SoftwareType,DateUTC<br>";
+$dailyHeader = "Time,TemperatureC,DewpointC,PressurehPa,WindDirection,WindDirectionDegrees,WindSpeedKMH,WindSpeedGustKMH,Humidity,HourlyPrecipMM,Conditions,Clouds,dailyrainMM,SolarRadiationWatts/m^2,SoftwareType,DateUTC,UV,SolarMax<br>";
 
 // Row 0 empty, row 1 header
 $dailyContent = "\n" . $dailyHeader . "\n";
@@ -113,9 +115,11 @@ while ($row = $res->fetchArray(SQLITE3_ASSOC)) {
     $rainRate = isset($row['RainRate']) ? sprintf("%.1f", $row['RainRate']) : '0.0';
     $rainToday = isset($row['RainToday']) ? sprintf("%.1f", $row['RainToday']) : '0.0';
     $solar = isset($row['SolarRad']) ? sprintf("%.1f", $row['SolarRad']) : '0.0';
+    $uv = isset($row['UV']) ? sprintf("%.1f", $row['UV']) : '0.0';
+    $solarMax = isset($row['SolarMax']) ? sprintf("%.1f", $row['SolarMax']) : '0.0';
     $utc = gmdate('Y-m-d H:i:s', $dt);
 
-    $dailyContent .= "{$ts},{$temp},{$dew},{$press},{$windCard},{$windDeg},{$windSpd},{$windGust},{$hum},{$rainRate},,,{$rainToday},{$solar},CumulusMX,{$utc},\n";
+    $dailyContent .= "{$ts},{$temp},{$dew},{$press},{$windCard},{$windDeg},{$windSpd},{$windGust},{$hum},{$rainRate},,,{$rainToday},{$solar},CumulusMX,{$utc},{$uv},{$solarMax},\n";
 }
 
 $dailyTargetFile = "{$chartDir}/{$todayDmY}.txt";
