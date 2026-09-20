@@ -2,7 +2,7 @@
 include('../common.php');
 include('../settings.php');
 include('conversion.php');
-include('chart_nav.php');
+include_once('chart_nav.php');
 
 $weatherfile = date('dmY');
 $dateStr = date('d/m/Y');
@@ -11,28 +11,28 @@ $dateStr = date('d/m/Y');
 <html>
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <title>Gràfic Combinat Temperatura i Humitat - MeteoSallent</title>
+    <title><?php echo $stationlocation;?> - Evolució de Temperatura, Humitat i Rosada</title>
     <link rel="stylesheet" href="weather34chartstyle.css?ver=<?php echo filemtime(__DIR__ . "/weather34chartstyle.css"); ?>">
     <script src="../js/jquery.js"></script>
     <script src="canvasJs.js"></script>
-    <script src="moments.js"></script>
 </head>
 <body>
-<div class="weather34darkbrowser" url="Temperatura i Humitat &bull; <?php echo $dateStr; ?>"></div>
+<div class="weather34darkbrowser" url="<?php echo $stationlocation;?> &bull; Temperatura, Humitat i Punt de Rosada &bull; <?php echo $dateStr; ?>"></div>
 
-<div style="display:flex; justify-content:center; gap:8px; margin:4px auto; max-width:820px; padding:0 8px;">
+<div style="display:flex; justify-content:center; gap:8px; margin:4px auto; max-width:820px; padding:0 8px; flex-wrap:wrap;">
     <a href="todaytemphum.php" class="chart-nav-btn active">Temperatura + Humitat + Rosada</a>
+    <a href="todaytemperature.php" class="chart-nav-btn">Temperatura + Rosada (Històric)</a>
     <a href="humidity.php" class="chart-nav-btn">Només Humitat</a>
 </div>
 
-<div class="chart-scroll-wrapper">
+<div class="chart-scroll-wrapper" id="chartScrollWrapper">
     <div id="chartContainer" class="chartContainer"></div>
 </div>
 
 <?php render_chart_scroller(); ?>
 
 <script type="text/javascript">
-.ready(function () {
+$(document).ready(function () {
     var dataTemp = [];
     var dataDew = [];
     var dataHum = [];
@@ -48,17 +48,17 @@ $dateStr = date('d/m/Y');
     });
 
     function processData(allText) {
-        var lines = allText.split('
-');
-        if (lines.length > 2) {
-            for (var i = 2; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
-                var row = lines[i].split(',');
-                if (row.length > 8) {
-                    var tVal = parseFloat(row[1]);
-                    var dewVal = parseFloat(row[2]);
-                    var hVal = parseFloat(row[8]);
-                    var timeLabel = moment(row[0]).format('HH:mm');
+        var allLinesArray = allText.split('\n');
+        if (allLinesArray.length > 2) {
+            for (var i = 2; i < allLinesArray.length; i++) {
+                var line = allLinesArray[i].trim();
+                if (!line) continue;
+                var rowData = line.split(',');
+                if (rowData.length > 8) {
+                    var tVal = parseFloat(rowData[1]);
+                    var dewVal = parseFloat(rowData[2]);
+                    var hVal = parseFloat(rowData[8]);
+                    var timeLabel = (typeof moment !== 'undefined') ? moment(rowData[0]).format('HH:mm') : (rowData[0].length >= 16 ? rowData[0].substr(11, 5) : rowData[0]);
 
                     if (!isNaN(tVal) && tVal > -50) {
                         dataTemp.push({ label: timeLabel, y: tVal });
@@ -111,28 +111,28 @@ $dateStr = date('d/m/Y');
                 interval: 12
             },
             axisY: {
-                title: "Temperatura / Rosada (&deg;C)",
-                titleFontColor: "#ff8841",
+                title: "Temperatura i Rosada (<?php echo $tempunit; ?>)",
+                titleFontColor: "#ff9350",
                 titleFontSize: 12,
                 titleFontWeight: "bold",
-                labelFontColor: "#ff8841",
+                labelFontColor: "#ff9350",
                 labelFontSize: 11,
                 gridColor: "rgba(255, 255, 255, 0.06)",
-                suffix: "&deg;C",
-                lineColor: "#ff8841",
-                tickColor: "#ff8841"
+                suffix: " <?php echo $tempunit; ?>",
+                lineColor: "#ff9350",
+                tickColor: "#ff9350"
             },
             axisY2: {
                 title: "Humitat Relativa (%)",
-                titleFontColor: "#01a4b4",
+                titleFontColor: "#00d2d3",
                 titleFontSize: 12,
                 titleFontWeight: "bold",
-                labelFontColor: "#01a4b4",
+                labelFontColor: "#00d2d3",
                 labelFontSize: 11,
                 gridColor: "transparent",
                 suffix: "%",
-                lineColor: "#01a4b4",
-                tickColor: "#01a4b4",
+                lineColor: "#00d2d3",
+                tickColor: "#00d2d3",
                 maximum: 100,
                 minimum: 0
             },
@@ -142,10 +142,10 @@ $dateStr = date('d/m/Y');
                     name: "Temperatura",
                     showInLegend: true,
                     axisYType: "primary",
-                    color: "#ff8841",
+                    color: "#ff9350",
                     lineThickness: 2.5,
                     markerSize: 0,
-                    yValueFormatString: "#0.0 &deg;C",
+                    yValueFormatString: "#0.0 <?php echo $tempunit; ?>",
                     dataPoints: dataTemp
                 },
                 {
@@ -153,11 +153,11 @@ $dateStr = date('d/m/Y');
                     name: "Punt de Rosada",
                     showInLegend: true,
                     axisYType: "primary",
-                    color: "#48FB9E",
-                    lineThickness: 1.5,
+                    color: "#34d399",
+                    lineThickness: 1.8,
                     lineDashType: "dash",
                     markerSize: 0,
-                    yValueFormatString: "#0.0 &deg;C",
+                    yValueFormatString: "#0.0 <?php echo $tempunit; ?>",
                     dataPoints: dataDew
                 },
                 {
@@ -165,11 +165,11 @@ $dateStr = date('d/m/Y');
                     name: "Humitat Relativa",
                     showInLegend: true,
                     axisYType: "secondary",
-                    color: "rgba(1, 164, 180, 0.35)",
-                    lineColor: "#01a4b4",
+                    color: "rgba(0, 210, 211, 0.28)",
+                    lineColor: "#00d2d3",
                     lineThickness: 2,
                     markerSize: 0,
-                    yValueFormatString: "#0%",
+                    yValueFormatString: "#0'%'",
                     dataPoints: dataHum
                 }
             ]

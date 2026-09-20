@@ -172,6 +172,10 @@ include('../common.php');
 </head>
 <body>
 <div class="weather34darkbrowser" url="<?php echo $stationlocation ;?> <?php echo $lang['Temperature'] ;?> - <?php echo $lang['Dewpoint'] ;?> (<?php echo $tempunit ;?>) <?php echo $lang['Today'];?>"></div>
+<div style="display:flex; justify-content:center; gap:8px; margin:4px auto; max-width:820px; padding:0 8px; flex-wrap:wrap;">
+    <a href="todaytemperature.php" class="chart-nav-btn active">Temperatura + Rosada</a>
+    <a href="todaytemphum.php" class="chart-nav-btn">Temperatura + Humitat + Rosada</a>
+</div>
 <?php include_once("chart_nav.php"); render_chart_nav("temperature", "today"); ?>
 <div class="chart-scroll-wrapper" id="chartScrollWrapper">
 <div id="chartContainer" class="chartContainer"></div>
