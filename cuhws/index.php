@@ -86,7 +86,7 @@ date_default_timezone_set($TZ);
       <div class="PWS_weather_item_s"><div id="pws_topextra"><?php include('pws_topextra.php'); ?></div></div>
       <div class="PWS_weather_item_s"><div id="pws_topwind"><?php include('pws_topwind.php'); ?></div></div>
       <div class="PWS_weather_item_s"><div id="pws_toprain"><?php include('pws_toprain.php'); ?></div></div>
-      <div class="PWS_weather_item_s"><div id="pws_topeq"><?php include('pws_topeq.php'); ?></div></div>
+      <div class="PWS_weather_item_s"><div id="pws_topticker"><?php include('pws_topticker.php'); ?></div></div>
     </div>
   </div>
 </div>
