@@ -35,13 +35,29 @@ if (file_exists($ds_file)) {
     }
 }
 
-// Carreguem el valor en temps real de Cumulus MX (canvas_status: pronòstic / estat de la Davis)
+// Carreguem el valor en temps real de Cumulus MX (pronòstic i alertes de la consola Davis)
 $cmx_status_text = '';
 $rt_file = __DIR__ . '/cumulusdata/realtimegauges.txt';
 if (file_exists($rt_file)) {
     $rt_json = json_decode(@file_get_contents($rt_file), true);
-    if (!empty($rt_json['forecast'])) {
-        $cmx_status_text = trim(html_entity_decode($rt_json['forecast'], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    if ($rt_json) {
+        $f_rrate = isset($rt_json['rrate']) ? floatval($rt_json['rrate']) : 0.0;
+        $f_wgust = isset($rt_json['wgust']) ? floatval($rt_json['wgust']) : 0.0;
+        $f_wspeed = isset($rt_json['wspeed']) ? floatval($rt_json['wspeed']) : 0.0;
+        $f_temp = isset($rt_json['temp']) ? floatval($rt_json['temp']) : 20.0;
+        $f_rfall = isset($rt_json['rfall']) ? floatval($rt_json['rfall']) : 0.0;
+        
+        if ($f_rrate >= 25.4) {
+            $cmx_status_text = "🐱🐶 Plou a bots i barrals! (IT'S RAINING CATS AND DOGS - " . number_format($f_rrate, 1) . " mm/h)";
+        } elseif ($f_wgust >= 45 || $f_wspeed >= 35) {
+            $cmx_status_text = "🎩💨 Aguanta't el barret! (HOLD ON TO YOUR HAT - Ràfega " . number_format($f_wgust, 0) . " km/h)";
+        } elseif ($f_wspeed >= 15 && $f_wspeed <= 26 && $f_rrate == 0 && $f_rfall == 0) {
+            $cmx_status_text = "🪁 Temps per volar estels (GOOD KITE FLYING WEATHER - " . number_format($f_wspeed, 0) . " km/h)";
+        } elseif ($f_temp <= 0.5 && ($f_rrate > 0 || $f_rfall > 0)) {
+            $cmx_status_text = "❄️⚠️ Risc de pluja engelant (FREEZING RAIN POSSIBLE - " . number_format($f_temp, 1) . "°C)";
+        } elseif (!empty($rt_json['forecast'])) {
+            $cmx_status_text = trim(html_entity_decode($rt_json['forecast'], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+        }
     }
 }
 if (empty($cmx_status_text)) {
