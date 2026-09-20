@@ -195,7 +195,7 @@ include('../common.php');
 </head>
 <body>
 <div class="weather34darkbrowser" url="<?php echo $stationlocation ;?> <?php echo $lang['Temperature'] ;?> (<?php echo $tempunit ;?>) - <?php echo $lang['Humidity'] ;?> (<?php echo "%" ;?>) <?php echo $lang['Today'];?>"></div>
-<div style="display:flex; justify-content:center; gap:8px; margin:4px auto; max-width:820px; padding:0 8px; flex-wrap:wrap;">
+<div style="display:flex; justify-content:center; gap:6px; margin:2px auto 2px auto; max-width:820px; padding:0 6px; flex-wrap:wrap;">
     <a href="todaytemphum.php" class="chart-nav-btn">Temperatura + Humitat + Rosada</a>
     <a href="todaytemperature.php" class="chart-nav-btn">Temperatura + Rosada (Històric)</a>
 </div>
