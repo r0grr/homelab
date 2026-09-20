@@ -64,8 +64,11 @@ if ($res_avui) {
     if (!empty($data_avui['features'][0]['attributes'])) {
         $attrs = $data_avui['features'][0]['attributes'];
         if (isset($attrs['PERIL_M']) && is_numeric($attrs['PERIL_M'])) {
-            $nivell_avui = intval($attrs['PERIL_M']);
-            $found_data = true;
+            $val = intval($attrs['PERIL_M']);
+            if ($val >= 0 && $val <= 4) {
+                $nivell_avui = $val;
+                $found_data = true;
+            }
         }
     }
 }
@@ -78,10 +81,19 @@ if ($res_dema) {
     if (!empty($data_dema['features'][0]['attributes'])) {
         $attrs_dema = $data_dema['features'][0]['attributes'];
         if (isset($attrs_dema['PERIL_M']) && is_numeric($attrs_dema['PERIL_M'])) {
-            $nivell_dema = intval($attrs_dema['PERIL_M']);
-            $nivell_dema_text = $level_names[$nivell_dema] ?? 'Moderat';
-            $color_dema = $level_colors[$nivell_dema] ?? '#e67e22';
-            $has_dema = true;
+            $val_dema = intval($attrs_dema['PERIL_M']);
+            // El Pla Alfa només té nivells 0, 1, 2, 3 o 4 (el nivell 5 és codi d'absència de mapa o invàlid)
+            if ($val_dema >= 0 && $val_dema <= 4) {
+                $nivell_dema = $val_dema;
+                $nivell_dema_text = $level_names[$nivell_dema] ?? 'Moderat';
+                $color_dema = $level_colors[$nivell_dema] ?? '#e67e22';
+                $has_dema = true;
+            } else {
+                $has_dema = false;
+                $nivell_dema = null;
+                $nivell_dema_text = null;
+                $color_dema = null;
+            }
         }
     }
 }

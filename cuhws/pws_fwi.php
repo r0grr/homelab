@@ -3,14 +3,14 @@
 include_once(__DIR__ . '/jsondata/gencat_pla_alfa.php');
 $pla_data = get_gencat_pla_alfa();
 
-$nivell_avui = isset($pla_data['nivell_avui']) ? intval($pla_data['nivell_avui']) : 3;
-$nivell_avui_text = $pla_data['nivell_avui_text'] ?? 'Molt Alt';
-$color_avui = $pla_data['color_avui'] ?? '#e74c3c';
+$nivell_avui = (isset($pla_data['nivell_avui']) && intval($pla_data['nivell_avui']) >= 0 && intval($pla_data['nivell_avui']) <= 4) ? intval($pla_data['nivell_avui']) : 1;
+$nivell_avui_text = $pla_data['nivell_avui_text'] ?? 'Moderat';
+$color_avui = $pla_data['color_avui'] ?? '#f39c12';
 
-$has_dema = !empty($pla_data['has_dema']) && isset($pla_data['nivell_dema']);
+$has_dema = !empty($pla_data['has_dema']) && isset($pla_data['nivell_dema']) && intval($pla_data['nivell_dema']) >= 0 && intval($pla_data['nivell_dema']) <= 4;
 $nivell_dema = $has_dema ? intval($pla_data['nivell_dema']) : null;
 $nivell_dema_text = $has_dema ? ($pla_data['nivell_dema_text'] ?? '') : '';
-$color_dema = $has_dema ? ($pla_data['color_dema'] ?? '#e74c3c') : '';
+$color_dema = $has_dema ? ($pla_data['color_dema'] ?? '#94a3b8') : '';
 
 $hora = $pla_data['hora'] ?? '9:30';
 $data_pla = $pla_data['data'] ?? date('d/m/Y');
