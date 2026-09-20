@@ -69,9 +69,9 @@ if ($hum < 30) {
     $confort_color = "#3b82f6";
 }
 
-// Càlcul alçada del líquid dins la gota SVG (escala 0-100% sobre 104px d'alçada útil)
+// Càlcul alçada del líquid dins la gota SVG (escala 0-100% sobre 109px d'alçada útil)
 $clamped_hum = max(0, min(100, $hum));
-$fill_y = 114 - ($clamped_hum / 100.0 * 104.0);
+$fill_y = 115 - ($clamped_hum / 100.0 * 109.0);
 ?>
 <div class="PWS_module_title">
     <span>Humitat Relativa %</span>
@@ -80,53 +80,41 @@ $fill_y = 114 - ($clamped_hum / 100.0 * 104.0);
 <div class="PWS_body">
     <!-- Left values: 1. Màx Avui, 2. Punt de Rosada -->
     <div class="PWS_left">
-        <div class="PWS_div_left PWS_div_temp" style="border-right-color: #0284c7;" title="Humitat màxima registrada avui">
+        <div class="PWS_div_left PWS_div_temp pws_has_time" style="border-right-color: #0284c7;" title="Humitat màxima registrada avui">
             Màx Avui<br><b><?php echo $hum_max; ?>%</b>
-            <span style="display: block; font-size: 9.5px; color: #a0aec0; margin-top: 1px; font-weight: 500;"><?php echo $hum_max_time; ?> h</span>
+            <span class="pws_val_time"><?php echo $hum_max_time; ?> h</span>
         </div>
         <div class="PWS_div_left PWS_div_temp" style="border-right-color: #48FB9E;" title="Punt de Rosada (Dew Point)">
             Punt Rosada<br><b><?php echo number_format($dew, 1); ?>&deg;C</b>
         </div>
     </div>
 
-    <!-- Middle dynamic water droplet -->
+    <!-- Middle dynamic water droplet (Flat 2D, wide shape) -->
     <div class="PWS_middle">
         <div style="position: relative; width: 124px; height: 124px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-            <svg width="100" height="114" viewBox="0 0 100 125" xmlns="http://www.w3.org/2000/svg">
+            <svg width="114" height="120" viewBox="0 0 114 120" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <clipPath id="pws_droplet_clip">
-                        <path d="M 50 10 C 50 10, 18 55, 18 82 A 32 32 0 0 0 82 82 C 82 55, 50 10, 50 10 Z" />
+                        <path d="M 57 6 C 57 6, 10 42, 10 68 A 47 47 0 0 0 104 68 C 104 42, 57 6, 57 6 Z" />
                     </clipPath>
-                    <linearGradient id="pws_water_gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stop-color="#38bdf8" />
-                        <stop offset="50%" stop-color="#0284c7" />
-                        <stop offset="100%" stop-color="#0369a1" />
-                    </linearGradient>
-                    <filter id="pws_water_glow" x="-20%" y="-20%" width="140%" height="140%">
-                        <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="rgba(2, 132, 199, 0.45)" />
-                    </filter>
                 </defs>
 
-                <!-- Fons buit de la gota -->
-                <path d="M 50 10 C 50 10, 18 55, 18 82 A 32 32 0 0 0 82 82 C 82 55, 50 10, 50 10 Z" 
-                      fill="rgba(14, 25, 42, 0.75)" 
-                      stroke="rgba(255, 255, 255, 0.16)" 
-                      stroke-width="1.8" 
-                      filter="url(#pws_water_glow)" />
+                <!-- Fons buit de la gota (pla 2D) -->
+                <path d="M 57 6 C 57 6, 10 42, 10 68 A 47 47 0 0 0 104 68 C 104 42, 57 6, 57 6 Z" 
+                      fill="rgba(30, 41, 59, 0.75)" />
 
-                <!-- Aigua que s'omple dinàmicament segons la humitat -->
+                <!-- Aigua que s'omple dinàmicament (color pla 2D) -->
                 <g clip-path="url(#pws_droplet_clip)">
-                    <rect x="0" y="<?php echo sprintf('%.1f', $fill_y); ?>" width="100" height="130" fill="url(#pws_water_gradient)" />
-                    <!-- Línia superficial d'onatge subtil -->
-                    <ellipse cx="50" cy="<?php echo sprintf('%.1f', $fill_y); ?>" rx="34" ry="4" fill="rgba(255, 255, 255, 0.4)" />
+                    <rect x="0" y="<?php echo sprintf('%.1f', $fill_y); ?>" width="114" height="120" fill="#0284c7" />
                 </g>
 
-                <!-- Reflex de llum a la gota -->
-                <path d="M 32 60 C 26 68, 25 76, 25 82" stroke="rgba(255, 255, 255, 0.35)" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                <!-- Contorn exterior fi i nítid de la gota -->
+                <path d="M 57 6 C 57 6, 10 42, 10 68 A 47 47 0 0 0 104 68 C 104 42, 57 6, 57 6 Z" 
+                      fill="none" stroke="rgba(56, 189, 248, 0.6)" stroke-width="2" />
 
-                <!-- Text amb el percentatge central -->
-                <text x="50" y="77" text-anchor="middle" font-size="22" font-weight="800" fill="#ffffff" style="font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.85));">
-                    <?php echo $hum; ?><tspan font-size="14" font-weight="600">%</tspan>
+                <!-- Text pla amb percentatge central -->
+                <text x="57" y="74" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff" style="font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;">
+                    <?php echo $hum; ?><tspan font-size="15" font-weight="600">%</tspan>
                 </text>
             </svg>
         </div>
@@ -137,9 +125,9 @@ $fill_y = 114 - ($clamped_hum / 100.0 * 104.0);
 
     <!-- Right values: 1. Mín Avui, 2. Bulb Humit -->
     <div class="PWS_right">
-        <div class="PWS_div_right PWS_div_temp" style="border-left-color: #f59e0b;" title="Humitat mínima registrada avui">
+        <div class="PWS_div_right PWS_div_temp pws_has_time" style="border-left-color: #f59e0b;" title="Humitat mínima registrada avui">
             Mín Avui<br><b><?php echo $hum_min; ?>%</b>
-            <span style="display: block; font-size: 9.5px; color: #a0aec0; margin-top: 1px; font-weight: 500;"><?php echo $hum_min_time; ?> h</span>
+            <span class="pws_val_time"><?php echo $hum_min_time; ?> h</span>
         </div>
         <div class="PWS_div_right PWS_div_temp" style="border-left-color: #00d2d3;" title="Temperatura de Bulb Humit">
             Bulb Humit<br><b><?php echo number_format($wetbulb, 1); ?>&deg;C</b>

@@ -22,9 +22,9 @@ $baromintime = isset($weather["thb0seapressmintime"]) ? $weather["thb0seapressmi
 <div class="PWS_body">
     <!-- Left values -->
     <div class="PWS_left">
-        <div class="PWS_div_left" style="border-right-color: #d65b4a;" title="<?php echo $baromaxtime ? "Hora pressió màxima: $baromaxtime" : "Pressió màxima d'avui"; ?>">
+        <div class="PWS_div_left pws_has_time" style="border-right-color: #d65b4a;" title="<?php echo $baromaxtime ? "Hora pressió màxima: $baromaxtime" : "Pressió màxima d'avui"; ?>">
             Màx Avui<br><b><?php echo number_format($baro_max, 1); ?> hPa</b>
-            <span style="display: block; font-size: 9.5px; color: #a0aec0; margin-top: 1px; font-weight: 500;"><?php echo $baromaxtime ? $baromaxtime . ' h' : '--:--'; ?></span>
+            <span class="pws_val_time"><?php echo $baromaxtime ? $baromaxtime . ' h' : '--:--'; ?></span>
         </div>
         <div class="PWS_div_left" style="border-right-color: #9aba2f;">Tendència<br><b><?php echo ($baro_trend >= 0 ? '+' : '') . number_format($baro_trend, 1); ?> hPa</b></div>
     </div>
@@ -67,9 +67,9 @@ $baromintime = isset($weather["thb0seapressmintime"]) ? $weather["thb0seapressmi
 
     <!-- Right values -->
     <div class="PWS_right">
-        <div class="PWS_div_right" style="border-left-color: #01a4b4;" title="<?php echo $baromintime ? "Hora pressió mínima: $baromintime" : "Pressió mínima d'avui"; ?>">
+        <div class="PWS_div_right pws_has_time" style="border-left-color: #01a4b4;" title="<?php echo $baromintime ? "Hora pressió mínima: $baromintime" : "Pressió mínima d'avui"; ?>">
             Mín Avui<br><b><?php echo number_format($baro_min, 1); ?> hPa</b>
-            <span style="display: block; font-size: 9.5px; color: #a0aec0; margin-top: 1px; font-weight: 500;"><?php echo $baromintime ? $baromintime . ' h' : '--:--'; ?></span>
+            <span class="pws_val_time"><?php echo $baromintime ? $baromintime . ' h' : '--:--'; ?></span>
         </div>
         <div class="PWS_div_right" style="border-left-color: <?php echo $trend_color; ?>;"><?php echo $trend_txt; ?><br><b><?php echo abs($baro_trend); ?> hPa/h</b></div>
     </div>

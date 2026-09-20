@@ -88,13 +88,13 @@ $dir_avg_txt = degToCompass($wind_dir_avg);
 
     <!-- Right values: 1. Vent Màx, 2. Ràfega Màx, 3. Recorregut -->
     <div class="PWS_right">
-        <div class="PWS_div_right" style="border-left-color: #9aba2f;" title="<?php echo $maxwindtime ? "Hora vent màxim: $maxwindtime" : "Vent màxim sostingut d'avui"; ?>">
+        <div class="PWS_div_right pws_has_time" style="border-left-color: #9aba2f;" title="<?php echo $maxwindtime ? "Hora vent màxim: $maxwindtime" : "Vent màxim sostingut d'avui"; ?>">
             Vent (Màx)<br><b><?php echo number_format($wind_max_speed, 1); ?> km/h</b>
-            <span style="display: block; font-size: 9.5px; color: #a0aec0; margin-top: 1px; font-weight: 500;"><?php echo $maxwindtime ? $maxwindtime . ' h' : '--:--'; ?></span>
+            <span class="pws_val_time"><?php echo $maxwindtime ? $maxwindtime . ' h' : '--:--'; ?></span>
         </div>
-        <div class="PWS_div_right" style="border-left-color: #ff8841;" title="<?php echo $maxgusttime ? "Hora ràfega màxima: $maxgusttime" : "Ràfega màxima d'avui"; ?>">
+        <div class="PWS_div_right pws_has_time" style="border-left-color: #ff8841;" title="<?php echo $maxgusttime ? "Hora ràfega màxima: $maxgusttime" : "Ràfega màxima d'avui"; ?>">
             Ràfega (Màx)<br><b><?php echo number_format($wind_max_gust, 1); ?> km/h</b>
-            <span style="display: block; font-size: 9.5px; color: #a0aec0; margin-top: 1px; font-weight: 500;"><?php echo $maxgusttime ? $maxgusttime . ' h' : '--:--'; ?></span>
+            <span class="pws_val_time"><?php echo $maxgusttime ? $maxgusttime . ' h' : '--:--'; ?></span>
         </div>
         <div class="PWS_div_right" style="border-left-color: #01a4b4;">Recorregut<br><b><?php echo number_format($wind_run, 1); ?> km</b></div>
     </div>

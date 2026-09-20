@@ -89,9 +89,9 @@ if (empty($max_rain_time)) {
     <!-- Right values -->
     <div class="PWS_right">
         <div class="PWS_div_right" style="border-left-color: #718096;">Darrera Hora<br><b><?php echo number_format($rain_lasthour, 1); ?> mm</b></div>
-        <div class="PWS_div_right" style="border-left-color: #718096;" title="Intensitat màxima de pluja avui">
+        <div class="PWS_div_right pws_has_time" style="border-left-color: #718096;" title="Intensitat màxima de pluja avui">
             Intensitat<br><b><?php echo number_format($rain_rate, 1); ?> mm/h</b>
-            <span style="display: block; font-size: 9.5px; color: #a0aec0; margin-top: 1px; font-weight: 500;"><?php echo !empty($max_rain_time) ? $max_rain_time . ' h' : '--:--'; ?></span>
+            <span class="pws_val_time"><?php echo !empty($max_rain_time) ? $max_rain_time . ' h' : '--:--'; ?></span>
         </div>
         <div class="PWS_div_right" style="border-left-color: #718096;">Darrera Pluja<br><b><?php echo $last_rain_display; ?></b></div>
     </div>
