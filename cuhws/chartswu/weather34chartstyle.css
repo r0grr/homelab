@@ -136,7 +136,7 @@ a:hover {
 }
 
 .chartContainer {
-    height: 415px;
+    height: 405px;
     width: 100% !important;
     max-width: 820px;
     min-width: 100%;
@@ -273,7 +273,7 @@ a:hover {
 
 @media screen and (max-width: 768px) {
     .chartContainer {
-        height: 350px;
+        height: 340px;
         min-width: 620px; /* Spacious width on mobile so data points and hour labels do not crowd */
     }
     .weather34darkbrowser[url]:after {
