@@ -687,7 +687,7 @@ supunit {
     padding: 0 !important;
     width: 96vw !important;
     max-width: 820px !important;
-    height: 580px !important;
+    height: 566px !important;
     max-height: 92vh !important;
     overflow: auto !important;
     -webkit-overflow-scrolling: touch;
@@ -735,7 +735,7 @@ supunit {
     .featherlight-iframe .featherlight-content {
         width: 98vw !important;
         max-width: 98vw !important;
-        height: 525px !important;
+        height: 515px !important;
         max-height: 94vh !important;
         overflow: auto !important;
         -webkit-overflow-scrolling: touch;
