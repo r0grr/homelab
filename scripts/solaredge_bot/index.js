@@ -598,6 +598,16 @@ async function updateLiveDashboard(forceNew = false) {
       opts.message_thread_id = TELEGRAM_TOPIC_ID;
     }
 
+    if (forceNew && state.liveMessageId) {
+      try {
+        await bot.deleteMessage(CHAT_ID, state.liveMessageId);
+        console.log(`🧹 [LIVE] Panell viu #${state.liveMessageId} esborrat per forceNew.`);
+      } catch (delErr) {
+        // Ignorar si ja no existia
+      }
+      state.liveMessageId = null;
+    }
+
     if (state.liveMessageId && !forceNew) {
       try {
         await bot.editMessageText(text, {
@@ -613,11 +623,26 @@ async function updateLiveDashboard(forceNew = false) {
         if (desc.includes('message is not modified')) {
           return;
         }
-        console.log(`⚠️ [LIVE] Error editant missatge #${state.liveMessageId}: ${desc}. Enviant-ne un de nou...`);
+
+        // Si és un error temporal de xarxa o timeout de Telegram (EFATAL, fetch failed, timeout, 429...),
+        // el missatge original encara existeix a Telegram. NO n'hem d'enviar cap de nou per evitar duplicats!
+        const isNetworkError = /EFATAL|fetch failed|ETIMEDOUT|ECONNRESET|ECONNREFUSED|ENOTFOUND|socket hang up|timeout|network|429/i.test(desc);
+        if (isNetworkError) {
+          console.warn(`⚠️ [LIVE] Error temporal de xarxa en editar el missatge #${state.liveMessageId} (${desc}). Es manté el panell i es reintentarà al proper cicle.`);
+          return;
+        }
+
+        console.log(`⚠️ [LIVE] Error de Telegram editant missatge #${state.liveMessageId}: ${desc}. Netejant l'antic i creant-ne un de nou...`);
+        try {
+          await bot.deleteMessage(CHAT_ID, state.liveMessageId);
+        } catch (delErr) {
+          // Ignorar si ja no existia
+        }
+        state.liveMessageId = null;
       }
     }
 
-    // Si no hi havia missatge previ o ha fallat l'edició, enviem-ne un de nou
+    // Si no hi havia missatge previ o Telegram ha confirmat que no es pot editar, enviem-ne un de nou
     const sent = await bot.sendMessage(CHAT_ID, text, opts);
     state.liveMessageId = sent.message_id;
     saveMemory();
