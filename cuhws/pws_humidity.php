@@ -99,6 +99,10 @@ $fill_y = 113 - ($clamped_hum / 100.0 * 107.0);
                     <clipPath id="pws_droplet_clip">
                         <path d="M 57 6 C 57 6, 12 42, 12 68 A 45 45 0 0 0 102 68 C 102 42, 57 6, 57 6 Z" />
                     </clipPath>
+                    <!-- Ombra molt suau i dissimulada per millorar la llegibilitat sobre fons clars/líquid -->
+                    <filter id="pws_text_subtle_shadow" x="-30%" y="-30%" width="160%" height="160%">
+                        <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#000000" flood-opacity="0.45" />
+                    </filter>
                 </defs>
 
                 <!-- Fons buit de la gota (pla 2D) -->
@@ -114,8 +118,8 @@ $fill_y = 113 - ($clamped_hum / 100.0 * 107.0);
                 <path d="M 57 6 C 57 6, 12 42, 12 68 A 45 45 0 0 0 102 68 C 102 42, 57 6, 57 6 Z" 
                       fill="none" stroke="rgba(56, 189, 248, 0.6)" stroke-width="2" />
 
-                <!-- Text pla amb percentatge central -->
-                <text x="57" y="74" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff" style="font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;">
+                <!-- Text pla amb percentatge central i ombra molt suau i dissimulada -->
+                <text x="57" y="74" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff" filter="url(#pws_text_subtle_shadow)" style="font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);">
                     <?php echo $hum; ?><tspan font-size="15" font-weight="600">%</tspan>
                 </text>
             </svg>
