@@ -25,7 +25,25 @@ else if(isSet($_COOKIE['lang']))
 }
 else
 {
-	$selected_lang_code = !empty($defaultlanguage) ? $defaultlanguage : 'cat';
+	// Detecció automàtica segons el navegador del visitant si no s'ha triat idioma manualment
+	$detected_lang = !empty($defaultlanguage) ? $defaultlanguage : 'cat';
+	if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+		$accept_langs = strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+		// Per a bots i Googlebot, sempre mantenim 'cat' per garantir el SEO en català i evitar "Traducir esta página"
+		$is_bot = isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/bot|crawl|slurp|spider|mediapartners/i', $_SERVER['HTTP_USER_AGENT']);
+		if (!$is_bot) {
+			if (strpos($accept_langs, 'ca') === 0 || strpos($accept_langs, 'ca-') !== false || strpos($accept_langs, 'val') !== false) {
+				$detected_lang = 'cat';
+			} elseif (strpos($accept_langs, 'es') === 0 || strpos($accept_langs, 'es-') !== false) {
+				$detected_lang = 'sp';
+			} elseif (strpos($accept_langs, 'fr') === 0 || strpos($accept_langs, 'fr-') !== false) {
+				$detected_lang = 'fr';
+			} elseif (strpos($accept_langs, 'en') === 0 || strpos($accept_langs, 'en-') !== false) {
+				$detected_lang = 'en';
+			}
+		}
+	}
+	$selected_lang_code = $detected_lang;
 }
 
 $LanguageList = array(

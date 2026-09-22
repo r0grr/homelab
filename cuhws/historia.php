@@ -72,6 +72,8 @@ if ($found_file) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial Climatològic &bull; MeteoSallent (2006-2026)</title>
+    <meta name="description" content="Informes climàtics històrics i resums mensuals i anuals de Sallent (2006-2026). Estació meteorològica MeteoSallent - TempsCat.">
+    <link rel="canonical" href="https://www.tempscat.com/historia.php">
     <link rel="stylesheet" href="css/main.dark.css">
     <style>
         body {

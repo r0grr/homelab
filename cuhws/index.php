@@ -5,14 +5,69 @@ include('livedata.php');
 include('settings1.php');
 include('common.php');
 date_default_timezone_set($TZ);
+
+$seo_titles = [
+    'cat' => 'El Temps a Sallent en directe | MeteoSallent - Estació Meteorològica Davis',
+    'sp'  => 'El Tiempo en Sallent en directo | MeteoSallent - Estación Meteorológica Davis',
+    'en'  => 'Live Weather in Sallent | MeteoSallent - Davis Weather Station',
+    'fr'  => 'Météo en direct à Sallent | MeteoSallent - Station Météorologique Davis'
+];
+$seo_descriptions = [
+    'cat' => 'Dades meteorològiques en temps real a Sallent (El Bages): temperatura, pluja, vent, pressió i humitat. Estació meteorològica Davis Vantage Pro2 Plus.',
+    'sp'  => 'Datos meteorológicos en tiempo real en Sallent (El Bages): temperatura, lluvia, viento, presión y humedad. Estación meteorológica Davis Vantage Pro2 Plus.',
+    'en'  => 'Real-time weather conditions in Sallent (Catalonia): live temperature, rainfall, wind speed, barometric pressure and humidity. Davis Vantage Pro2 Plus station.',
+    'fr'  => 'Données météorologiques en direct à Sallent (Catalogne) : température, précipitations, vent, pression et humidité. Station météo Davis Vantage Pro2 Plus.'
+];
+
+$cur_lang = $selected_lang_code ?? 'cat';
+$page_title = $seo_titles[$cur_lang] ?? $seo_titles['cat'];
+$page_description = $seo_descriptions[$cur_lang] ?? $seo_descriptions['cat'];
+$page_locale = ($cur_lang === 'sp') ? 'es_ES' : (($cur_lang === 'fr') ? 'fr_FR' : (($cur_lang === 'en') ? 'en_US' : 'ca_ES'));
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $language;?>">
 <head>
   <meta charset="utf-8">
-  <title><?php echo $stationlocation; ?> &bull; MeteoSallent Smart Weather Station</title>
-  <meta content="Estació meteorològica Davis Vantage Pro2 Plus en temps real a <?php echo $stationlocation;?>" name="description">
+  <title><?php echo $page_title; ?></title>
+  <meta name="description" content="<?php echo $page_description; ?>">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, viewport-fit=cover">
+  <link rel="canonical" href="https://www.tempscat.com/">
+
+  <!-- Open Graph / Xarxes Socials -->
+  <meta property="og:locale" content="<?php echo $page_locale; ?>">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="<?php echo $page_title; ?>">
+  <meta property="og:description" content="<?php echo $page_description; ?>">
+  <meta property="og:url" content="https://www.tempscat.com/">
+  <meta property="og:site_name" content="TempsCat - MeteoSallent">
+  <meta property="og:image" content="https://www.tempscat.com/img/meteosallent_logo.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="<?php echo $page_title; ?>">
+  <meta name="twitter:description" content="<?php echo $page_description; ?>">
+  <meta name="twitter:image" content="https://www.tempscat.com/img/meteosallent_logo.png">
+
+  <!-- Dades estructurades JSON-LD / Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Place",
+    "name": "Estació Meteorològica Sallent (MeteoSallent)",
+    "description": "Estació meteorològica en temps real a Sallent, El Bages",
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 41.818,
+      "longitude": 1.895
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Sallent",
+      "addressRegion": "Barcelona",
+      "postalCode": "08650",
+      "addressCountry": "ES"
+    }
+  }
+  </script>
+
   <link rel="icon" type="image/png" href="img/favicon-32x32.png?v=3" sizes="32x32">
   <link rel="icon" type="image/png" href="img/favicon-196x196.png?v=3" sizes="196x196">
   <link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=3">
@@ -42,8 +97,8 @@ date_default_timezone_set($TZ);
 
     <div class="navbar-brand-block">
       <div class="navbar-brand">
-        <img src="img/meteosallent_logo.png" class="meteosallent-logo" width="34" height="30" alt="MeteoSallent">
-        <span class="navbar-brand-title">MeteoSallent</span>
+        <img src="img/meteosallent_logo.png" class="meteosallent-logo" width="34" height="30" alt="MeteoSallent - Estació Meteorològica de Sallent (El Bages)">
+        <h1 class="navbar-brand-title" style="margin: 0; font-size: inherit; font-weight: inherit; display: inline;">MeteoSallent</h1>
       </div>
       <div class="navbar-brand-sub desktop-only">
         Davis Vantage Pro2 Plus (UV-Solar) &bull; 336m. snm. &bull; E08650 SALLENT (El Bages) CAT

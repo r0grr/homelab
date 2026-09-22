@@ -20,6 +20,9 @@ http://tempscat.com, http://www.tempscat.com, http://sallent.dyndns.org, tempsca
             roll_keep 5
         }
     }
+
+    # Compressió d'actius web i HTML per a màxima velocitat (Google PageSpeed / Core Web Vitals)
+    encode zstd gzip
     # Bloqueig de seguretat: fitxers de configuració i claus des d'Internet
     @blocked {
         path /easyweathersetup.php* /settings.php* /settings1.php*

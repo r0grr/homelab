@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /settings1.php
+Disallow: /settings.php
+Disallow: /easyweathersetup.php
+Disallow: /cumulusmxdata/
+
+Sitemap: https://www.tempscat.com/sitemap.xml
