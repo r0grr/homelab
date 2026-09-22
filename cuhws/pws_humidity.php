@@ -49,24 +49,26 @@ if ($hum_max === null || $hum_min === null) {
 if ($hum_max === null) $hum_max = $hum;
 if ($hum_min === null) $hum_min = $hum;
 
-// Nivell de confort d'humitat
-$confort_text = "Confortable";
-$confort_color = "#01a4b4";
+// Nivell de confort d'humitat segons l'escala sol·licitada
+// 0% – 30% (Sec / Molt Sec): taronja càlid (#f97316)
+// 30% – 60% (Confort / Ideal): grocs clars (#E6EE9C) fins a 45%, verds (#4ade80) fins a 60%
+// 60% – 80% (Humit): blau clar (#38bdf8)
+// 80% – 100% (Molt Humit / Saturació): violeta intens (#8b5cf6)
 if ($hum < 30) {
-    $confort_text = "Ambient Molt Sec";
-    $confort_color = "#f59e0b";
+    $confort_text = "Sec / Molt Sec";
+    $confort_color = "#f97316";
 } elseif ($hum < 45) {
-    $confort_text = "Ambient Sec";
-    $confort_color = "#9aba2f";
-} elseif ($hum <= 65) {
-    $confort_text = "Confortable / Òptim";
-    $confort_color = "#01a4b4";
+    $confort_text = "Confort / Ideal";
+    $confort_color = "#E6EE9C"; // HEX sol·licitat per a 32% (groc clar / llima)
+} elseif ($hum <= 60) {
+    $confort_text = "Confort / Ideal";
+    $confort_color = "#4ade80"; // Tons verds de l'escala de confort
 } elseif ($hum <= 80) {
     $confort_text = "Humit";
-    $confort_color = "#0284c7";
+    $confort_color = "#38bdf8"; // Blau clar
 } else {
-    $confort_text = "Molt Humit / Xafogós";
-    $confort_color = "#3b82f6";
+    $confort_text = "Molt Humit / Saturació";
+    $confort_color = "#8b5cf6"; // Violeta / blau fosc
 }
 
 // Càlcul alçada del líquid dins la gota SVG (escala 0-100% sobre 107px d'alçada útil)
