@@ -24,11 +24,11 @@ The system is orchestrated via Docker Compose in an isolated bridge network (`ho
     <img src="docs/architecture.svg" alt="Homelab Architecture Diagram" width="100%" />
   </a>
   <br>
-  <em>🔍 <b>Tip:</b> Fes clic sobre la imatge per obrir el diagrama a pantalla completa en format vectorial escalable (SVG).</em>
+  <em>🔍 <b>Tip:</b> Click on the image to open the full-size diagram in scalable vector format (SVG).</em>
 </p>
 
 <details>
-<summary><b>📐 Veure el codi font Mermaid del diagrama</b></summary>
+<summary><b>📐 View Mermaid diagram source code</b></summary>
 
 ```mermaid
 flowchart TB
