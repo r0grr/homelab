@@ -19,6 +19,17 @@ An enterprise-grade, energy-optimized personal homelab architecture running on L
 
 The system is orchestrated via Docker Compose in an isolated bridge network (`homelab-net`, `172.20.0.0/16`), with strict boundary separation between public web services, private administrative endpoints, IoT broker pipes, and automated maintenance watchdogs.
 
+<p align="center">
+  <a href="docs/architecture.svg" target="_blank">
+    <img src="docs/architecture.svg" alt="Homelab Architecture Diagram" width="100%" />
+  </a>
+  <br>
+  <em>🔍 <b>Tip:</b> Fes clic sobre la imatge per obrir el diagrama a pantalla completa en format vectorial escalable (SVG).</em>
+</p>
+
+<details>
+<summary><b>📐 Veure el codi font Mermaid del diagrama</b></summary>
+
 ```mermaid
 flowchart TB
     subgraph External ["🌐 Ingress & Edge Networking"]
@@ -123,6 +134,8 @@ flowchart TB
     MAINT -.->|Audit Reports| TG
     BKP --> SATA
 ```
+
+</details>
 
 ---
 
