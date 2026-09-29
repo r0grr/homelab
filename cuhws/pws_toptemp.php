@@ -67,26 +67,59 @@ $format_data_curta = function($timestamp) use ($mesos_curts) {
     return date('j', $timestamp) . ' ' . ($mesos_curts[$m] ?? date('M', $timestamp));
 };
 
-// Rècords de l'any 2026 des de year.ini
-$year_ini_file = __DIR__ . '/cumulusmxdata/year.ini';
-$year_ini = file_exists($year_ini_file) ? @parse_ini_file($year_ini_file, true) : [];
+// Rècords de l'any actual des de year.ini o informes anuals NOAA
+$max_year = null;
+$min_year = null;
+$max_year_date = '';
+$min_year_date = '';
 
-if (isset($year_ini['Temp']['High']) && is_numeric($year_ini['Temp']['High'])) {
-    $max_year = floatval($year_ini['Temp']['High']);
-    $ts_high = !empty($year_ini['Temp']['HTime']) ? strtotime($year_ini['Temp']['HTime']) : null;
-    $max_year_date = $ts_high ? $format_data_curta($ts_high) : '6 Set';
-} else {
-    $max_year = 39.2;
-    $max_year_date = '6 Set';
+$year_ini_file = __DIR__ . '/cumulusmxdata/year.ini';
+if (file_exists($year_ini_file)) {
+    $year_ini = @parse_ini_file($year_ini_file, true);
+    if (isset($year_ini['Temp']['High']) && is_numeric($year_ini['Temp']['High'])) {
+        $max_year = floatval($year_ini['Temp']['High']);
+        $ts_high = !empty($year_ini['Temp']['HTime']) ? strtotime($year_ini['Temp']['HTime']) : null;
+        $max_year_date = $ts_high ? $format_data_curta($ts_high) : '';
+    }
+    if (isset($year_ini['Temp']['Low']) && is_numeric($year_ini['Temp']['Low'])) {
+        $min_year = floatval($year_ini['Temp']['Low']);
+        $ts_low = !empty($year_ini['Temp']['LTime']) ? strtotime($year_ini['Temp']['LTime']) : null;
+        $min_year_date = $ts_low ? $format_data_curta($ts_low) : '';
+    }
 }
 
-if (isset($year_ini['Temp']['Low']) && is_numeric($year_ini['Temp']['Low'])) {
-    $min_year = floatval($year_ini['Temp']['Low']);
-    $ts_low = !empty($year_ini['Temp']['LTime']) ? strtotime($year_ini['Temp']['LTime']) : null;
-    $min_year_date = $ts_low ? $format_data_curta($ts_low) : '7 Gen';
-} else {
-    $min_year = -6.2;
-    $min_year_date = '7 Gen';
+if ($max_year === null || $min_year === null) {
+    $noaa_file = __DIR__ . '/noaa_reports/' . $any_actual . '.txt';
+    if (!file_exists($noaa_file)) {
+        $noaa_file = __DIR__ . '/noaa_reports/noaayr.txt';
+    }
+    if (file_exists($noaa_file)) {
+        $lines = file($noaa_file);
+        foreach ($lines as $line) {
+            if (preg_match("/^\s*TOT\s+([\d\.\-]+)\s+([\d\.\-]+)\s+(\d+\/\d+\/\d+)\s+([\d\.\-]+)\s+(\d+\/\d+\/\d+)/i", $line, $matches)) {
+                if ($max_year === null) {
+                    $max_year = floatval($matches[2]);
+                    $parts = explode('/', $matches[3]);
+                    $max_year_date = $parts[0] . ' ' . ($mesos_curts[intval($parts[1])] ?? '');
+                }
+                if ($min_year === null) {
+                    $min_year = floatval($matches[4]);
+                    $parts = explode('/', $matches[5]);
+                    $min_year_date = $parts[0] . ' ' . ($mesos_curts[intval($parts[1])] ?? '');
+                }
+                break;
+            }
+        }
+    }
+}
+
+if ($max_year === null) {
+    $max_year = $max_today;
+    $max_year_date = $format_data_curta(time());
+}
+if ($min_year === null) {
+    $min_year = $min_today;
+    $min_year_date = $format_data_curta(time());
 }
 
 if ($max_month > $max_year) {

@@ -51,7 +51,9 @@ if (!file_exists($metoffice_cache_file) || (time() - filemtime($metoffice_cache_
 
 if (!file_exists($metoffice_cache_file) || filesize($metoffice_cache_file) < 5000) {
     $saved_url = file_exists($metoffice_url_cache) ? trim(@file_get_contents($metoffice_url_cache)) : "";
-    $metoffice_img_url = !empty($saved_url) ? $saved_url : "https://data.consumer-digital.api.metoffice.gov.uk/v1/surface-pressure/colour/2026-09-08T1200/FSXX12T_00.gif";
+    $fallback_run = (intval(date('G')) >= 15) ? '1200' : '0000';
+    $fallback_date = (intval(date('G')) < 4) ? date('Y-m-d', strtotime('-1 day')) : date('Y-m-d');
+    $metoffice_img_url = !empty($saved_url) ? $saved_url : "https://data.consumer-digital.api.metoffice.gov.uk/v1/surface-pressure/colour/{$fallback_date}T{$fallback_run}/FSXX12T_00.gif";
 }
 ?>
 <!DOCTYPE html>

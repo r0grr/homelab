@@ -647,7 +647,7 @@ body {
             </div>
 
             <div class="sdo-img-wrapper">
-                <img id="sdoImage" src="https://sdo.gsfc.nasa.gov/assets/img/latest/latest_512_HMIIC.jpg" alt="Disc Solar NASA SDO" onerror="this.src='img/sun_placeholder.png';">
+                <img id="sdoImage" src="https://sdo.gsfc.nasa.gov/assets/img/latest/latest_512_HMIIC.jpg" alt="Disc Solar NASA SDO" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'512\' height=\'512\' viewBox=\'0 0 512 512\'><rect fill=\'%23111827\' width=\'512\' height=\'512\'/><circle cx=\'256\' cy=\'256\' r=\'140\' fill=\'%23f59e0b\' opacity=\'0.8\'/><text x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' fill=\'%23ffffff\' font-family=\'sans-serif\' font-size=\'18\'>Imatge SDO no disponible</text></svg>';">
             </div>
 
             <div class="sdo-caption" id="sdoCaption">
@@ -660,7 +660,7 @@ body {
     <div class="card">
         <div class="card-title">
             <span>Activitat Solar i Cicle 25</span>
-            <span style="font-size: 10px; color: #a855f7;">Màxim Solar 2024 - 2026</span>
+            <span style="font-size: 10px; color: #a855f7;">Cicle d'activitat de ~11 anys</span>
         </div>
 
         <div style="font-size: 11.5px; line-height: 1.6; color: #cbd5e1;">
