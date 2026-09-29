@@ -2,38 +2,120 @@
 include_once('livedata.php');
 include_once('common.php');
 
+// Funció astronòmica perpetual (Algorisme de Jean Meeus)
+// Permet calcular equinoccis i solsticis amb precisió matemàtica per a qualsevol any futur > 2035.
+function getMeeusSeasonEvent($year, $season_key) {
+    $m = ($year - 2000) / 1000.0;
+    switch($season_key) {
+        case "spring":
+            $jde = 2451623.80984 + 365242.37404 * $m + 0.05169 * pow($m, 2) - 0.00411 * pow($m, 3);
+            $ts = round(($jde - 2440587.5) * 86400);
+            return [
+                "key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera",
+                "date_str" => date("j M Y", $ts) . " &bull; " . date("H:i", $ts) . " h",
+                "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D",
+                "timer_border" => "rgba(141,252,45,0.35)", "ts" => $ts
+            ];
+        case "summer":
+            $jde = 2451716.56767 + 365241.62603 * $m + 0.00325 * pow($m, 2) + 0.00888 * pow($m, 3);
+            $ts = round(($jde - 2440587.5) * 86400);
+            return [
+                "key" => "summer", "name" => "Estiu", "title" => "☀️ Inici Estiu",
+                "date_str" => date("j M Y", $ts) . " &bull; " . date("H:i", $ts) . " h",
+                "started" => "Estiu iniciat", "color" => "#ecb454", "timer_color" => "#f6d365",
+                "timer_border" => "rgba(236,180,84,0.35)", "ts" => $ts
+            ];
+        case "autumn":
+            $jde = 2451810.21715 + 365242.01767 * $m - 0.11575 * pow($m, 2) + 0.00337 * pow($m, 3);
+            $ts = round(($jde - 2440587.5) * 86400);
+            return [
+                "key" => "autumn", "name" => "Tardor", "title" => "🍂 Inici Tardor",
+                "date_str" => date("j M Y", $ts) . " &bull; " . date("H:i", $ts) . " h",
+                "started" => "Tardor iniciada", "color" => "#ff8841", "timer_color" => "#2ecc71",
+                "timer_border" => "rgba(46,204,113,0.35)", "ts" => $ts
+            ];
+        case "winter":
+            $jde = 2451900.05952 + 365242.74049 * $m - 0.06223 * pow($m, 2) - 0.05235 * pow($m, 3);
+            $ts = round(($jde - 2440587.5) * 86400);
+            return [
+                "key" => "winter", "name" => "Hivern", "title" => "❄️ Inici Hivern",
+                "date_str" => date("j M Y", $ts) . " &bull; " . date("H:i", $ts) . " h",
+                "started" => "Hivern iniciat", "color" => "#01a4b4", "timer_color" => "#57FAF9",
+                "timer_border" => "rgba(87,250,249,0.35)", "ts" => $ts
+            ];
+    }
+}
+
 // Efemèrides oficials dels canvis d'estació a Catalunya (IGN / OAN)
 // Horaris oficials en CET (UTC+1) a l'hivern/primavera i CEST (UTC+2) a l'estiu/tardor.
 $seasons_timeline = [
     // 2026
-    ["key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera", "date_str" => "20 Mar 2026 &bull; 15:46 h", "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D", "timer_border" => "rgba(141,252,45,0.35)", "iso" => "2026-03-20T15:46:00+01:00", "ts" => strtotime("2026-03-20 15:46:00 CET")],
-    ["key" => "summer", "name" => "Estiu",     "title" => "☀️ Inici Estiu",     "date_str" => "21 Jun 2026 &bull; 09:24 h", "started" => "Estiu iniciat",      "color" => "#ecb454", "timer_color" => "#f6d365", "timer_border" => "rgba(236,180,84,0.35)", "iso" => "2026-06-21T09:24:00+02:00", "ts" => strtotime("2026-06-21 09:24:00 CEST")],
-    ["key" => "autumn", "name" => "Tardor",    "title" => "🍂 Inici Tardor",    "date_str" => "23 Set 2026 &bull; 02:05 h", "started" => "Tardor iniciada",    "color" => "#ff8841", "timer_color" => "#2ecc71", "timer_border" => "rgba(46,204,113,0.35)", "iso" => "2026-09-23T02:05:00+02:00", "ts" => strtotime("2026-09-23 02:05:00 CEST")],
-    ["key" => "winter", "name" => "Hivern",    "title" => "❄️ Inici Hivern",    "date_str" => "21 Des 2026 &bull; 21:50 h", "started" => "Hivern iniciat",     "color" => "#01a4b4", "timer_color" => "#57FAF9", "timer_border" => "rgba(87,250,249,0.35)", "iso" => "2026-12-21T21:50:00+01:00", "ts" => strtotime("2026-12-21 21:50:00 CET")],
+    ["key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera", "date_str" => "20 Mar 2026 &bull; 15:46 h", "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D", "timer_border" => "rgba(141,252,45,0.35)", "ts" => strtotime("2026-03-20 15:46:00 CET")],
+    ["key" => "summer", "name" => "Estiu",     "title" => "☀️ Inici Estiu",     "date_str" => "21 Jun 2026 &bull; 09:24 h", "started" => "Estiu iniciat",      "color" => "#ecb454", "timer_color" => "#f6d365", "timer_border" => "rgba(236,180,84,0.35)", "ts" => strtotime("2026-06-21 09:24:00 CEST")],
+    ["key" => "autumn", "name" => "Tardor",    "title" => "🍂 Inici Tardor",    "date_str" => "23 Set 2026 &bull; 02:05 h", "started" => "Tardor iniciada",    "color" => "#ff8841", "timer_color" => "#2ecc71", "timer_border" => "rgba(46,204,113,0.35)", "ts" => strtotime("2026-09-23 02:05:00 CEST")],
+    ["key" => "winter", "name" => "Hivern",    "title" => "❄️ Inici Hivern",    "date_str" => "21 Des 2026 &bull; 21:50 h", "started" => "Hivern iniciat",     "color" => "#01a4b4", "timer_color" => "#57FAF9", "timer_border" => "rgba(87,250,249,0.35)", "ts" => strtotime("2026-12-21 21:50:00 CET")],
     // 2027
-    ["key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera", "date_str" => "20 Mar 2027 &bull; 21:25 h", "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D", "timer_border" => "rgba(141,252,45,0.35)", "iso" => "2027-03-20T21:25:00+01:00", "ts" => strtotime("2027-03-20 21:25:00 CET")],
-    ["key" => "summer", "name" => "Estiu",     "title" => "☀️ Inici Estiu",     "date_str" => "21 Jun 2027 &bull; 15:11 h", "started" => "Estiu iniciat",      "color" => "#ecb454", "timer_color" => "#f6d365", "timer_border" => "rgba(236,180,84,0.35)", "iso" => "2027-06-21T15:11:00+02:00", "ts" => strtotime("2027-06-21 15:11:00 CEST")],
-    ["key" => "autumn", "name" => "Tardor",    "title" => "🍂 Inici Tardor",    "date_str" => "23 Set 2027 &bull; 08:02 h", "started" => "Tardor iniciada",    "color" => "#ff8841", "timer_color" => "#2ecc71", "timer_border" => "rgba(46,204,113,0.35)", "iso" => "2027-09-23T08:02:00+02:00", "ts" => strtotime("2027-09-23 08:02:00 CEST")],
-    ["key" => "winter", "name" => "Hivern",    "title" => "❄️ Inici Hivern",    "date_str" => "22 Des 2027 &bull; 03:42 h", "started" => "Hivern iniciat",     "color" => "#01a4b4", "timer_color" => "#57FAF9", "timer_border" => "rgba(87,250,249,0.35)", "iso" => "2027-12-22T03:42:00+01:00", "ts" => strtotime("2027-12-22 03:42:00 CET")],
+    ["key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera", "date_str" => "20 Mar 2027 &bull; 21:25 h", "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D", "timer_border" => "rgba(141,252,45,0.35)", "ts" => strtotime("2027-03-20 21:25:00 CET")],
+    ["key" => "summer", "name" => "Estiu",     "title" => "☀️ Inici Estiu",     "date_str" => "21 Jun 2027 &bull; 15:11 h", "started" => "Estiu iniciat",      "color" => "#ecb454", "timer_color" => "#f6d365", "timer_border" => "rgba(236,180,84,0.35)", "ts" => strtotime("2027-06-21 15:11:00 CEST")],
+    ["key" => "autumn", "name" => "Tardor",    "title" => "🍂 Inici Tardor",    "date_str" => "23 Set 2027 &bull; 08:02 h", "started" => "Tardor iniciada",    "color" => "#ff8841", "timer_color" => "#2ecc71", "timer_border" => "rgba(46,204,113,0.35)", "ts" => strtotime("2027-09-23 08:02:00 CEST")],
+    ["key" => "winter", "name" => "Hivern",    "title" => "❄️ Inici Hivern",    "date_str" => "22 Des 2027 &bull; 03:42 h", "started" => "Hivern iniciat",     "color" => "#01a4b4", "timer_color" => "#57FAF9", "timer_border" => "rgba(87,250,249,0.35)", "ts" => strtotime("2027-12-22 03:42:00 CET")],
     // 2028
-    ["key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera", "date_str" => "20 Mar 2028 &bull; 03:17 h", "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D", "timer_border" => "rgba(141,252,45,0.35)", "iso" => "2028-03-20T03:17:00+01:00", "ts" => strtotime("2028-03-20 03:17:00 CET")],
-    ["key" => "summer", "name" => "Estiu",     "title" => "☀️ Inici Estiu",     "date_str" => "20 Jun 2028 &bull; 21:02 h", "started" => "Estiu iniciat",      "color" => "#ecb454", "timer_color" => "#f6d365", "timer_border" => "rgba(236,180,84,0.35)", "iso" => "2028-06-20T21:02:00+02:00", "ts" => strtotime("2028-06-20 21:02:00 CEST")],
-    ["key" => "autumn", "name" => "Tardor",    "title" => "🍂 Inici Tardor",    "date_str" => "22 Set 2028 &bull; 13:45 h", "started" => "Tardor iniciada",    "color" => "#ff8841", "timer_color" => "#2ecc71", "timer_border" => "rgba(46,204,113,0.35)", "iso" => "2028-09-22T13:45:00+02:00", "ts" => strtotime("2028-09-22 13:45:00 CEST")],
-    ["key" => "winter", "name" => "Hivern",    "title" => "❄️ Inici Hivern",    "date_str" => "21 Des 2028 &bull; 09:20 h", "started" => "Hivern iniciat",     "color" => "#01a4b4", "timer_color" => "#57FAF9", "timer_border" => "rgba(87,250,249,0.35)", "iso" => "2028-12-21T09:20:00+01:00", "ts" => strtotime("2028-12-21 09:20:00 CET")],
+    ["key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera", "date_str" => "20 Mar 2028 &bull; 03:17 h", "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D", "timer_border" => "rgba(141,252,45,0.35)", "ts" => strtotime("2028-03-20 03:17:00 CET")],
+    ["key" => "summer", "name" => "Estiu",     "title" => "☀️ Inici Estiu",     "date_str" => "20 Jun 2028 &bull; 21:02 h", "started" => "Estiu iniciat",      "color" => "#ecb454", "timer_color" => "#f6d365", "timer_border" => "rgba(236,180,84,0.35)", "ts" => strtotime("2028-06-20 21:02:00 CEST")],
+    ["key" => "autumn", "name" => "Tardor",    "title" => "🍂 Inici Tardor",    "date_str" => "22 Set 2028 &bull; 13:45 h", "started" => "Tardor iniciada",    "color" => "#ff8841", "timer_color" => "#2ecc71", "timer_border" => "rgba(46,204,113,0.35)", "ts" => strtotime("2028-09-22 13:45:00 CEST")],
+    ["key" => "winter", "name" => "Hivern",    "title" => "❄️ Inici Hivern",    "date_str" => "21 Des 2028 &bull; 09:20 h", "started" => "Hivern iniciat",     "color" => "#01a4b4", "timer_color" => "#57FAF9", "timer_border" => "rgba(87,250,249,0.35)", "ts" => strtotime("2028-12-21 09:20:00 CET")],
     // 2029
-    ["key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera", "date_str" => "20 Mar 2029 &bull; 09:02 h", "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D", "timer_border" => "rgba(141,252,45,0.35)", "iso" => "2029-03-20T09:02:00+01:00", "ts" => strtotime("2029-03-20 09:02:00 CET")],
-    ["key" => "summer", "name" => "Estiu",     "title" => "☀️ Inici Estiu",     "date_str" => "21 Jun 2029 &bull; 02:48 h", "started" => "Estiu iniciat",      "color" => "#ecb454", "timer_color" => "#f6d365", "timer_border" => "rgba(236,180,84,0.35)", "iso" => "2029-06-21T02:48:00+02:00", "ts" => strtotime("2029-06-21 02:48:00 CEST")],
-    ["key" => "autumn", "name" => "Tardor",    "title" => "🍂 Inici Tardor",    "date_str" => "22 Set 2029 &bull; 19:38 h", "started" => "Tardor iniciada",    "color" => "#ff8841", "timer_color" => "#2ecc71", "timer_border" => "rgba(46,204,113,0.35)", "iso" => "2029-09-22T19:38:00+02:00", "ts" => strtotime("2029-09-22 19:38:00 CEST")],
-    ["key" => "winter", "name" => "Hivern",    "title" => "❄️ Inici Hivern",    "date_str" => "21 Des 2029 &bull; 15:14 h", "started" => "Hivern iniciat",     "color" => "#01a4b4", "timer_color" => "#57FAF9", "timer_border" => "rgba(87,250,249,0.35)", "iso" => "2029-12-21T15:14:00+01:00", "ts" => strtotime("2029-12-21 15:14:00 CET")],
+    ["key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera", "date_str" => "20 Mar 2029 &bull; 09:02 h", "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D", "timer_border" => "rgba(141,252,45,0.35)", "ts" => strtotime("2029-03-20 09:02:00 CET")],
+    ["key" => "summer", "name" => "Estiu",     "title" => "☀️ Inici Estiu",     "date_str" => "21 Jun 2029 &bull; 02:48 h", "started" => "Estiu iniciat",      "color" => "#ecb454", "timer_color" => "#f6d365", "timer_border" => "rgba(236,180,84,0.35)", "ts" => strtotime("2029-06-21 02:48:00 CEST")],
+    ["key" => "autumn", "name" => "Tardor",    "title" => "🍂 Inici Tardor",    "date_str" => "22 Set 2029 &bull; 19:38 h", "started" => "Tardor iniciada",    "color" => "#ff8841", "timer_color" => "#2ecc71", "timer_border" => "rgba(46,204,113,0.35)", "ts" => strtotime("2029-09-22 19:38:00 CEST")],
+    ["key" => "winter", "name" => "Hivern",    "title" => "❄️ Inici Hivern",    "date_str" => "21 Des 2029 &bull; 15:14 h", "started" => "Hivern iniciat",     "color" => "#01a4b4", "timer_color" => "#57FAF9", "timer_border" => "rgba(87,250,249,0.35)", "ts" => strtotime("2029-12-21 15:14:00 CET")],
     // 2030
-    ["key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera", "date_str" => "20 Mar 2030 &bull; 14:52 h", "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D", "timer_border" => "rgba(141,252,45,0.35)", "iso" => "2030-03-20T14:52:00+01:00", "ts" => strtotime("2030-03-20 14:52:00 CET")],
-    ["key" => "summer", "name" => "Estiu",     "title" => "☀️ Inici Estiu",     "date_str" => "21 Jun 2030 &bull; 08:31 h", "started" => "Estiu iniciat",      "color" => "#ecb454", "timer_color" => "#f6d365", "timer_border" => "rgba(236,180,84,0.35)", "iso" => "2030-06-21T08:31:00+02:00", "ts" => strtotime("2030-06-21 08:31:00 CEST")],
-    ["key" => "autumn", "name" => "Tardor",    "title" => "🍂 Inici Tardor",    "date_str" => "23 Set 2030 &bull; 01:27 h", "started" => "Tardor iniciada",    "color" => "#ff8841", "timer_color" => "#2ecc71", "timer_border" => "rgba(46,204,113,0.35)", "iso" => "2030-09-23T01:27:00+02:00", "ts" => strtotime("2030-09-23 01:27:00 CEST")],
-    ["key" => "winter", "name" => "Hivern",    "title" => "❄️ Inici Hivern",    "date_str" => "21 Des 2030 &bull; 21:09 h", "started" => "Hivern iniciat",     "color" => "#01a4b4", "timer_color" => "#57FAF9", "timer_border" => "rgba(87,250,249,0.35)", "iso" => "2030-12-21T21:09:00+01:00", "ts" => strtotime("2030-12-21 21:09:00 CET")]
+    ["key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera", "date_str" => "20 Mar 2030 &bull; 14:52 h", "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D", "timer_border" => "rgba(141,252,45,0.35)", "ts" => strtotime("2030-03-20 14:52:00 CET")],
+    ["key" => "summer", "name" => "Estiu",     "title" => "☀️ Inici Estiu",     "date_str" => "21 Jun 2030 &bull; 08:31 h", "started" => "Estiu iniciat",      "color" => "#ecb454", "timer_color" => "#f6d365", "timer_border" => "rgba(236,180,84,0.35)", "ts" => strtotime("2030-06-21 08:31:00 CEST")],
+    ["key" => "autumn", "name" => "Tardor",    "title" => "🍂 Inici Tardor",    "date_str" => "23 Set 2030 &bull; 01:27 h", "started" => "Tardor iniciada",    "color" => "#ff8841", "timer_color" => "#2ecc71", "timer_border" => "rgba(46,204,113,0.35)", "ts" => strtotime("2030-09-23 01:27:00 CEST")],
+    ["key" => "winter", "name" => "Hivern",    "title" => "❄️ Inici Hivern",    "date_str" => "21 Des 2030 &bull; 21:09 h", "started" => "Hivern iniciat",     "color" => "#01a4b4", "timer_color" => "#57FAF9", "timer_border" => "rgba(87,250,249,0.35)", "ts" => strtotime("2030-12-21 21:09:00 CET")],
+    // 2031
+    ["key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera", "date_str" => "20 Mar 2031 &bull; 20:41 h", "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D", "timer_border" => "rgba(141,252,45,0.35)", "ts" => strtotime("2031-03-20 20:41:00 CET")],
+    ["key" => "summer", "name" => "Estiu",     "title" => "☀️ Inici Estiu",     "date_str" => "21 Jun 2031 &bull; 14:28 h", "started" => "Estiu iniciat",      "color" => "#ecb454", "timer_color" => "#f6d365", "timer_border" => "rgba(236,180,84,0.35)", "ts" => strtotime("2031-06-21 14:28:00 CEST")],
+    ["key" => "autumn", "name" => "Tardor",    "title" => "🍂 Inici Tardor",    "date_str" => "23 Set 2031 &bull; 07:15 h", "started" => "Tardor iniciada",    "color" => "#ff8841", "timer_color" => "#2ecc71", "timer_border" => "rgba(46,204,113,0.35)", "ts" => strtotime("2031-09-23 07:15:00 CEST")],
+    ["key" => "winter", "name" => "Hivern",    "title" => "❄️ Inici Hivern",    "date_str" => "22 Des 2031 &bull; 02:55 h", "started" => "Hivern iniciat",     "color" => "#01a4b4", "timer_color" => "#57FAF9", "timer_border" => "rgba(87,250,249,0.35)", "ts" => strtotime("2031-12-22 02:55:00 CET")],
+    // 2032
+    ["key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera", "date_str" => "20 Mar 2032 &bull; 02:21 h", "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D", "timer_border" => "rgba(141,252,45,0.35)", "ts" => strtotime("2032-03-20 02:21:00 CET")],
+    ["key" => "summer", "name" => "Estiu",     "title" => "☀️ Inici Estiu",     "date_str" => "20 Jun 2032 &bull; 20:08 h", "started" => "Estiu iniciat",      "color" => "#ecb454", "timer_color" => "#f6d365", "timer_border" => "rgba(236,180,84,0.35)", "ts" => strtotime("2032-06-20 20:08:00 CEST")],
+    ["key" => "autumn", "name" => "Tardor",    "title" => "🍂 Inici Tardor",    "date_str" => "22 Set 2032 &bull; 13:10 h", "started" => "Tardor iniciada",    "color" => "#ff8841", "timer_color" => "#2ecc71", "timer_border" => "rgba(46,204,113,0.35)", "ts" => strtotime("2032-09-22 13:10:00 CEST")],
+    ["key" => "winter", "name" => "Hivern",    "title" => "❄️ Inici Hivern",    "date_str" => "21 Des 2032 &bull; 08:56 h", "started" => "Hivern iniciat",     "color" => "#01a4b4", "timer_color" => "#57FAF9", "timer_border" => "rgba(87,250,249,0.35)", "ts" => strtotime("2032-12-21 08:56:00 CET")],
+    // 2033
+    ["key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera", "date_str" => "20 Mar 2033 &bull; 08:22 h", "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D", "timer_border" => "rgba(141,252,45,0.35)", "ts" => strtotime("2033-03-20 08:22:00 CET")],
+    ["key" => "summer", "name" => "Estiu",     "title" => "☀️ Inici Estiu",     "date_str" => "21 Jun 2033 &bull; 02:01 h", "started" => "Estiu iniciat",      "color" => "#ecb454", "timer_color" => "#f6d365", "timer_border" => "rgba(236,180,84,0.35)", "ts" => strtotime("2033-06-21 02:01:00 CEST")],
+    ["key" => "autumn", "name" => "Tardor",    "title" => "🍂 Inici Tardor",    "date_str" => "22 Set 2033 &bull; 18:52 h", "started" => "Tardor iniciada",    "color" => "#ff8841", "timer_color" => "#2ecc71", "timer_border" => "rgba(46,204,113,0.35)", "ts" => strtotime("2033-09-22 18:52:00 CEST")],
+    ["key" => "winter", "name" => "Hivern",    "title" => "❄️ Inici Hivern",    "date_str" => "21 Des 2033 &bull; 14:45 h", "started" => "Hivern iniciat",     "color" => "#01a4b4", "timer_color" => "#57FAF9", "timer_border" => "rgba(87,250,249,0.35)", "ts" => strtotime("2033-12-21 14:45:00 CET")],
+    // 2034
+    ["key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera", "date_str" => "20 Mar 2034 &bull; 14:17 h", "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D", "timer_border" => "rgba(141,252,45,0.35)", "ts" => strtotime("2034-03-20 14:17:00 CET")],
+    ["key" => "summer", "name" => "Estiu",     "title" => "☀️ Inici Estiu",     "date_str" => "21 Jun 2034 &bull; 07:44 h", "started" => "Estiu iniciat",      "color" => "#ecb454", "timer_color" => "#f6d365", "timer_border" => "rgba(236,180,84,0.35)", "ts" => strtotime("2034-06-21 07:44:00 CEST")],
+    ["key" => "autumn", "name" => "Tardor",    "title" => "🍂 Inici Tardor",    "date_str" => "23 Set 2034 &bull; 00:40 h", "started" => "Tardor iniciada",    "color" => "#ff8841", "timer_color" => "#2ecc71", "timer_border" => "rgba(46,204,113,0.35)", "ts" => strtotime("2034-09-23 00:40:00 CEST")],
+    ["key" => "winter", "name" => "Hivern",    "title" => "❄️ Inici Hivern",    "date_str" => "21 Des 2034 &bull; 20:34 h", "started" => "Hivern iniciat",     "color" => "#01a4b4", "timer_color" => "#57FAF9", "timer_border" => "rgba(87,250,249,0.35)", "ts" => strtotime("2034-12-21 20:34:00 CET")],
+    // 2035
+    ["key" => "spring", "name" => "Primavera", "title" => "🌱 Inici Primavera", "date_str" => "20 Mar 2035 &bull; 20:02 h", "started" => "Primavera iniciada", "color" => "#8DFC2D", "timer_color" => "#8DFC2D", "timer_border" => "rgba(141,252,45,0.35)", "ts" => strtotime("2035-03-20 20:02:00 CET")],
+    ["key" => "summer", "name" => "Estiu",     "title" => "☀️ Inici Estiu",     "date_str" => "21 Jun 2035 &bull; 13:33 h", "started" => "Estiu iniciat",      "color" => "#ecb454", "timer_color" => "#f6d365", "timer_border" => "rgba(236,180,84,0.35)", "ts" => strtotime("2035-06-21 13:33:00 CEST")],
+    ["key" => "autumn", "name" => "Tardor",    "title" => "🍂 Inici Tardor",    "date_str" => "23 Set 2035 &bull; 06:38 h", "started" => "Tardor iniciada",    "color" => "#ff8841", "timer_color" => "#2ecc71", "timer_border" => "rgba(46,204,113,0.35)", "ts" => strtotime("2035-09-23 06:38:00 CEST")],
+    ["key" => "winter", "name" => "Hivern",    "title" => "❄️ Inici Hivern",    "date_str" => "22 Des 2035 &bull; 02:30 h", "started" => "Hivern iniciat",     "color" => "#01a4b4", "timer_color" => "#57FAF9", "timer_border" => "rgba(87,250,249,0.35)", "ts" => strtotime("2035-12-22 02:30:00 CET")]
 ];
 
 $now = time();
 $grace_period_sec = 3 * 86400; // 3 dies en segons
+
+// Generador perpetu: Si el temps actual o futur immediat s'apropa o supera el 2035,
+// calculem automàticament els anys necessaris mitjançant l'algorisme de Jean Meeus.
+$last_ts = end($seasons_timeline)["ts"];
+if ($now + (2 * 365 * 86400) > $last_ts) {
+    $start_year = intval(date("Y", $last_ts)) + 1;
+    $target_year = intval(date("Y", $now)) + 2;
+    for ($y = $start_year; $y <= $target_year; $y++) {
+        foreach (["spring", "summer", "autumn", "winter"] as $s_key) {
+            $seasons_timeline[] = getMeeusSeasonEvent($y, $s_key);
+        }
+    }
+}
 
 // Trobar l'estació activa per al bloc esquerre (la primera que no hagi superat els 3 dies de celebració)
 $left_idx = 0;
@@ -71,6 +153,9 @@ if ($diff_right <= 0) {
     $mr = floor(($diff_right % 3600) / 60);
     $right_timer_text = sprintf("%dd %02dh %02dm", $dr, $hr, $mr);
 }
+
+// Passem només un conjunt optimitzat de les properes estacions a JS
+$js_seasons = array_slice($seasons_timeline, max(0, $left_idx - 1), 8);
 ?>
 <div class="PWS_module_title">
     <span>Compte Enrere Estacions de l'Any</span>
@@ -100,7 +185,7 @@ if ($diff_right <= 0) {
 
 <script>
 (function() {
-    var seasons = <?php echo json_encode(array_map(function($s) {
+    var seasons = <?php echo json_encode(array_values(array_map(function($s) {
         return [
             "title"        => $s["title"],
             "date_str"     => $s["date_str"],
@@ -110,7 +195,7 @@ if ($diff_right <= 0) {
             "timer_border" => $s["timer_border"],
             "time_ms"      => $s["ts"] * 1000
         ];
-    }, $seasons_timeline)); ?>;
+    }, $js_seasons))); ?>;
 
     var GRACE_PERIOD_MS = 3 * 24 * 60 * 60 * 1000; // 3 dies en mil·lisegons
 

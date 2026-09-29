@@ -150,3 +150,43 @@ curl -s --max-time 20 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMess
   -d "$PAYLOAD" >/dev/null
 
 echo "Informe enviat correctament!"
+
+# 6. Recordatori especial a llarg termini (Desembre 2034)
+# Convingut a la conversa del 29/09/2026 per a la revisió del mòdul d'estacions (pws_countdown.php)
+CURRENT_YEAR=$(date +%Y)
+CURRENT_MONTH=$(date +%-m)
+FLAG_2034="${BASE_DIR}/scripts/.recordatori_2034_enviat"
+IS_TEST="${1:-}"
+
+if ([ "$CURRENT_YEAR" -ge 2034 ] && [ "$CURRENT_MONTH" -ge 12 ] && [ ! -f "$FLAG_2034" ]) || [ "$IS_TEST" = "--test-reminder-2034" ]; then
+  MSG_2034="🔔 <b>RECORDATORI HOMELAB (Conversa del 29/09/2026)</b>
+📅 <i>Desembre de 2034</i>
+
+Hem arribat al <b>desembre de 2034</b>!
+Tal com vam acordar a la conversa del 29 de setembre de 2026, et recordo que cal revisar les efemèrides astronòmiques de MeteoSallent (<code>cuhws/pws_countdown.php</code>) per si vols afegir o ajustar manualment la taula oficial per al cicle 2035 en endavant."
+
+  if [ "$IS_TEST" = "--test-reminder-2034" ]; then
+    MSG_2034="🧪 <b>[PROVA DE CONFIGURACIÓ]</b>\n${MSG_2034}\n\n<i>(Aquest és un enviament de prova per verificar que l'alerta del desembre de 2034 funcionarà correctament).</i>"
+  fi
+
+  PAYLOAD_2034=$(jq -n \
+    --arg chat_id "$CHAT_ID" \
+    --arg message_thread_id "$TOPIC_ID" \
+    --arg text "$(echo -e "$MSG_2034")" \
+    '{
+      chat_id: $chat_id,
+      message_thread_id: ($message_thread_id | tonumber),
+      text: $text,
+      parse_mode: "HTML",
+      disable_web_page_preview: true
+    }')
+
+  curl -s --max-time 20 -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+    -H "Content-Type: application/json" \
+    -d "$PAYLOAD_2034" >/dev/null
+
+  if [ "$IS_TEST" != "--test-reminder-2034" ]; then
+    touch "$FLAG_2034"
+  fi
+  echo "Recordatori de Desembre 2034 processat correctament!"
+fi
