@@ -1,9 +1,9 @@
 <?php
 header('Content-type: text/html; charset=utf-8');
 if(!file_exists('settings1.php')) { copy('initial-settings1.php','settings1.php'); }
-include('livedata.php');
-include('settings1.php');
-include('common.php');
+include_once('livedata.php');
+include_once('settings1.php');
+include_once('common.php');
 date_default_timezone_set($TZ);
 
 $seo_titles = [

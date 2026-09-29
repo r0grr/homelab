@@ -1,5 +1,5 @@
 <?php
-include('settings.php');include('livedata.php');error_reporting(0); 
+include_once('settings.php');include_once('livedata.php');error_reporting(0); 
 $result = date_sun_info(time(), $lat, $lon);
 $suns2 =date('G.i', $result['sunset']);
 $sunrs2 =date('G.i', $result['sunrise']);
