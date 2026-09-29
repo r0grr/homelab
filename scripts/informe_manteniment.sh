@@ -9,8 +9,7 @@
 set -uo pipefail
 
 # Protecció de concurrència (evitar execucions solapades)
-LOCK_FILE="/tmp/informe_manteniment.lock"
-exec 200>"$LOCK_FILE"
+exec 200<"$0"
 if ! flock -n 200; then
   echo "L'informe de manteniment ja s'està executant en un altre procés. Sortint."
   exit 0
