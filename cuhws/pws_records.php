@@ -42,5 +42,5 @@ include_once('common.php');
     </table>
 </div>
 <div class="PWS_module_footer">
-    <a href="historia.php" target="_blank"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Arxiu Rècords i Històric (2006-2026)</a>
+    <a href="historia.php" target="_blank"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Arxiu Rècords i Històric (2006-<?php echo date('Y'); ?>)</a>
 </div>

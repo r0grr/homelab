@@ -13,7 +13,7 @@ include_once('shared.php'); ?>
     <ul class="weather34sidebarMenuInner">
         <li><a href="#">PREFERÈNCIES</a></li>
         <li><a href="index.php" title="Inici"><?php echo $weather34homeicon; ?> Inici</a></li>  
-        <li><a href="historia.php" title="Historial Climatològic"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Historial Climatològic (2006-2026)</a></li>  
+        <li><a href="historia.php" title="Historial Climatològic"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Historial Climatològic (2006-<?php echo date('Y'); ?>)</a></li>  
 
         <li><a href="#">XARXA TEMPSCAT</a></li>
         <li><a href="https://sqv.tempscat.com" target="_blank" title="Estació Meteorològica Sant Quirze del Vallès"><?php echo $info;?> Sant Quirze del Vallès</a></li>

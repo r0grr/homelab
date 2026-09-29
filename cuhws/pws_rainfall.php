@@ -87,7 +87,9 @@ $bg4 = ($rain_level >= 4) ? $blue_fill : $empty_fill;
 $bdr4 = ($rain_level >= 4) ? $blue_border : $empty_border;
 
 $bg5 = ($rain_level >= 5) ? $blue_fill : $empty_fill;
-$bdr5 = ($rain_level >= 5) ? $blue_border : $empty_border;
+$mesos_cat = [1 => "Gener", 2 => "Febrer", 3 => "Març", 4 => "Abril", 5 => "Maig", 6 => "Juny", 7 => "Juliol", 8 => "Agost", 9 => "Setembre", 10 => "Octubre", 11 => "Novembre", 12 => "Desembre"];
+$current_year_str = date('Y');
+$current_month_str = $mesos_cat[intval(date('n'))] ?? date('F');
 ?>
 <div class="PWS_module_title">
     <span>Precipitació - mm</span>
@@ -96,8 +98,8 @@ $bdr5 = ($rain_level >= 5) ? $blue_border : $empty_border;
 <div class="PWS_body">
     <!-- Left values -->
     <div class="PWS_left">
-        <div class="PWS_div_left" style="border-right-color: #01a4b4;">2026<br><b><?php echo number_format($rain_year, 1); ?> mm</b></div>
-        <div class="PWS_div_left" style="border-right-color: #01a4b4;">Setembre<br><b><?php echo number_format($rain_month, 1); ?> mm</b></div>
+        <div class="PWS_div_left" style="border-right-color: #01a4b4;"><?php echo $current_year_str; ?><br><b><?php echo number_format($rain_year, 1); ?> mm</b></div>
+        <div class="PWS_div_left" style="border-right-color: #01a4b4;"><?php echo $current_month_str; ?><br><b><?php echo number_format($rain_month, 1); ?> mm</b></div>
         <div class="PWS_div_left" style="border-right-color: #01a4b4;">Ahir<br><b><?php echo number_format($rain_yesterday, 1); ?> mm</b></div>
     </div>
 

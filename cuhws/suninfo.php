@@ -109,11 +109,64 @@ if ($now < $sunrise_ts) {
     $state_desc = "Dia en curs &bull; Sol radiant sobre l'horitzó";
 }
 
-// Càlcul compte enrere per a l'Equinocci de Tardor (~22 de setembre de 2026 a les 20:05 UTC)
-$autumn_equinox_ts = gmmktime(20, 5, 0, 9, 22, 2026);
-$equinox_diff_sec = $autumn_equinox_ts - $now;
-$equinox_days = max(0, floor($equinox_diff_sec / 86400));
-$equinox_hours = max(0, floor(($equinox_diff_sec % 86400) / 3600));
+// Càlcul dinàmic del proper canvi d'estació astronòmic
+$seasons_events = [
+    // 2026
+    ["name" => "Equinocci de Primavera 2026", "event" => "Primavera", "icon" => "🌱", "date_str" => "20 de març de 2026 a les 15:46 h CET", "ts" => strtotime("2026-03-20 15:46:00 CET"), "desc" => "En aquest moment precís, el Sol creua l'equador celeste en sentit nord, donant lloc a un dia i una nit de pràcticament idèntica durada arreu del planeta Terra."],
+    ["name" => "Solstici d'Estiu 2026", "event" => "Estiu", "icon" => "☀️", "date_str" => "21 de juny de 2026 a les 09:24 h CEST", "ts" => strtotime("2026-06-21 09:24:00 CEST"), "desc" => "En aquest moment precís, el Sol assoleix la seva màxima declinació nord respecte a l'equador celeste, donant lloc al dia més llarg de l'any i a la nit més curta a Catalunya."],
+    ["name" => "Equinocci de Tardor 2026", "event" => "Tardor", "icon" => "🍂", "date_str" => "23 de setembre de 2026 a les 02:05 h CEST", "ts" => strtotime("2026-09-23 02:05:00 CEST"), "desc" => "En aquest moment precís, el Sol creua l'equador celeste cap a l'hemisferi sud, donant lloc a un dia i una nit de pràcticament idèntica durada arreu del planeta Terra."],
+    ["name" => "Solstici d'Hivern 2026", "event" => "Hivern", "icon" => "❄️", "date_str" => "21 de desembre de 2026 a les 21:50 h CET", "ts" => strtotime("2026-12-21 21:50:00 CET"), "desc" => "En aquest moment precís, el Sol assoleix la seva màxima declinació sud respecte a l'equador celeste, donant lloc a la nit més llarga de l'any i al dia amb menys hores de llum solar a Catalunya."],
+    // 2027
+    ["name" => "Equinocci de Primavera 2027", "event" => "Primavera", "icon" => "🌱", "date_str" => "20 de març de 2027 a les 21:25 h CET", "ts" => strtotime("2027-03-20 21:25:00 CET"), "desc" => "En aquest moment precís, el Sol creua l'equador celeste en sentit nord, donant lloc a un dia i una nit de pràcticament idèntica durada arreu del planeta Terra."],
+    ["name" => "Solstici d'Estiu 2027", "event" => "Estiu", "icon" => "☀️", "date_str" => "21 de juny de 2027 a les 15:11 h CEST", "ts" => strtotime("2027-06-21 15:11:00 CEST"), "desc" => "En aquest moment precís, el Sol assoleix la seva màxima declinació nord respecte a l'equador celeste, donant lloc al dia més llarg de l'any i a la nit més curta a Catalunya."],
+    ["name" => "Equinocci de Tardor 2027", "event" => "Tardor", "icon" => "🍂", "date_str" => "23 de setembre de 2027 a les 08:02 h CEST", "ts" => strtotime("2027-09-23 08:02:00 CEST"), "desc" => "En aquest moment precís, el Sol creua l'equador celeste cap a l'hemisferi sud, donant lloc a un dia i una nit de pràcticament idèntica durada arreu del planeta Terra."],
+    ["name" => "Solstici d'Hivern 2027", "event" => "Hivern", "icon" => "❄️", "date_str" => "22 de desembre de 2027 a les 03:42 h CET", "ts" => strtotime("2027-12-22 03:42:00 CET"), "desc" => "En aquest moment precís, el Sol assoleix la seva màxima declinació sud respecte a l'equador celeste, donant lloc a la nit més llarga de l'any i al dia amb menys hores de llum solar a Catalunya."]
+];
+
+$next_season = null;
+foreach ($seasons_events as $se) {
+    if ($se["ts"] > $now) {
+        $next_season = $se;
+        break;
+    }
+}
+if (!$next_season) {
+    // Si s'han exhaurit les efemèrides de la taula, calculem automàticament amb l'algorisme de Jean Meeus
+    $cy = intval(date("Y", $now));
+    $mesos_cat = [1=>"gener",2=>"febrer",3=>"març",4=>"abril",5=>"maig",6=>"juny",7=>"juliol",8=>"agost",9=>"setembre",10=>"octubre",11=>"novembre",12=>"desembre"];
+    for ($y = $cy; $y <= $cy + 1; $y++) {
+        $m = ($y - 2000) / 1000;
+        $candidates = [
+            ["event" => "Primavera", "icon" => "🌱", "jde" => 2451623.80984 + 365242.37404 * $m + 0.05169 * pow($m, 2) - 0.00411 * pow($m, 3), "desc" => "En aquest moment precís, el Sol creua l'equador celeste en sentit nord, donant lloc a un dia i una nit de pràcticament idèntica durada arreu del planeta Terra."],
+            ["event" => "Estiu",     "icon" => "☀️", "jde" => 2451716.56767 + 365241.62603 * $m + 0.00325 * pow($m, 2) + 0.00888 * pow($m, 3), "desc" => "En aquest moment precís, el Sol assoleix la seva màxima declinació nord respecte a l'equador celeste, donant lloc al dia més llarg de l'any i a la nit més curta a Catalunya."],
+            ["event" => "Tardor",    "icon" => "🍂", "jde" => 2451810.21715 + 365242.01767 * $m - 0.11575 * pow($m, 2) + 0.00337 * pow($m, 3), "desc" => "En aquest moment precís, el Sol creua l'equador celeste cap a l'hemisferi sud, donant lloc a un dia i una nit de pràcticament idèntica durada arreu del planeta Terra."],
+            ["event" => "Hivern",    "icon" => "❄️", "jde" => 2451900.05952 + 365242.74049 * $m - 0.06223 * pow($m, 2) - 0.05235 * pow($m, 3), "desc" => "En aquest moment precís, el Sol assoleix la seva màxima declinació sud respecte a l'equador celeste, donant lloc a la nit més llarga de l'any i al dia amb menys hores de llum solar a Catalunya."]
+        ];
+        foreach ($candidates as $cand) {
+            $ts = round(($cand["jde"] - 2440587.5) * 86400);
+            if ($ts > $now) {
+                $tz_code = date("I", $ts) ? "CEST" : "CET";
+                $ev_name = ($cand["event"] == "Estiu" || $cand["event"] == "Hivern") ? "Solstici d'{$cand['event']} $y" : "Equinocci de {$cand['event']} $y";
+                $next_season = [
+                    "name" => $ev_name,
+                    "event" => $cand["event"],
+                    "icon" => $cand["icon"],
+                    "date_str" => date("j", $ts) . " de " . $mesos_cat[intval(date("n", $ts))] . " de $y a les " . date("H:i", $ts) . " h $tz_code",
+                    "ts" => $ts,
+                    "desc" => $cand["desc"]
+                ];
+                break 2;
+            }
+        }
+    }
+}
+if (!$next_season) {
+    $next_season = end($seasons_events);
+}
+
+$season_diff_sec = max(0, $next_season["ts"] - $now);
+$season_days = floor($season_diff_sec / 86400);
+$season_hours = floor(($season_diff_sec % 86400) / 3600);
 ?>
 <!DOCTYPE html>
 <html lang="ca">
@@ -615,10 +668,10 @@ body {
                 El Sol segueix un cicle d'activitat magnètica d'aproximadament 11 anys. Actualment ens trobem en el <b>Cicle Solar 25</b>, en plena fase de <b>Màxim Solar</b>. Això es tradueix en un nombre elevat de taques solars, ejeccions de massa coronal (CME) i tempestes geomagnètiques capaços de generar espectaculars aurores boreals a latituds inusuals, inclosa Catalunya.
             </p>
             <div style="background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 6px; padding: 10px 12px; margin-top: 6px;">
-                <b style="color: #c084fc;">🍂 Proper Canvi d'Estació: Equinocci de Tardor 2026</b><br>
-                Tindrà lloc el <b>22 de setembre de 2026</b> a les <b>22:05 h CEST</b> (20:05 UTC).
-                <span style="color: #fbbf24; font-weight: 700;">Resten només <?php echo $equinox_days; ?> dies i <?php echo $equinox_hours; ?> hores!</span>
-                En aquest moment precís, el Sol creua l'equador celeste cap a l'hemisferi sud, donant lloc a un dia i una nit de pràcticament idèntica durada arreu del planeta Terra.
+                <b style="color: #c084fc;"><?php echo $next_season['icon'] . ' Proper Canvi d\'Estació: ' . $next_season['name']; ?></b><br>
+                Tindrà lloc el <b><?php echo $next_season['date_str']; ?></b>.<br>
+                <span style="color: #fbbf24; font-weight: 700;">Resten <?php echo $season_days; ?> dies i <?php echo $season_hours; ?> hores!</span><br>
+                <?php echo $next_season['desc']; ?>
             </div>
         </div>
     </div>

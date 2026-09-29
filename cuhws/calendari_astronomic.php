@@ -17,28 +17,138 @@ $daylight_sec = $sun_info["sunset"] - $sun_info["sunrise"];
 $daylight_h   = floor($daylight_sec / 3600);
 $daylight_m   = floor(($daylight_sec % 3600) / 60);
 
-// Efemèrides de canvi d'estació (IGN / Observatori Astronòmic Nacional)
-// Valors calculats amb precisió astronòmica per al fus horari CET/CEST
-$seasons = [
+// Mesos en català
+$mesos_cat = [
+    1 => "Gener", 2 => "Febrer", 3 => "Març", 4 => "Abril", 5 => "Maig", 6 => "Juny",
+    7 => "Juliol", 8 => "Agost", 9 => "Setembre", 10 => "Octubre", 11 => "Novembre", 12 => "Desembre"
+];
+
+// Algorisme astronòmic de Jean Meeus per calcular equinoccis i solsticis per a qualsevol any
+function getMeeusSeasonDetail($year, $season) {
+    global $mesos_cat;
+    $m = ($year - 2000) / 1000;
+    switch ($season) {
+        case "spring":
+            $jde = 2451623.80984 + 365242.37404 * $m + 0.05169 * pow($m, 2) - 0.00411 * pow($m, 3);
+            $ts = round(($jde - 2440587.5) * 86400);
+            return [
+                "date" => date("j", $ts) . " " . $mesos_cat[intval(date("n", $ts))] . " " . $year,
+                "time" => date("H:i", $ts) . " h",
+                "name" => "Primavera (Equinocci)",
+                "icon" => "🌱",
+                "color" => "#8DFC2D",
+                "ts" => $ts
+            ];
+        case "summer":
+            $jde = 2451716.56767 + 365241.62603 * $m + 0.00325 * pow($m, 2) + 0.00888 * pow($m, 3);
+            $ts = round(($jde - 2440587.5) * 86400);
+            return [
+                "date" => date("j", $ts) . " " . $mesos_cat[intval(date("n", $ts))] . " " . $year,
+                "time" => date("H:i", $ts) . " h",
+                "name" => "Estiu (Solstici)",
+                "icon" => "☀️",
+                "color" => "#ecb454",
+                "ts" => $ts
+            ];
+        case "autumn":
+            $jde = 2451810.21715 + 365242.01767 * $m - 0.11575 * pow($m, 2) + 0.00337 * pow($m, 3);
+            $ts = round(($jde - 2440587.5) * 86400);
+            return [
+                "date" => date("j", $ts) . " " . $mesos_cat[intval(date("n", $ts))] . " " . $year,
+                "time" => date("H:i", $ts) . " h",
+                "name" => "Tardor (Equinocci)",
+                "icon" => "🍂",
+                "color" => "#ff8841",
+                "ts" => $ts
+            ];
+        case "winter":
+            $jde = 2451900.05952 + 365242.74049 * $m - 0.06223 * pow($m, 2) - 0.05235 * pow($m, 3);
+            $ts = round(($jde - 2440587.5) * 86400);
+            return [
+                "date" => date("j", $ts) . " " . $mesos_cat[intval(date("n", $ts))] . " " . $year,
+                "time" => date("H:i", $ts) . " h",
+                "name" => "Hivern (Solstici)",
+                "icon" => "❄️",
+                "color" => "#01a4b4",
+                "ts" => $ts
+            ];
+    }
+}
+
+// Efemèrides de canvi d'estació oficials (IGN / Observatori Astronòmic Nacional) 2026-2035
+$seasons_ign = [
     2026 => [
         "spring" => ["date" => "20 Març 2026", "time" => "15:46 h", "name" => "Primavera (Equinocci)", "icon" => "🌱", "color" => "#8DFC2D", "ts" => strtotime("2026-03-20 15:46:00 CET")],
         "summer" => ["date" => "21 Juny 2026", "time" => "09:24 h", "name" => "Estiu (Solstici)", "icon" => "☀️", "color" => "#ecb454", "ts" => strtotime("2026-06-21 09:24:00 CEST")],
         "autumn" => ["date" => "23 Setembre 2026", "time" => "02:05 h", "name" => "Tardor (Equinocci)", "icon" => "🍂", "color" => "#ff8841", "ts" => strtotime("2026-09-23 02:05:00 CEST")],
         "winter" => ["date" => "21 Desembre 2026", "time" => "21:50 h", "name" => "Hivern (Solstici)", "icon" => "❄️", "color" => "#01a4b4", "ts" => strtotime("2026-12-21 21:50:00 CET")]
+    ],
+    2027 => [
+        "spring" => ["date" => "20 Març 2027", "time" => "21:25 h", "name" => "Primavera (Equinocci)", "icon" => "🌱", "color" => "#8DFC2D", "ts" => strtotime("2027-03-20 21:25:00 CET")],
+        "summer" => ["date" => "21 Juny 2027", "time" => "15:11 h", "name" => "Estiu (Solstici)", "icon" => "☀️", "color" => "#ecb454", "ts" => strtotime("2027-06-21 15:11:00 CEST")],
+        "autumn" => ["date" => "23 Setembre 2027", "time" => "08:02 h", "name" => "Tardor (Equinocci)", "icon" => "🍂", "color" => "#ff8841", "ts" => strtotime("2027-09-23 08:02:00 CEST")],
+        "winter" => ["date" => "22 Desembre 2027", "time" => "03:42 h", "name" => "Hivern (Solstici)", "icon" => "❄️", "color" => "#01a4b4", "ts" => strtotime("2027-12-22 03:42:00 CET")]
+    ],
+    2028 => [
+        "spring" => ["date" => "20 Març 2028", "time" => "03:17 h", "name" => "Primavera (Equinocci)", "icon" => "🌱", "color" => "#8DFC2D", "ts" => strtotime("2028-03-20 03:17:00 CET")],
+        "summer" => ["date" => "20 Juny 2028", "time" => "21:02 h", "name" => "Estiu (Solstici)", "icon" => "☀️", "color" => "#ecb454", "ts" => strtotime("2028-06-20 21:02:00 CEST")],
+        "autumn" => ["date" => "22 Setembre 2028", "time" => "13:45 h", "name" => "Tardor (Equinocci)", "icon" => "🍂", "color" => "#ff8841", "ts" => strtotime("2028-09-22 13:45:00 CEST")],
+        "winter" => ["date" => "21 Desembre 2028", "time" => "09:20 h", "name" => "Hivern (Solstici)", "icon" => "❄️", "color" => "#01a4b4", "ts" => strtotime("2028-12-21 09:20:00 CET")]
+    ],
+    2029 => [
+        "spring" => ["date" => "20 Març 2029", "time" => "09:02 h", "name" => "Primavera (Equinocci)", "icon" => "🌱", "color" => "#8DFC2D", "ts" => strtotime("2029-03-20 09:02:00 CET")],
+        "summer" => ["date" => "21 Juny 2029", "time" => "02:48 h", "name" => "Estiu (Solstici)", "icon" => "☀️", "color" => "#ecb454", "ts" => strtotime("2029-06-21 02:48:00 CEST")],
+        "autumn" => ["date" => "22 Setembre 2029", "time" => "19:38 h", "name" => "Tardor (Equinocci)", "icon" => "🍂", "color" => "#ff8841", "ts" => strtotime("2029-09-22 19:38:00 CEST")],
+        "winter" => ["date" => "21 Desembre 2029", "time" => "15:14 h", "name" => "Hivern (Solstici)", "icon" => "❄️", "color" => "#01a4b4", "ts" => strtotime("2029-12-21 15:14:00 CET")]
+    ],
+    2030 => [
+        "spring" => ["date" => "20 Març 2030", "time" => "14:52 h", "name" => "Primavera (Equinocci)", "icon" => "🌱", "color" => "#8DFC2D", "ts" => strtotime("2030-03-20 14:52:00 CET")],
+        "summer" => ["date" => "21 Juny 2030", "time" => "08:31 h", "name" => "Estiu (Solstici)", "icon" => "☀️", "color" => "#ecb454", "ts" => strtotime("2030-06-21 08:31:00 CEST")],
+        "autumn" => ["date" => "23 Setembre 2030", "time" => "01:27 h", "name" => "Tardor (Equinocci)", "icon" => "🍂", "color" => "#ff8841", "ts" => strtotime("2030-09-23 01:27:00 CEST")],
+        "winter" => ["date" => "21 Desembre 2030", "time" => "21:09 h", "name" => "Hivern (Solstici)", "icon" => "❄️", "color" => "#01a4b4", "ts" => strtotime("2030-12-21 21:09:00 CET")]
+    ],
+    2031 => [
+        "spring" => ["date" => "20 Març 2031", "time" => "20:41 h", "name" => "Primavera (Equinocci)", "icon" => "🌱", "color" => "#8DFC2D", "ts" => strtotime("2031-03-20 20:41:00 CET")],
+        "summer" => ["date" => "21 Juny 2031", "time" => "14:28 h", "name" => "Estiu (Solstici)", "icon" => "☀️", "color" => "#ecb454", "ts" => strtotime("2031-06-21 14:28:00 CEST")],
+        "autumn" => ["date" => "23 Setembre 2031", "time" => "07:15 h", "name" => "Tardor (Equinocci)", "icon" => "🍂", "color" => "#ff8841", "ts" => strtotime("2031-09-23 07:15:00 CEST")],
+        "winter" => ["date" => "22 Desembre 2031", "time" => "02:55 h", "name" => "Hivern (Solstici)", "icon" => "❄️", "color" => "#01a4b4", "ts" => strtotime("2031-12-22 02:55:00 CET")]
+    ],
+    2032 => [
+        "spring" => ["date" => "20 Març 2032", "time" => "02:21 h", "name" => "Primavera (Equinocci)", "icon" => "🌱", "color" => "#8DFC2D", "ts" => strtotime("2032-03-20 02:21:00 CET")],
+        "summer" => ["date" => "20 Juny 2032", "time" => "20:08 h", "name" => "Estiu (Solstici)", "icon" => "☀️", "color" => "#ecb454", "ts" => strtotime("2032-06-20 20:08:00 CEST")],
+        "autumn" => ["date" => "22 Setembre 2032", "time" => "13:10 h", "name" => "Tardor (Equinocci)", "icon" => "🍂", "color" => "#ff8841", "ts" => strtotime("2032-09-22 13:10:00 CEST")],
+        "winter" => ["date" => "21 Desembre 2032", "time" => "08:56 h", "name" => "Hivern (Solstici)", "icon" => "❄️", "color" => "#01a4b4", "ts" => strtotime("2032-12-21 08:56:00 CET")]
+    ],
+    2033 => [
+        "spring" => ["date" => "20 Març 2033", "time" => "08:22 h", "name" => "Primavera (Equinocci)", "icon" => "🌱", "color" => "#8DFC2D", "ts" => strtotime("2033-03-20 08:22:00 CET")],
+        "summer" => ["date" => "21 Juny 2033", "time" => "02:01 h", "name" => "Estiu (Solstici)", "icon" => "☀️", "color" => "#ecb454", "ts" => strtotime("2033-06-21 02:01:00 CEST")],
+        "autumn" => ["date" => "22 Setembre 2033", "time" => "18:52 h", "name" => "Tardor (Equinocci)", "icon" => "🍂", "color" => "#ff8841", "ts" => strtotime("2033-09-22 18:52:00 CEST")],
+        "winter" => ["date" => "21 Desembre 2033", "time" => "14:45 h", "name" => "Hivern (Solstici)", "icon" => "❄️", "color" => "#01a4b4", "ts" => strtotime("2033-12-21 14:45:00 CET")]
+    ],
+    2034 => [
+        "spring" => ["date" => "20 Març 2034", "time" => "14:17 h", "name" => "Primavera (Equinocci)", "icon" => "🌱", "color" => "#8DFC2D", "ts" => strtotime("2034-03-20 14:17:00 CET")],
+        "summer" => ["date" => "21 Juny 2034", "time" => "07:44 h", "name" => "Estiu (Solstici)", "icon" => "☀️", "color" => "#ecb454", "ts" => strtotime("2034-06-21 07:44:00 CEST")],
+        "autumn" => ["date" => "23 Setembre 2034", "time" => "00:40 h", "name" => "Tardor (Equinocci)", "icon" => "🍂", "color" => "#ff8841", "ts" => strtotime("2034-09-23 00:40:00 CEST")],
+        "winter" => ["date" => "21 Desembre 2034", "time" => "20:34 h", "name" => "Hivern (Solstici)", "icon" => "❄️", "color" => "#01a4b4", "ts" => strtotime("2034-12-21 20:34:00 CET")]
+    ],
+    2035 => [
+        "spring" => ["date" => "20 Març 2035", "time" => "20:02 h", "name" => "Primavera (Equinocci)", "icon" => "🌱", "color" => "#8DFC2D", "ts" => strtotime("2035-03-20 20:02:00 CET")],
+        "summer" => ["date" => "21 Juny 2035", "time" => "13:33 h", "name" => "Estiu (Solstici)", "icon" => "☀️", "color" => "#ecb454", "ts" => strtotime("2035-06-21 13:33:00 CEST")],
+        "autumn" => ["date" => "23 Setembre 2035", "time" => "06:38 h", "name" => "Tardor (Equinocci)", "icon" => "🍂", "color" => "#ff8841", "ts" => strtotime("2035-09-23 06:38:00 CEST")],
+        "winter" => ["date" => "22 Desembre 2035", "time" => "02:30 h", "name" => "Hivern (Solstici)", "icon" => "❄️", "color" => "#01a4b4", "ts" => strtotime("2035-12-22 02:30:00 CET")]
     ]
 ];
 
-// Fallback dinàmic si l'any és diferent
-if (!isset($seasons[$current_year])) {
-    $seasons[$current_year] = [
-        "spring" => ["date" => "20 Març " . $current_year, "time" => "04:06 h", "name" => "Primavera (Equinocci)", "icon" => "🌱", "color" => "#8DFC2D", "ts" => strtotime($current_year . "-03-20 04:06:00 CET")],
-        "summer" => ["date" => "21 Juny " . $current_year, "time" => "21:58 h", "name" => "Estiu (Solstici)", "icon" => "☀️", "color" => "#ecb454", "ts" => strtotime($current_year . "-06-21 21:58:00 CEST")],
-        "autumn" => ["date" => "22 Setembre " . $current_year, "time" => "13:44 h", "name" => "Tardor (Equinocci)", "icon" => "🍂", "color" => "#ff8841", "ts" => strtotime($current_year . "-09-22 13:44:00 CEST")],
-        "winter" => ["date" => "21 Desembre " . $current_year, "time" => "09:21 h", "name" => "Hivern (Solstici)", "icon" => "❄️", "color" => "#01a4b4", "ts" => strtotime($current_year . "-12-21 09:21:00 CET")]
+if (isset($seasons_ign[$current_year])) {
+    $cur_seasons = $seasons_ign[$current_year];
+} else {
+    $cur_seasons = [
+        "spring" => getMeeusSeasonDetail($current_year, "spring"),
+        "summer" => getMeeusSeasonDetail($current_year, "summer"),
+        "autumn" => getMeeusSeasonDetail($current_year, "autumn"),
+        "winter" => getMeeusSeasonDetail($current_year, "winter")
     ];
 }
-
-$cur_seasons = $seasons[$current_year];
 
 // Canvis d'horari oficial a Catalunya (Últim diumenge de març i d'octubre)
 function getLastSunday($month, $year) {
@@ -283,10 +393,14 @@ body {
     <!-- Eclipsis Destacats -->
     <div class="card">
         <div class="card-title">
-            <span>Gran Esdeveniment Astronòmic: Eclipsi Total de Sol 2026</span>
+            <span>Gran Esdeveniment Astronòmic: Eclipsi Total de Sol (12 d'Agost de 2026)</span>
         </div>
         <p style="font-size: 11px; line-height: 1.5; color: #e2e8f0;">
+            <?php if ($now < strtotime("2026-08-12 21:00:00 CEST")): ?>
             El <b>12 d'agost de 2026</b> tindrà lloc un esdeveniment històric: el primer eclipsi total de Sol visible des de la península Ibèrica des de fa més d'un segle. La franja de totalitat creuarà el nord de la península (Galícia, Cantàbric, Castella i Lleó, Aragó i part de Catalunya / Illes Balears) a última hora de la tarda abans de la posta solar.
+            <?php else: ?>
+            El <b>12 d'agost de 2026</b> va tenir lloc un esdeveniment històric: el primer eclipsi total de Sol visible des de la península Ibèrica en més d'un segle. La franja de totalitat va creuar el nord de la península (Galícia, Cantàbric, Castella i Lleó, Aragó i part de Catalunya / Illes Balears) a última hora de la tarda abans de la posta solar.
+            <?php endif; ?>
         </p>
     </div>
 

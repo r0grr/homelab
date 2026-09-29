@@ -5,11 +5,13 @@ date_default_timezone_set($TZ);
 
 $reports_dir = __DIR__ . '/noaa_reports';
 
-$available_years = range(2026, 2006);
-$selected_year = isset($_GET['year']) ? intval($_GET['year']) : 2026;
+$current_year = intval(date('Y'));
+$available_years = range($current_year, 2006);
+$selected_year = isset($_GET['year']) ? intval($_GET['year']) : $current_year;
 if (!in_array($selected_year, $available_years)) {
-    $selected_year = 2026;
+    $selected_year = $current_year;
 }
+$total_years_record = $current_year - 2006 + 1;
 
 $selected_month = isset($_GET['month']) ? $_GET['month'] : 'all';
 
@@ -71,8 +73,8 @@ if ($found_file) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial Climatològic &bull; MeteoSallent (2006-2026)</title>
-    <meta name="description" content="Informes climàtics històrics i resums mensuals i anuals de Sallent (2006-2026). Estació meteorològica MeteoSallent - TempsCat.">
+    <title>Historial Climatològic &bull; MeteoSallent (2006-<?php echo $current_year; ?>)</title>
+    <meta name="description" content="Informes climàtics històrics i resums mensuals i anuals de Sallent (2006-<?php echo $current_year; ?>). Estació meteorològica MeteoSallent - TempsCat.">
     <link rel="canonical" href="https://www.tempscat.com/historia.php">
     <link rel="stylesheet" href="css/main.dark.css">
     <style>
@@ -213,7 +215,7 @@ if ($found_file) {
         <div class="hist-header">
             <div>
                 <h1>Arxiu Climatològic Històric &bull; Sallent (El Bages)</h1>
-                <span style="font-size: 12.5px; color: #a0aec0;">Registre continu de 21 anys oficials (2006 - 2026) &bull; Davis Vantage Pro2 Plus</span>
+                <span style="font-size: 12.5px; color: #a0aec0;">Registre continu de <?php echo $total_years_record; ?> anys oficials (2006 - <?php echo $current_year; ?>) &bull; Davis Vantage Pro2 Plus</span>
             </div>
             <a href="index.php" class="btn-back">&larr; Tornar a la Web en Directe</a>
         </div>
