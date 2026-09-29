@@ -26,27 +26,39 @@ if (!empty($lastraindate)) {
         }
     }
 }
-// Determinació dinàmica de l'hora de màxima intensitat o darrera precipitació
+// Determinació dinàmica de la màxima intensitat de pluja i la seva hora
+$max_rain_rate = 0.0;
 $max_rain_time = '';
 $rg_file = __DIR__ . '/cumulusdata/realtimegauges.txt';
 if (file_exists($rg_file)) {
     $rg_json = @json_decode(file_get_contents($rg_file), true);
-    if (!empty($rg_json['rrateTM']) && floatval($rg_json['rrateTM']) > 0 && !empty($rg_json['TrrateTM']) && $rg_json['TrrateTM'] !== '00:00') {
-        $max_rain_time = $rg_json['TrrateTM'];
+    if (!empty($rg_json['rrateTM']) && floatval($rg_json['rrateTM']) > 0) {
+        $max_rain_rate = floatval($rg_json['rrateTM']);
+        if (!empty($rg_json['TrrateTM']) && $rg_json['TrrateTM'] !== '00:00') {
+            $max_rain_time = $rg_json['TrrateTM'];
+        }
     } elseif (!empty($rg_json['hourlyrainTH']) && floatval($rg_json['hourlyrainTH']) > 0 && !empty($rg_json['ThourlyrainTH']) && $rg_json['ThourlyrainTH'] !== '00:00') {
+        $max_rain_rate = floatval($rg_json['hourlyrainTH']);
         $max_rain_time = $rg_json['ThourlyrainTH'];
     } elseif (!empty($rg_json['LastRainTipISO']) && strpos($rg_json['LastRainTipISO'], date('Y-m-d')) === 0) {
         $max_rain_time = date('H:i', strtotime($rg_json['LastRainTipISO']));
     }
 }
-if (empty($max_rain_time)) {
+if ($max_rain_rate == 0.0 || empty($max_rain_time)) {
     $today_ini_file = __DIR__ . '/cumulusmxdata/today.ini';
     if (file_exists($today_ini_file)) {
         $today_ini = @parse_ini_file($today_ini_file, true);
-        if (!empty($today_ini['Rain']['HHourlyTime'])) {
-            $max_rain_time = date('H:i', strtotime($today_ini['Rain']['HHourlyTime']));
-        } elseif (!empty($today_ini['Rain']['LastTip'])) {
-            $max_rain_time = date('H:i', strtotime($today_ini['Rain']['LastTip']));
+        if ($max_rain_rate == 0.0 && !empty($today_ini['Rain']['High'])) {
+            $max_rain_rate = floatval($today_ini['Rain']['High']);
+        }
+        if (empty($max_rain_time)) {
+            if (!empty($today_ini['Rain']['HTime'])) {
+                $max_rain_time = date('H:i', strtotime($today_ini['Rain']['HTime']));
+            } elseif (!empty($today_ini['Rain']['HHourlyTime'])) {
+                $max_rain_time = date('H:i', strtotime($today_ini['Rain']['HHourlyTime']));
+            } elseif (!empty($today_ini['Rain']['LastTip'])) {
+                $max_rain_time = date('H:i', strtotime($today_ini['Rain']['LastTip']));
+            }
         }
     }
 }
@@ -127,27 +139,20 @@ $current_month_str = $mesos_cat[intval(date('n'))] ?? date('F');
             <?php 
             if ($rain_rate > 0) {
                 echo '<span style="color:#38bdf8;">Plou: ' . number_format($rain_rate, 1) . ' mm/h</span>';
-            } elseif ($rain_today > 0) {
-                if (!empty($max_rain_time)) {
-                    echo '<span style="color:#01a4b4;">Hora màx: ' . $max_rain_time . ' h</span>';
-                } else {
-                    echo '<span style="color:#01a4b4;">' . number_format($rain_today, 1) . ' mm acumulats</span>';
-                }
             } else {
-                echo '<span style="color:#a0aec0;">Sense pluja avui</span>';
+                echo '<span style="color:#a0aec0;">Intensitat: ' . number_format($rain_rate, 1) . ' mm/h</span>';
             }
             ?>
         </div>
     </div>
 
-    <!-- Right values -->
+    <!-- Right values: Opció B (Intensitat Màx) i Darrera Pluja -->
     <div class="PWS_right">
-        <div class="PWS_div_right" style="border-left-color: #718096;">Darrera Hora<br><b><?php echo number_format($rain_lasthour, 1); ?> mm</b></div>
-        <div class="PWS_div_right pws_has_time" style="border-left-color: #718096;" title="Intensitat màxima de pluja avui">
-            Intensitat<br><b><?php echo number_format($rain_rate, 1); ?> mm/h</b>
+        <div class="PWS_div_right pws_has_time" style="border-left-color: #01a4b4;" title="Intensitat màxima de pluja avui">
+            Intensitat Màx<br><b><?php echo number_format($max_rain_rate, 1); ?> mm/h</b>
             <span class="pws_val_time"><?php echo !empty($max_rain_time) ? $max_rain_time . ' h' : '--:--'; ?></span>
         </div>
-        <div class="PWS_div_right" style="border-left-color: #718096;">Darrera Pluja<br><b><?php echo $last_rain_display; ?></b></div>
+        <div class="PWS_div_right" style="border-left-color: #718096;" title="Data de la darrera pluja">Darrera Pluja<br><b><?php echo $last_rain_display; ?></b></div>
     </div>
 </div>
 <div class="PWS_module_footer">
