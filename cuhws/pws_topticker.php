@@ -125,12 +125,15 @@ $first = $all_messages[0];
     font-size: 10.5px;
     font-weight: 600;
     font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
-    padding-left: 100%;
-    animation: davisTickerMarquee 16s linear infinite;
+    transform: translateX(0);
 }
-@keyframes davisTickerMarquee {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
+@keyframes davisMarqueePingPong {
+    0%, 20% {
+        transform: translateX(0px);
+    }
+    80%, 100% {
+        transform: translateX(var(--davis-ticker-scroll, 0px));
+    }
 }
 .davis-ticker-box:hover .davis-top-ticker-track {
     animation-play-state: paused !important;
@@ -169,6 +172,29 @@ $first = $all_messages[0];
         window._davisTickerTimer = null;
     }
     
+    var wrapEl = document.getElementById('davis_top_wrap');
+    var trackEl = document.getElementById('davis_top_track');
+    var iconBoxEl = document.getElementById('davis_top_icon_box');
+    var titleEl = document.getElementById('davis_top_title');
+    var dotEl = document.getElementById('davis_top_dot');
+
+    function initDavisMarquee() {
+        if (!wrapEl || !trackEl) return;
+        var diff = trackEl.scrollWidth - wrapEl.clientWidth;
+        if (diff > 4) {
+            wrapEl.style.setProperty('--davis-ticker-scroll', '-' + (diff + 10) + 'px');
+            var duration = Math.max(7, Math.round(diff / 18) + 3);
+            trackEl.style.animation = 'davisMarqueePingPong ' + duration + 's ease-in-out infinite alternate';
+        } else {
+            trackEl.style.animation = 'none';
+            trackEl.style.transform = 'none';
+        }
+    }
+
+    initDavisMarquee();
+    setTimeout(initDavisMarquee, 100);
+    window.addEventListener('resize', initDavisMarquee);
+
     var messages = <?php echo json_encode($all_messages); ?>;
     // Si només hi ha el pronòstic oficial (situació normal sense alertes/easter eggs actius), no cal rotar
     if (!messages || messages.length <= 1) return;
@@ -176,11 +202,6 @@ $first = $all_messages[0];
     if (window._davisTickerIdx === undefined) {
         window._davisTickerIdx = 0;
     }
-    
-    var iconBoxEl = document.getElementById('davis_top_icon_box');
-    var titleEl = document.getElementById('davis_top_title');
-    var dotEl = document.getElementById('davis_top_dot');
-    var trackEl = document.getElementById('davis_top_track');
     
     function setItem(i) {
         var msg = messages[i];
@@ -203,6 +224,7 @@ $first = $all_messages[0];
         if (trackEl) {
             trackEl.style.color = msg.accent;
             trackEl.textContent = msg.subtitle;
+            initDavisMarquee();
         }
     }
     
