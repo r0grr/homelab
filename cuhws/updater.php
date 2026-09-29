@@ -10,7 +10,7 @@ function safeUpdate(id, newHtml) {
     var el = document.getElementById(id);
     if (!el || !newHtml) return;
     if (el.innerHTML.trim() !== newHtml.trim()) {
-        $(el).html(newHtml);
+        el.innerHTML = newHtml;
     }
 }
 
