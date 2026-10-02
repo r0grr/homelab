@@ -99,6 +99,7 @@ $bg4 = ($rain_level >= 4) ? $blue_fill : $empty_fill;
 $bdr4 = ($rain_level >= 4) ? $blue_border : $empty_border;
 
 $bg5 = ($rain_level >= 5) ? $blue_fill : $empty_fill;
+$bdr5 = ($rain_level >= 5) ? $blue_border : $empty_border;
 $mesos_cat = [1 => "Gener", 2 => "Febrer", 3 => "Març", 4 => "Abril", 5 => "Maig", 6 => "Juny", 7 => "Juliol", 8 => "Agost", 9 => "Setembre", 10 => "Octubre", 11 => "Novembre", 12 => "Desembre"];
 $current_year_str = date('Y');
 $current_month_str = $mesos_cat[intval(date('n'))] ?? date('F');
