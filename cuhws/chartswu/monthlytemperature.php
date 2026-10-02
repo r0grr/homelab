@@ -125,7 +125,7 @@
 		data: [
 		{
 			//type: "spline",
-			type: "splineArea",
+			type: "column",
 			color:"#ff9350",
 			markerSize:2,
 			showInLegend:true,
@@ -137,7 +137,7 @@
 			yValueFormatString: "#0.# <?php echo $tempunit ;?>",
 		},
 		{
-			type: "splineArea",
+			type: "column",
 			color:"#00A4B4",
 			markerSize:2,
 			showInLegend:true,
