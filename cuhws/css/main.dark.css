@@ -13495,10 +13495,11 @@ header.top-navbar {
 }
 
 /* Responsive adjustments */
-@media screen and (max-width: 1279px) {
+@media screen and (max-width: 1259px) {
     .top-summary-wrapper {
+        max-width: 654px;
+        margin: 0 auto 4px auto;
         padding: 0 4px;
-        margin-bottom: 4px;
     }
     .top-summary-toggle-btn {
         display: flex !important;
@@ -13588,23 +13589,72 @@ header.top-navbar {
         font-size: 12px !important;
     }
 }
-@media screen and (min-width: 640px) and (max-width: 959px) {
-    .PWS_weather_container { width: 640px; }
-    .PWS_weather_item_s { width: 250px; min-width: 250px; }
+@media screen and (min-width: 640px) and (max-width: 1259px) {
+    .PWS_weather_container {
+        width: 654px;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 0 4px;
+        box-sizing: border-box;
+    }
+    .PWS_weather_item {
+        width: 314px;
+        min-width: 300px;
+        max-width: calc(50% - 6px);
+        margin: 3px;
+        box-sizing: border-box;
+    }
+    .PWS_weather_item_w {
+        width: 634px;
+        max-width: calc(100% - 6px);
+        margin: 3px;
+        box-sizing: border-box;
+    }
+    .PWS_weather_item_s {
+        width: calc(33.333% - 6px);
+        max-width: 210px;
+        min-width: 180px;
+        margin: 3px;
+        box-sizing: border-box;
+    }
+    header.top-navbar {
+        max-width: 648px !important;
+        margin: 6px auto !important;
+    }
+    .top-summary-wrapper {
+        max-width: 654px !important;
+        margin: 0 auto 6px auto !important;
+    }
+    .top-summary-content > .PWS_weather_container {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        width: 654px !important;
+        max-width: 100% !important;
+    }
+    .top-summary-content .PWS_weather_item_s {
+        flex: 0 0 calc(33.333% - 6px) !important;
+        width: calc(33.333% - 6px) !important;
+        max-width: 210px !important;
+        min-width: 180px !important;
+        margin: 3px !important;
+        box-sizing: border-box !important;
+    }
+    .pws_footer_card {
+        max-width: 648px !important;
+        margin: 10px auto !important;
+    }
 }
-@media screen and (min-width: 960px) and (max-width: 1279px) {
-    .PWS_weather_container { width: 960px; }
-    .PWS_weather_item_s { width: 250px; min-width: 250px; }
-}
-@media screen and (min-width: 1280px) and (max-width: 1459px) {
+@media screen and (min-width: 1260px) and (max-width: 1459px) {
     .PWS_weather_container { width: 1280px; }
-    .PWS_weather_item { width: 314px; min-width: 314px; }
+    .PWS_weather_item { width: 314px; min-width: 300px; }
     .PWS_weather_item_w { width: 634px; }
-    header.top-navbar { max-width: 1274px !important; }
+    header.top-navbar { max-width: 1274px !important; margin: 8px auto !important; }
     .top-summary-wrapper { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }
     .top-summary-content > .PWS_weather_container { display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: space-between !important; }
     .top-summary-content .PWS_weather_item_s { flex: 1 1 0 !important; width: auto !important; max-width: none !important; min-width: 0 !important; margin: 3px !important; box-sizing: border-box !important; }
-    .pws_footer_card { max-width: 1274px !important; }
+    .pws_footer_card { max-width: 1274px !important; margin: 14px auto 0 auto !important; }
 }
 @media screen and (min-width: 1460px) {
     .PWS_weather_container { width: 1460px; }
@@ -13666,7 +13716,7 @@ header.top-navbar {
     text-align: center;
 }
 
-@media screen and (max-width: 959px) {
+@media screen and (max-width: 639px) {
     .PWS_weather_item_w {
         width: 100% !important;
         min-width: 100% !important;
@@ -13674,12 +13724,15 @@ header.top-navbar {
         margin: 4px 0 !important;
     }
 }
-@media screen and (min-width: 960px) and (max-width: 1279px) {
+@media screen and (min-width: 640px) and (max-width: 1259px) {
     .PWS_weather_item_w {
-        width: 474px;
+        width: 634px;
+        max-width: calc(100% - 6px);
+        height: 232px;
+        margin: 3px;
     }
 }
-@media screen and (min-width: 1280px) and (max-width: 1459px) {
+@media screen and (min-width: 1260px) and (max-width: 1459px) {
     .PWS_weather_item_w {
         width: 634px;
     }
@@ -14007,12 +14060,12 @@ header.top-navbar {
 /* ==========================================================================
    DESKTOP RESPONSIVE CONTAINER ALIGNMENTS (Outer flush width: Container - 6px)
    ========================================================================== */
-@media screen and (min-width: 960px) and (max-width: 1279px) {
+@media screen and (min-width: 640px) and (max-width: 1259px) {
     header.top-navbar, .pws_footer_card {
-        max-width: 954px !important;
+        max-width: 648px !important;
     }
 }
-@media screen and (min-width: 1280px) and (max-width: 1459px) {
+@media screen and (min-width: 1260px) and (max-width: 1459px) {
     header.top-navbar, .pws_footer_card {
         max-width: 1274px !important;
     }
@@ -14024,20 +14077,18 @@ header.top-navbar {
 }
 
 /* ==========================================================================
-   MOBILE RESPONSIVE OVERRIDES (<= 959px)
+   MOBILE & TABLET RESPONSIVE OVERRIDES (<= 1259px)
    ========================================================================== */
-@media screen and (max-width: 959px) {
+@media screen and (max-width: 1259px) {
     header.top-navbar {
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
         width: 100% !important;
-        max-width: 100% !important;
+        max-width: 648px !important;
         height: auto !important;
-        margin: 0 0 6px 0 !important;
-        border-radius: 0 !important;
-        border-left: none !important;
-        border-right: none !important;
+        margin: 6px auto !important;
+        border-radius: 6px !important;
         padding: 8px 10px 9px 10px !important;
         box-sizing: border-box !important;
         flex-direction: column !important;
@@ -14130,9 +14181,9 @@ header.top-navbar {
         visibility: visible !important;
         opacity: 1 !important;
         width: 100% !important;
-        max-width: 100% !important;
+        max-width: 648px !important;
         padding: 0 !important;
-        margin: 10px 0 0 0 !important;
+        margin: 10px auto 0 auto !important;
     }
 
     .pws_footer_card {
@@ -14140,14 +14191,10 @@ header.top-navbar {
         visibility: visible !important;
         opacity: 1 !important;
         width: 100% !important;
-        max-width: 100% !important;
-        border-radius: 0 !important;
-        border-left: none !important;
-        border-right: none !important;
-        border-bottom: none !important;
-        margin: 0 !important;
-        margin-bottom: 0 !important;
-        padding: 18px 12px calc(26px + env(safe-area-inset-bottom, 12px)) 12px !important;
+        max-width: 648px !important;
+        border-radius: 6px !important;
+        margin: 0 auto !important;
+        padding: 18px 16px 20px 16px !important;
         box-sizing: border-box !important;
         gap: 12px !important;
     }
@@ -14162,5 +14209,30 @@ header.top-navbar {
 
     .pws_footer_seal {
         font-size: 11.5px !important;
+    }
+}
+
+@media screen and (max-width: 639px) {
+    header.top-navbar {
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        margin: 0 0 6px 0 !important;
+        max-width: 100% !important;
+    }
+
+    .PWS_weather_container.pws_footer_container,
+    .pws_footer_container {
+        max-width: 100% !important;
+        margin: 10px 0 0 0 !important;
+    }
+
+    .pws_footer_card {
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: none !important;
+        max-width: 100% !important;
+        padding: 18px 12px calc(26px + env(safe-area-inset-bottom, 12px)) 12px !important;
     }
 }
