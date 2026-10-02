@@ -15,6 +15,50 @@ CMX_REPORTS_DIR = '/opt/servidor/cumulusmx/reports'
 CMX_DATA_DIR = '/opt/servidor/cumulusmx/data'
 DAYFILE_PATH = os.path.join(CMX_DATA_DIR, 'dayfile.txt')
 
+def format_monthly_day_row(day, mean, high, htime, low, ltime, heat, cool, rain, avgw, gust, gtime, domdir, barom, hum):
+    if ltime.startswith('0') and len(ltime) == 5:
+        ltime = ltime[1:]
+    if htime.startswith('0') and len(htime) == 5:
+        htime = htime[1:]
+    if gtime.startswith('0') and len(gtime) == 5:
+        gtime = gtime[1:]
+    return (
+        f"{day:<2}"
+        f"{mean:7.1f}"
+        f"{high:6.1f}"
+        f"{htime:>9}"
+        f"{low:6.1f}"
+        f"{ltime:>9}"
+        f"{heat:5d}"
+        f"{cool:5d} "
+        f"{rain:5.1f} "
+        f"{avgw:3d} "
+        f"{gust:3d} "
+        f"{gtime:>8} "
+        f"{domdir:>3}"
+        f"{barom:6.1f}"
+        f"{hum:5d}\n"
+    )
+
+def format_monthly_tot_row(tot_mean, tot_max_h, tot_max_h_date, tot_min_l, tot_min_l_date, tot_heat, tot_cool, tot_rain, tot_avgw, tot_max_g, tot_max_g_date, tot_domdir, tot_barom, tot_hum):
+    return (
+        f"TOT  "
+        f"{tot_mean:4.1f} "
+        f"{tot_max_h:5.1f} "
+        f"{tot_max_h_date:>8} "
+        f"{tot_min_l:5.1f} "
+        f"{tot_min_l_date:>8} "
+        f"{tot_heat:4d} "
+        f"{tot_cool:4d}  "
+        f"{tot_rain:5.1f}   "
+        f"{tot_avgw:1d}  "
+        f"{tot_max_g:2d}  "
+        f"{tot_max_g_date:>7}   "
+        f"{tot_domdir:>1}"
+        f"{tot_barom:6.1f}"
+        f"{tot_hum:5d}\n"
+    )
+
 def format_yearly_row(mon, mean, high, hdate, low, ldate, hdays, cdays, rain, avgw, hi, hidate, domdir, barom, hum):
     return (
         f"{mon:<2}"
@@ -38,6 +82,60 @@ def format_yearly_tot(tot_mean, tot_max_h, tot_max_h_date, tot_min_l, tot_min_l_
     return (
         f"TOT  {tot_mean:4.1f} {tot_max_h:5.1f}   {tot_max_h_date:>6} {tot_min_l:5.1f}   {tot_min_l_date:>6} {tot_heat:4d} {tot_cool:4d} {tot_rain:5.1f}   {tot_avgw:1d}  {tot_max_g:2d}  {tot_max_g_date:>7}   {tot_domdir:>1}{tot_barom:6.1f}   {tot_hum:2d}\n"
     )
+
+def parse_existing_month_days(month_file):
+    days = {}
+    if not os.path.exists(month_file):
+        return days
+    try:
+        with open(month_file, 'r', encoding='utf-8', errors='ignore') as f:
+            for line in f:
+                l = line.strip()
+                if not l or not l[0].isdigit():
+                    continue
+                parts = l.split()
+                if len(parts) >= 12:
+                    try:
+                        d = int(parts[0])
+                        mean_t = float(parts[1])
+                        high_t = float(parts[2])
+                        high_time = parts[3]
+                        low_t = float(parts[4])
+                        low_time = parts[5]
+                        heat = int(parts[6])
+                        cool = int(parts[7])
+                        rain = float(parts[8])
+                        avgw = int(parts[9])
+                        gust = int(parts[10])
+                        gust_time = parts[11]
+                        if len(parts) >= 15:
+                            dom_dir = parts[12]
+                            barom = float(parts[13])
+                            hum = int(parts[14])
+                        elif len(parts) == 14:
+                            d_b = parts[12]
+                            idx = 0
+                            while idx < len(d_b) and not d_b[idx].isdigit():
+                                idx += 1
+                            dom_dir = d_b[:idx] if idx > 0 else 'S'
+                            barom = float(d_b[idx:]) if idx < len(d_b) else 1021.0
+                            hum = int(parts[13])
+                        else:
+                            dom_dir = 'S'
+                            barom = 1021.0
+                            hum = 60
+                        days[d] = {
+                            'mean': mean_t, 'high': high_t, 'high_time': high_time,
+                            'low': low_t, 'low_time': low_time, 'heat': heat,
+                            'cool': cool, 'rain': rain, 'avgw': avgw, 'gust': gust,
+                            'gust_time': gust_time, 'domdir': dom_dir, 'barom': barom,
+                            'hum': hum
+                        }
+                    except Exception:
+                        pass
+    except Exception as e:
+        print(f"Notice reading existing month file: {e}", file=sys.stderr)
+    return days
 
 def parse_yearly_file(file_path):
     months = {}
@@ -83,20 +181,7 @@ def parse_yearly_file(file_path):
 
 def sync_month(cur_year, cur_month):
     target_month_file = os.path.join(CUHWS_NOAA_DIR, f"{cur_year}_{cur_month}.txt")
-    existing_days = {}
-
-    # Read current month file to preserve days 1-3 if present
-    if os.path.exists(target_month_file):
-        try:
-            with open(target_month_file, 'r', encoding='utf-8', errors='ignore') as f:
-                lines = f.readlines()
-            for line in lines:
-                parts = line.strip().split()
-                if parts and parts[0].isdigit():
-                    d = int(parts[0])
-                    existing_days[d] = line.rstrip("\r\n")
-        except Exception as e:
-            print(f"Notice reading existing month file: {e}", file=sys.stderr)
+    days = parse_existing_month_days(target_month_file)
 
     # Read dayfile.txt for days recorded in Cumulus MX
     if os.path.exists(DAYFILE_PATH):
@@ -143,16 +228,17 @@ def sync_month(cur_year, cur_month):
                                 elif day_num == 8:
                                     barom, hum = 1016.5, 54
 
-                            formatted_line = (
-                                f"{day_num:<4} {mean_temp:5.1f} {high_temp:5.1f}   {high_time:>6}  {low_temp:5.1f}    {low_time:>5}   "
-                                f"{heat_deg:3d}  {cool_deg:3d}  {rain:4.1f}   {avg_wind:1d}  {gust:2d}    {gust_time:>5}   "
-                                f"{dom_dir:>1}{barom:7.1f}   {hum:2d}"
-                            )
-                            existing_days[day_num] = formatted_line
+                            days[day_num] = {
+                                'mean': mean_temp, 'high': high_temp, 'high_time': high_time,
+                                'low': low_temp, 'low_time': low_time, 'heat': heat_deg,
+                                'cool': cool_deg, 'rain': rain, 'avgw': avg_wind,
+                                'gust': gust, 'gust_time': gust_time, 'domdir': dom_dir,
+                                'barom': barom, 'hum': hum
+                            }
         except Exception as e:
             print(f"Error parsing dayfile.txt: {e}", file=sys.stderr)
 
-    if not existing_days:
+    if not days:
         return None
 
     header = (
@@ -172,35 +258,29 @@ def sync_month(cur_year, cur_month):
     total_cool = 0
     count = 0
 
-    for d in sorted(existing_days.keys()):
-        line = existing_days[d]
-        body += line + "\n"
-        parts = line.split()
-        if len(parts) >= 11:
-            try:
-                m_t = float(parts[1])
-                h_t = float(parts[2])
-                l_t = float(parts[4])
-                h_d = int(parts[6])
-                c_d = int(parts[7])
-                r_d = float(parts[8])
-                g_v = int(parts[10])
-                total_mean_sum += m_t
-                total_heat += h_d
-                total_cool += c_d
-                total_rain += r_d
-                if h_t > max_h:
-                    max_h = h_t
-                    max_h_day = d
-                if l_t < min_l:
-                    min_l = l_t
-                    min_l_day = d
-                if g_v > max_g:
-                    max_g = g_v
-                    max_g_day = d
-                count += 1
-            except ValueError:
-                pass
+    for d in sorted(days.keys()):
+        item = days[d]
+        body += format_monthly_day_row(
+            d, item['mean'], item['high'], item['high_time'],
+            item['low'], item['low_time'], item['heat'],
+            item['cool'], item['rain'], item['avgw'],
+            item['gust'], item['gust_time'], item['domdir'],
+            item['barom'], item['hum']
+        )
+        total_mean_sum += item['mean']
+        total_heat += item['heat']
+        total_cool += item['cool']
+        total_rain += item['rain']
+        if item['high'] > max_h:
+            max_h = item['high']
+            max_h_day = d
+        if item['low'] < min_l:
+            min_l = item['low']
+            min_l_day = d
+        if item['gust'] > max_g:
+            max_g = item['gust']
+            max_g_day = d
+        count += 1
 
     avg_m = (total_mean_sum / count) if count > 0 else 0.0
     y_short = cur_year[2:]
@@ -209,14 +289,14 @@ def sync_month(cur_year, cur_month):
     min_l_date = f"{min_l_day}/{m_int}/{y_short}"
     max_g_date = f"{max_g_day}/{m_int}/{y_short}"
 
-    tot_line = (
-        "---------------------------------------------------------------------------------------\n"
-        f"TOT  {avg_m:5.1f} {max_h:5.1f}   {max_h_date:>7} {min_l:5.1f}   {min_l_date:>7}   "
-        f"{total_heat:3d}  {total_cool:3d}   {total_rain:3.1f}   4  {max_g:2d}   {max_g_date:>6}   S1021.0   60\n\n"
-        "HEAT BASE: 38.0\n"
-        "COOL BASE: -18.0\n\n"
+    sep = "---------------------------------------------------------------------------------------\n"
+    tot_line = format_monthly_tot_row(
+        avg_m, max_h, max_h_date, min_l, min_l_date,
+        total_heat, total_cool, total_rain, 4, max_g, max_g_date,
+        'S', 1021.0, 60
     )
-    full_content = header + body + tot_line
+    footer = "\nHEAT BASE: 38.0\nCOOL BASE: -18.0\n\n"
+    full_content = header + body + sep + tot_line + footer
 
     with open(target_month_file, 'w', encoding='utf-8') as f:
         f.write(full_content)
@@ -248,7 +328,6 @@ def sync_noaa():
     cur_year = now.strftime('%Y')
     cur_month = now.strftime('%m')
 
-    # Also check if previous month needs closing/finalizing
     cur_m_int = int(cur_month)
     months_to_sync = []
     if cur_m_int > 1:
@@ -271,7 +350,6 @@ def sync_noaa():
     target_year_file = os.path.join(CUHWS_NOAA_DIR, f"{cur_year}.txt")
     target_noaayr = os.path.join(CUHWS_NOAA_DIR, "noaayr.txt")
 
-    # Parse existing verified months from year file
     months_data = parse_yearly_file(target_year_file)
     for m_int, summary in synced_summaries.items():
         months_data[m_int] = summary
@@ -294,7 +372,6 @@ def sync_noaa():
                 md['domdir'], md['barom'], md['hum']
             )
 
-        # Compute dynamic TOT
         m_list = list(months_data.values())
         tot_mean = sum(m['mean'] for m in m_list) / len(m_list)
         max_h = max(m['high'] for m in m_list)
