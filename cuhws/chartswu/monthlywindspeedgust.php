@@ -129,7 +129,7 @@
 		data: [
 		{
 			//wind speed
-			type: "splineArea",
+			type: "column",
 			color:"#00A4B4",
 			markerSize:2,
 			showInLegend:true,
@@ -142,7 +142,7 @@
 		},
 		{
 			// wind gust
-			type: "spline",
+			type: "column",
 			color:"#f26c4f",
 			markerSize:2,
 			showInLegend:true,

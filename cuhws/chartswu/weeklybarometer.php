@@ -93,7 +93,7 @@
 			titleFontFamily: "arial",	
 			labelFontFamily: "arial",	
 			minimum: 0,
-			interval:6,	
+			interval:1,	
 				
 			},
 			
@@ -125,7 +125,7 @@
 		data: [
 		{
 			//type: "spline",
-			type: "spline",
+			type: "column",
 			color:"#3182ce",
 			markerSize:2,
 			showInLegend:true,
@@ -137,7 +137,7 @@
 			yValueFormatString: "#0.## <?php echo $pressureunit ;?>",
 		},
 		{
-			type: "spline",
+			type: "column",
 			color:"#00A4B4",
 			markerSize:2,
 			showInLegend:true,
