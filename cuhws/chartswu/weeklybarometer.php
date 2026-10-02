@@ -92,7 +92,6 @@
 			gridThickness: 0.5,	
 			titleFontFamily: "arial",	
 			labelFontFamily: "arial",	
-			minimum: 0,
 			interval:1,	
 				
 			},
