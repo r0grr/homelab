@@ -20,6 +20,7 @@ import math
 import signal
 import traceback
 import configparser
+import subprocess
 from datetime import datetime, timezone
 
 RT_PATH = '/opt/servidor/cumulusmx/web/realtime.txt'
@@ -358,13 +359,23 @@ def generate_meteoclimatic():
     except Exception as e:
         print(f"Error writing meteoclimatic.htm: {e}", file=sys.stderr, flush=True)
 
+def run_noaa_sync():
+    """Runs noaa_sync.py in an isolated subprocess to guarantee fresh execution without in-memory caching."""
+    try:
+        noaa_script = os.path.join(os.path.dirname(__file__), 'noaa_sync.py')
+        if os.path.exists(noaa_script):
+            res = subprocess.run([sys.executable, noaa_script], capture_output=True, text=True, timeout=60)
+            if res.returncode == 0:
+                if res.stdout.strip():
+                    print(res.stdout.strip(), flush=True)
+            else:
+                print(f"NOAA sync notice: {res.stderr.strip()}", file=sys.stderr, flush=True)
+    except Exception as e:
+        print(f"NOAA sync execution error: {e}", file=sys.stderr, flush=True)
+
 def main():
     ensure_symlinks()
-    try:
-        from noaa_sync import sync_noaa
-        sync_noaa()
-    except Exception as e:
-        print(f"Initial NOAA sync notice: {e}", file=sys.stderr, flush=True)
+    run_noaa_sync()
 
     loop_count = 0
     while _RUNNING:
@@ -374,11 +385,7 @@ def main():
             loop_count += 1
             # Run NOAA report sync every hour (every 12 cycles of 5 min)
             if loop_count % 12 == 0:
-                try:
-                    from noaa_sync import sync_noaa
-                    sync_noaa()
-                except Exception as e:
-                    print(f"Hourly NOAA sync error: {e}", file=sys.stderr, flush=True)
+                run_noaa_sync()
         except Exception as e:
             print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Unexpected error in loop: {e}", file=sys.stderr, flush=True)
             traceback.print_exc(file=sys.stderr)
