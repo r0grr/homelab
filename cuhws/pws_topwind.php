@@ -53,13 +53,13 @@ $max_gust_year = 72;
             <td style="text-align: left; padding-left: 2px; font-weight: 700; color: #cbd5e1; white-space: nowrap;">Avui</td>
             <td style="white-space: nowrap;">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
-                    <span class="badge-slate" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 19px; border-radius: 4px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo $max_wind_today; ?></span>
+                    <span class="badge-slate" style="display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 18px; padding: 0 3px; border-radius: 3px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo $max_wind_today; ?></span>
                     <small style="width: 36px; text-align: left; font-size: 10px; color: #a0aec0; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;"><?php echo $max_wind_time; ?></small>
                 </div>
             </td>
             <td style="white-space: nowrap;">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
-                    <span class="badge-slate" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 19px; border-radius: 4px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo $max_gust_today; ?></span>
+                    <span class="badge-slate" style="display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 18px; padding: 0 3px; border-radius: 3px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo $max_gust_today; ?></span>
                     <small style="width: 36px; text-align: left; font-size: 10px; color: #a0aec0; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;"><?php echo $max_gust_time; ?></small>
                 </div>
             </td>
@@ -68,13 +68,13 @@ $max_gust_year = 72;
             <td style="text-align: left; padding-left: 2px; font-weight: 700; color: #cbd5e1; white-space: nowrap;"><?php echo $mes_actual; ?></td>
             <td style="white-space: nowrap;">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
-                    <span class="badge-slate" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 19px; border-radius: 4px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo $max_wind_month; ?></span>
+                    <span class="badge-slate" style="display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 18px; padding: 0 3px; border-radius: 3px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo $max_wind_month; ?></span>
                     <small style="width: 36px; text-align: left; font-size: 10px; color: #a0aec0; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;"><?php echo $day_wind_month; ?> <?php echo substr($mes_actual, 0, 3); ?></small>
                 </div>
             </td>
             <td style="white-space: nowrap;">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
-                    <span class="badge-slate" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 19px; border-radius: 4px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo $max_gust_month; ?></span>
+                    <span class="badge-slate" style="display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 18px; padding: 0 3px; border-radius: 3px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo $max_gust_month; ?></span>
                     <small style="width: 36px; text-align: left; font-size: 10px; color: #a0aec0; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;"><?php echo $day_gust_month; ?> <?php echo substr($mes_actual, 0, 3); ?></small>
                 </div>
             </td>
@@ -83,13 +83,13 @@ $max_gust_year = 72;
             <td style="text-align: left; padding-left: 2px; font-weight: 700; color: #cbd5e1; white-space: nowrap;"><?php echo $any_actual; ?></td>
             <td style="white-space: nowrap;">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
-                    <span class="badge-orange" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 19px; border-radius: 4px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo $max_wind_year; ?></span>
+                    <span class="badge-orange" style="display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 18px; padding: 0 3px; border-radius: 3px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo $max_wind_year; ?></span>
                     <small style="width: 36px; text-align: left; font-size: 10px; color: #a0aec0; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;">12 Feb</small>
                 </div>
             </td>
             <td style="white-space: nowrap;">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
-                    <span class="badge-red" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 19px; border-radius: 4px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo $max_gust_year; ?></span>
+                    <span class="badge-red" style="display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 18px; padding: 0 3px; border-radius: 3px; font-weight: 600; font-size: 11.5px; font-variant-numeric: tabular-nums; box-sizing: border-box; flex-shrink: 0;"><?php echo $max_gust_year; ?></span>
                     <small style="width: 36px; text-align: left; font-size: 10px; color: #a0aec0; font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0;">24 Mar</small>
                 </div>
             </td>

@@ -131,7 +131,7 @@ $title_ch3 = ($ch3_min !== null && $ch3_max !== null) ? "Canal 3 Buffer SH30 - M
             </td>
             <td style="white-space: nowrap;">
                 <?php if ($ch2_temp !== null): ?>
-                    <span class="<?php echo get_temp_badge($ch2_temp); ?>" style="padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 12.5px;">
+                    <span class="<?php echo get_temp_badge($ch2_temp); ?>" style="display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 19px; padding: 0 4px; border-radius: 3px; font-weight: 700; font-size: 12.5px; box-sizing: border-box;">
                         <?php echo number_format($ch2_temp, 1); ?>&deg;
                     </span>
                 <?php else: ?>
@@ -153,7 +153,7 @@ $title_ch3 = ($ch3_min !== null && $ch3_max !== null) ? "Canal 3 Buffer SH30 - M
             </td>
             <td style="white-space: nowrap;">
                 <?php if ($ch3_temp !== null): ?>
-                    <span class="<?php echo get_temp_badge($ch3_temp); ?>" style="padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 12.5px;">
+                    <span class="<?php echo get_temp_badge($ch3_temp); ?>" style="display: inline-flex; align-items: center; justify-content: center; min-width: 36px; height: 19px; padding: 0 4px; border-radius: 3px; font-weight: 700; font-size: 12.5px; box-sizing: border-box;">
                         <?php echo number_format($ch3_temp, 1); ?>&deg;
                     </span>
                 <?php else: ?>
