@@ -140,12 +140,34 @@ function render_chart_scroller() {
             });
         }
 
+        function fitParentModal() {
+            try {
+                if (window.parent && window.parent !== window) {
+                    var pContent = window.parent.document.querySelector(".featherlight-iframe .featherlight-content");
+                    if (pContent) {
+                        var scroller = document.querySelector(".chart-scroller-wrapper");
+                        if (scroller) {
+                            var neededH = scroller.offsetTop + scroller.offsetHeight + 8;
+                            if (neededH > 200) {
+                                pContent.style.setProperty("height", neededH + "px", "important");
+                            }
+                        }
+                    }
+                }
+            } catch(e) {}
+        }
+
         wrapper.addEventListener("scroll", updateRangeFromScroll, { passive: true });
-        window.addEventListener("resize", updateRangeFromScroll);
+        window.addEventListener("resize", function() {
+            updateRangeFromScroll();
+            fitParentModal();
+        });
         
-        setTimeout(updateRangeFromScroll, 300);
-        setTimeout(updateRangeFromScroll, 800);
-        setTimeout(updateRangeFromScroll, 1500);
+        fitParentModal();
+        setTimeout(function() { updateRangeFromScroll(); fitParentModal(); }, 150);
+        setTimeout(function() { updateRangeFromScroll(); fitParentModal(); }, 400);
+        setTimeout(function() { updateRangeFromScroll(); fitParentModal(); }, 800);
+        setTimeout(function() { updateRangeFromScroll(); fitParentModal(); }, 1500);
     }
 
     if (document.readyState === "loading") {
