@@ -2,11 +2,12 @@
 // Open-Meteo forecast fetcher for MeteoSallent
 // Caches forecast in DarkSky JSON format for CU-HWS dashboard compatibility
 
-chdir(dirname(__FILE__));
-include_once('../settings1.php');
-include_once('../common.php');
+$dir = __DIR__;
+include_once(dirname($dir) . '/settings1.php');
+include_once(dirname($dir) . '/common.php');
 
-$cache_file = "darksky-{$language}.txt";
+$lang_code = !empty($language) ? $language : 'ca';
+$cache_file = "{$dir}/darksky-{$lang_code}.txt";
 $cache_time = 1800; // 30 minutes
 
 if (file_exists($cache_file) && (time() - filemtime($cache_file) < $cache_time) && filesize($cache_file) > 500) {
@@ -106,8 +107,10 @@ $ds = [
 ];
 
 $encoded = json_encode($ds);
-file_put_contents("darksky-{$language}.txt", $encoded);
-file_put_contents("darksky-ca.txt", $encoded);
-file_put_contents("darksky-cat.txt", $encoded);
-file_put_contents("darksky-en.txt", $encoded);
-echo "Forecast updated successfully\n";
+file_put_contents("{$dir}/darksky-{$lang_code}.txt", $encoded);
+file_put_contents("{$dir}/darksky-ca.txt", $encoded);
+file_put_contents("{$dir}/darksky-cat.txt", $encoded);
+file_put_contents("{$dir}/darksky-en.txt", $encoded);
+if (php_sapi_name() === 'cli' || !empty($_GET['verbose'])) {
+    echo "Forecast updated successfully\n";
+}
