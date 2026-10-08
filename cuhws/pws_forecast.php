@@ -3,11 +3,16 @@ include_once('livedata.php');
 include_once('common.php');
 date_default_timezone_set($TZ);
 
-// Carreguem la previsió oficial d'Open-Meteo per a Sallent si existeix
+// Carreguem la previsió oficial d'Open-Meteo per a Sallent (actualització automàtica cada 30 minuts)
 $ds_file = __DIR__ . '/jsondata/darksky-cat.txt';
-$d0_max = 31; $d0_min = 18; $d0_icon = 'pws_icons/clear_day.svg'; $d0_prob = '0%';
+if (!file_exists($ds_file) || (time() - filemtime($ds_file) > 1800) || filesize($ds_file) < 200) {
+    @include_once(__DIR__ . '/jsondata/openmeteo_fetch.php');
+}
+
+$curr_temp = isset($weather["temp"]) ? floatval($weather["temp"]) : 18.0;
+$d0_max = round($curr_temp + 3); $d0_min = round($curr_temp - 5); $d0_icon = 'pws_icons/clear_day.svg'; $d0_prob = '0%';
 $d0_night_icon = 'pws_icons/few_night.svg';
-$d1_max = 32; $d1_min = 19; $d1_icon = 'pws_icons/clear_day.svg'; $d1_prob = '5%';
+$d1_max = round($curr_temp + 3); $d1_min = round($curr_temp - 5); $d1_icon = 'pws_icons/clear_day.svg'; $d1_prob = '5%';
 $d1_night_icon = 'pws_icons/few_night.svg';
 
 if (file_exists($ds_file)) {
@@ -65,28 +70,6 @@ if (empty($cmx_status_text)) {
 }
 ?>
 <style>
-.pws_fct_tab_btn {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    color: #cbd5e0;
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 7px;
-    border-radius: 4px;
-    cursor: pointer;
-    line-height: 13px;
-    transition: all 0.2s ease;
-}
-.pws_fct_tab_btn:hover {
-    background: rgba(255, 255, 255, 0.16);
-    color: #ffffff;
-}
-.pws_fct_tab_btn.active {
-    background: #ff8841;
-    color: #ffffff;
-    border-color: #ff8841;
-    box-shadow: 0 0 6px rgba(255, 136, 65, 0.5);
-}
 .pws_forecast_marquee_wrap {
     margin: 3px 8px 4px 8px;
     background: rgba(0, 0, 0, 0.35);
@@ -124,13 +107,9 @@ if (empty($cmx_status_text)) {
 }
 </style>
 
-<div class="PWS_module_title" style="display: flex; justify-content: space-between; align-items: center;">
+<div class="PWS_module_title">
     <span>Previsió Meteorològica</span>
-    <div style="display: flex; align-items: center; gap: 5px;">
-        <button id="btn_fct_tab_table" onclick="pwsSwitchForecastTab('table')" class="pws_fct_tab_btn active" type="button" title="Previsió 4 dies">Previsió</button>
-        <button id="btn_fct_tab_map" onclick="pwsSwitchForecastTab('map')" class="pws_fct_tab_btn" type="button" title="Mapa Ensembles GFS Wetterzentrale">Ensembles</button>
-        <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('d/m H:i'); ?></span>
-    </div>
+    <span class="PWS_ol_time"><svg viewBox="0 0 32 32" width="7" height="7" fill="currentColor"><circle cx="16" cy="16" r="14"></circle></svg> <?php echo date('d/m H:i'); ?></span>
 </div>
 
 <!-- Ticker d'informació de l'estació Cumulus MX (valor dinàmic de canvas_status) -->
@@ -170,26 +149,14 @@ if (empty($cmx_status_text)) {
             </tr>
         </table>
     </div>
-
-    <!-- Vista 2: Mapa Ensembles GFS Wetterzentrale -->
-    <div id="pws_fct_view_map" style="display: none; width: 100%; height: 100%; text-align: center; box-sizing: border-box;">
-        <a href="wetterzentrale.php" data-featherlight="iframe" title="Clica per ampliar el mapa d'ensembles GFS" style="display: block; text-decoration: none; height: 100%;">
-            <div style="background: #ffffff; border-radius: 4px; padding: 2px; height: 122px; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.5);">
-                <img src="https://wetterzentrale.de/es/ens_image.php?geoid=34523&var=201&model=gfs&member=ENS&bw=1" alt="Ensembles GFS Sallent" style="max-height: 118px; max-width: 100%; object-fit: contain;" />
-            </div>
-            <div style="margin-top: 5px; font-size: 11px; color: #38bdf8; font-weight: 700;">
-                🔍 Clica per ampliar en pantalla completa
-            </div>
-        </a>
-    </div>
 </div>
 
 <div class="PWS_module_footer">
     <a href="wetterzentrale.php" data-featherlight="iframe" title="Diagrama d'Ensembles GFS (Wetterzentrale)"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Ensembles GFS</a>
     <span style="color: #4a5568;"> | </span>
-    <a href="meteocat_modal.php" data-featherlight="iframe" title="Predicció oficial Meteocat Sallent"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Meteocat Sallent</a>
+    <a href="meteocat_modal.php" data-featherlight="iframe" title="Predicció oficial Meteocat Sallent"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Meteocat</a>
     <span style="color: #4a5568;"> | </span>
-    <a href="estofex.php" data-featherlight="iframe" title="Previsió europea de tempestes severes (ESTOFEX)"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> Storm Forecast</a>
+    <a href="estofex.php" data-featherlight="iframe" title="Previsió europea de tempestes severes (ESTOFEX)"><svg viewBox="0 0 32 32" width="12" height="10" fill="none" stroke="currentcolor" stroke-linecap="round" stroke-linejoin="round" stroke-width="10%"><path d="M14 9 L3 9 3 29 23 29 23 18 M18 4 L28 4 28 14 M28 4 L14 18"></path></svg> ESTOFEX</a>
 </div>
 
 <script>
@@ -212,24 +179,4 @@ if (empty($cmx_status_text)) {
     setTimeout(initPwsFctMarquee, 300);
     window.addEventListener('resize', initPwsFctMarquee);
 })();
-
-if (typeof window.pwsSwitchForecastTab === 'undefined') {
-    window.pwsSwitchForecastTab = function(tab) {
-        var viewTable = document.getElementById('pws_fct_view_table');
-        var viewMap = document.getElementById('pws_fct_view_map');
-        var btnTable = document.getElementById('btn_fct_tab_table');
-        var btnMap = document.getElementById('btn_fct_tab_map');
-        if (tab === 'map') {
-            if (viewTable) viewTable.style.display = 'none';
-            if (viewMap) viewMap.style.display = 'block';
-            if (btnTable) btnTable.classList.remove('active');
-            if (btnMap) btnMap.classList.add('active');
-        } else {
-            if (viewTable) viewTable.style.display = 'block';
-            if (viewMap) viewMap.style.display = 'none';
-            if (btnTable) btnTable.classList.add('active');
-            if (btnMap) btnMap.classList.remove('active');
-        }
-    };
-}
 </script>

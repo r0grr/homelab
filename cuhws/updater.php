@@ -62,5 +62,7 @@ $(document).ready(function() {
 
     // Sincronització de dades de gràfics amb Cumulus MX (cada 10 minuts / 600000 ms)
     setInterval(function() { $.get("cumulus_charts_bridge.php"); }, 600000);
+    // Actualització de la previsió meteorològica Open-Meteo (cada 30 minuts / 1800000 ms)
+    setInterval(function() { $.get("jsondata/openmeteo_fetch.php"); }, 1800000);
 });
 </script>
