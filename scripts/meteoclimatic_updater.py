@@ -43,13 +43,13 @@ COMPAT_DIRS = [
 CACHE = {
     'tmp': 20.0, 'wnd': 0.0, 'azi': 0.0, 'bar': 1015.0, 'hum': 50,
     'sun': 0.0, 'uvi': 0.0,
-    'dhtm': 25.0, 'dltm': 15.0, 'dhhm': 80, 'dlhm': 40,
+    'dhtm': 20.0, 'dltm': 15.0, 'dhhm': 80, 'dlhm': 40,
     'dhbr': 1020.0, 'dlbr': 1010.0, 'dgst': 10.0,
     'dsun': 0.0, 'dhuv': 0.0, 'dpcp': 0.0, 'wrun': 0.0,
-    'mhtm': 38.5, 'mltm': 16.8, 'mhhm': 91, 'mlhm': 19,
-    'mhbr': 1024.0, 'mlbr': 1017.7, 'msun': 1004.0, 'mhuv': 7.0, 'mgst': 29.0, 'mpcp': 0.0,
-    'yhtm': 39.5, 'yltm': -6.2, 'yhhm': 96, 'ylhm': 14,
-    'yhbr': 1035.0, 'ylbr': 987.1, 'ygst': 62.8, 'ysun': 1334.0, 'yhuv': 9.2, 'ypcp': 0.0
+    'mhtm': 25.0, 'mltm': 10.0, 'mhhm': 90, 'mlhm': 30,
+    'mhbr': 1025.0, 'mlbr': 1010.0, 'msun': 800.0, 'mhuv': 5.0, 'mgst': 25.0, 'mpcp': 0.0,
+    'yhtm': 38.0, 'yltm': -5.0, 'yhhm': 98, 'ylhm': 15,
+    'yhbr': 1035.0, 'ylbr': 985.0, 'ygst': 50.0, 'ysun': 1200.0, 'yhuv': 9.0, 'ypcp': 0.0
 }
 
 _RUNNING = True
@@ -185,6 +185,57 @@ def safe_load_ini(filename):
             print(f"Warning reading {filename}: {e}", file=sys.stderr, flush=True)
     return cp
 
+def get_ini_val(cp, section, option):
+    """Safely extracts a string value from ConfigParser without throwing exceptions."""
+    if cp and cp.has_section(section) and cp.has_option(section, option):
+        try:
+            return cp.get(section, option)
+        except Exception:
+            return None
+    return None
+
+def get_solar_extremes_from_dayfile(target_year, target_month=None):
+    """
+    Parses Cumulus MX dayfile.txt to find maximum Solar radiation and UV.
+    Dayfile format: DD/MM/YY,... field 42 = SolarRad, field 44 = UV
+    """
+    path = os.path.join(DATA_DIR, 'dayfile.txt')
+    if not os.path.exists(path):
+        return None, None
+    max_solar = 0.0
+    max_uv = 0.0
+    found = False
+    try:
+        with open(path, 'r', encoding='utf-8', errors='ignore') as f:
+            for line in f:
+                parts = line.strip().split(',')
+                if len(parts) < 45:
+                    continue
+                date_parts = parts[0].split('/')
+                if len(date_parts) != 3:
+                    continue
+                try:
+                    d_day, d_month, d_year = int(date_parts[0]), int(date_parts[1]), int(date_parts[2])
+                    full_year = 2000 + d_year if d_year < 100 else d_year
+                    if full_year != target_year:
+                        continue
+                    if target_month is not None and d_month != target_month:
+                        continue
+                    s = safe_float(parts[42], 0.0)
+                    u = safe_float(parts[44], 0.0)
+                    if s > max_solar:
+                        max_solar = s
+                    if u > max_uv:
+                        max_uv = u
+                    found = True
+                except Exception:
+                    continue
+    except Exception:
+        pass
+    if found:
+        return max_solar, max_uv
+    return None, None
+
 def generate_meteoclimatic():
     global CACHE
 
@@ -199,6 +250,7 @@ def generate_meteoclimatic():
     today = safe_load_ini('today.ini')
     month = safe_load_ini('month.ini')
     year = safe_load_ini('year.ini')
+    alltime = safe_load_ini('alltime.ini')
 
     # Parse real-time fields with robust fallbacks
     if rt:
@@ -258,27 +310,123 @@ def generate_meteoclimatic():
     dsun = round(safe_float(today.get('Solar', 'HighSolarRad', fallback=None), sun), 1)
     dhuv = round(safe_float(today.get('Solar', 'HighUV', fallback=None), uvi), 1)
 
-    # Monthly extremes (incorporating historical records if available)
-    mhtm = round(max(safe_float(month.get('Temp', 'High', fallback='38.5'), 38.5), 38.5), 1)
-    mltm = round(min(safe_float(month.get('Temp', 'Low', fallback='16.8'), 16.8), 16.8), 1)
-    mhhm = safe_int(max(safe_float(month.get('Humidity', 'High', fallback='91'), 91), 91), 91)
-    mlhm = safe_int(min(safe_float(month.get('Humidity', 'Low', fallback='19'), 19), 19), 19)
-    mhbr = round(max(safe_float(month.get('Pressure', 'High', fallback='1024.0'), 1024.0), 1024.0), 1)
-    mlbr = round(min(safe_float(month.get('Pressure', 'Low', fallback='1017.7'), 1017.7), 1017.7), 1)
-    msun = round(max(safe_float(month.get('Solar', 'HighSolarRad', fallback='1004.0'), 1004.0), 1004.0), 1)
-    mhuv = round(max(safe_float(month.get('Solar', 'HighUV', fallback='7.0'), 7.0), 7.0), 1)
-    mgst = round(max(safe_float(month.get('Wind', 'Gust', fallback='29.0'), 29.0), 29.0), 1)
+    # Monthly extremes from month.ini and dayfile.txt
+    mhtm_raw = get_ini_val(month, 'Temp', 'High')
+    mhtm = round(safe_float(mhtm_raw, dhtm), 1) if mhtm_raw is not None else dhtm
+    mhtm = max(mhtm, dhtm)
 
-    # Yearly extremes
-    yhtm = round(max(safe_float(year.get('Temp', 'High', fallback='39.5'), 39.5), 39.5), 1)
-    yltm = round(min(safe_float(year.get('Temp', 'Low', fallback='-6.2'), -6.2), -6.2), 1)
-    yhhm = safe_int(max(safe_float(year.get('Humidity', 'High', fallback='96'), 96), 96), 96)
-    ylhm = safe_int(min(safe_float(year.get('Humidity', 'Low', fallback='14'), 14), 14), 14)
-    yhbr = round(max(safe_float(year.get('Pressure', 'High', fallback='1035.0'), 1035.0), 1035.0), 1)
-    ylbr = round(min(safe_float(year.get('Pressure', 'Low', fallback='987.1'), 987.1), 987.1), 1)
-    ygst = round(max(safe_float(year.get('Wind', 'Gust', fallback='62.8'), 62.8), 62.8), 1)
-    ysun = round(max(safe_float(year.get('Solar', 'HighSolarRad', fallback='1334.0'), 1334.0), 1334.0), 1)
-    yhuv = round(max(safe_float(year.get('Solar', 'HighUV', fallback='9.2'), 9.2), 9.2), 1)
+    mltm_raw = get_ini_val(month, 'Temp', 'Low')
+    mltm = round(safe_float(mltm_raw, dltm), 1) if mltm_raw is not None else dltm
+    mltm = min(mltm, dltm)
+
+    mhhm_raw = get_ini_val(month, 'Humidity', 'High')
+    mhhm = safe_int(mhhm_raw, dhhm) if mhhm_raw is not None else dhhm
+    mhhm = max(mhhm, dhhm)
+
+    mlhm_raw = get_ini_val(month, 'Humidity', 'Low')
+    mlhm = safe_int(mlhm_raw, dlhm) if mlhm_raw is not None else dlhm
+    mlhm = min(mlhm, dlhm)
+
+    mhbr_raw = get_ini_val(month, 'Pressure', 'High')
+    mhbr = round(safe_float(mhbr_raw, dhbr), 1) if mhbr_raw is not None else dhbr
+    mhbr = max(mhbr, dhbr)
+
+    mlbr_raw = get_ini_val(month, 'Pressure', 'Low')
+    mlbr = round(safe_float(mlbr_raw, dlbr), 1) if mlbr_raw is not None else dlbr
+    mlbr = min(mlbr, dlbr)
+
+    mgst_raw = get_ini_val(month, 'Wind', 'Gust')
+    mgst = round(safe_float(mgst_raw, dgst), 1) if mgst_raw is not None else dgst
+    mgst = max(mgst, dgst)
+
+    df_msun, df_muv = get_solar_extremes_from_dayfile(now.year, now.month)
+    msun_base = df_msun if df_msun is not None else dsun
+    mhuv_base = df_muv if df_muv is not None else dhuv
+    msun_raw = get_ini_val(month, 'Solar', 'HighSolarRad')
+    msun = round(safe_float(msun_raw, msun_base), 1) if msun_raw is not None else msun_base
+    msun = max(msun, dsun)
+
+    mhuv_raw = get_ini_val(month, 'Solar', 'HighUV')
+    mhuv = round(safe_float(mhuv_raw, mhuv_base), 1) if mhuv_raw is not None else mhuv_base
+    mhuv = max(mhuv, dhuv)
+
+    # Yearly extremes from year.ini, alltime.ini, and dayfile.txt
+    yhtm_raw = get_ini_val(year, 'Temp', 'High')
+    yhtm = round(safe_float(yhtm_raw, mhtm), 1) if yhtm_raw is not None else mhtm
+    yhtm = max(yhtm, mhtm)
+
+    yltm_raw = get_ini_val(year, 'Temp', 'Low')
+    yltm = round(safe_float(yltm_raw, mltm), 1) if yltm_raw is not None else mltm
+    yltm = min(yltm, mltm)
+
+    yhhm_raw = get_ini_val(year, 'Humidity', 'High')
+    yhhm = safe_int(yhhm_raw, mhhm) if yhhm_raw is not None else mhhm
+    yhhm = max(yhhm, mhhm)
+
+    ylhm_raw = get_ini_val(year, 'Humidity', 'Low')
+    ylhm = safe_int(ylhm_raw, mlhm) if ylhm_raw is not None else mlhm
+    ylhm = min(ylhm, mlhm)
+
+    yhbr_raw = get_ini_val(year, 'Pressure', 'High')
+    yhbr = round(safe_float(yhbr_raw, mhbr), 1) if yhbr_raw is not None else mhbr
+    yhbr = max(yhbr, mhbr)
+
+    ylbr_raw = get_ini_val(year, 'Pressure', 'Low')
+    ylbr = round(safe_float(ylbr_raw, mlbr), 1) if ylbr_raw is not None else mlbr
+    ylbr = min(ylbr, mlbr)
+
+    ygst_raw = get_ini_val(year, 'Wind', 'Gust')
+    ygst = round(safe_float(ygst_raw, mgst), 1) if ygst_raw is not None else mgst
+    alltime_gust = safe_float(get_ini_val(alltime, 'Wind', 'highgustvalue'), None)
+    alltime_time = get_ini_val(alltime, 'Wind', 'highgusttime')
+    if alltime_gust is not None and alltime_time and str(now.year) in str(alltime_time):
+        ygst = max(ygst, round(alltime_gust, 1))
+    ygst = max(ygst, mgst)
+
+    df_ysun, df_yuv = get_solar_extremes_from_dayfile(now.year, None)
+    ysun_base = max(df_ysun, CACHE.get('ysun', 1000.0)) if df_ysun is not None else CACHE.get('ysun', 1000.0)
+    yhuv_base = max(df_yuv, CACHE.get('yhuv', 9.0)) if df_yuv is not None else CACHE.get('yhuv', 9.0)
+    ysun_raw = get_ini_val(year, 'Solar', 'HighSolarRad')
+    ysun = round(safe_float(ysun_raw, ysun_base), 1) if ysun_raw is not None else ysun_base
+    ysun = max(ysun, msun)
+
+    yhuv_raw = get_ini_val(year, 'Solar', 'HighUV')
+    yhuv = round(safe_float(yhuv_raw, yhuv_base), 1) if yhuv_raw is not None else yhuv_base
+    yhuv = max(yhuv, mhuv)
+
+    # Sanity fallback clamps to guarantee 100% adherence to Meteoclimatic DATA2 rules
+    dhtm = max(dhtm, tmp)
+    dltm = min(dltm, tmp)
+    mhtm = max(mhtm, dhtm)
+    mltm = min(mltm, dltm)
+    yhtm = max(yhtm, mhtm)
+    yltm = min(yltm, mltm)
+
+    dhhm = max(dhhm, hum)
+    dlhm = min(dlhm, hum)
+    mhhm = max(mhhm, dhhm)
+    mlhm = min(mlhm, dlhm)
+    yhhm = max(yhhm, mhhm)
+    ylhm = min(ylhm, mlhm)
+
+    dhbr = max(dhbr, bar)
+    dlbr = min(dlbr, bar)
+    mhbr = max(mhbr, dhbr)
+    mlbr = min(mlbr, dlbr)
+    yhbr = max(yhbr, mhbr)
+    ylbr = min(ylbr, mlbr)
+
+    dgst = max(dgst, wnd)
+    mgst = max(mgst, dgst)
+    ygst = max(ygst, mgst)
+
+    dsun = max(dsun, sun)
+    msun = max(msun, dsun)
+    ysun = max(ysun, msun)
+
+    dhuv = max(dhuv, uvi)
+    mhuv = max(mhuv, dhuv)
+    yhuv = max(yhuv, mhuv)
 
     # Update in-memory cache
     CACHE.update({
