@@ -11,9 +11,9 @@ http://meteosallent.com, http://www.meteosallent.com, meteosallent.com, www.mete
 }
 
 # ==============================================================================
-# DOMINI PÚBLIC OFICIAL TEMPSCAT & DYNDNS
+# DOMINI PÚBLIC OFICIAL TEMPSCAT
 # ==============================================================================
-http://tempscat.com, http://www.tempscat.com, http://sallent.dyndns.org, tempscat.com, www.tempscat.com, sallent.dyndns.org {
+http://tempscat.com, http://www.tempscat.com, tempscat.com, www.tempscat.com {
     log {
         output file /var/log/caddy/access.log {
             roll_size 10mb
@@ -62,6 +62,13 @@ http://tempscat.com, http://www.tempscat.com, http://sallent.dyndns.org, tempsca
 }
 
 # ==============================================================================
+# BLOQUEIG TOTAL DYNDNS (sallent.dyndns.org)
+# ==============================================================================
+http://sallent.dyndns.org, sallent.dyndns.org {
+    abort
+}
+
+# ==============================================================================
 # PANELL PRIVAT D'ANALÍTICA WEB GOACCESS (Intern: LAN / Tailscale)
 # ==============================================================================
 :7880 {
@@ -69,11 +76,12 @@ http://tempscat.com, http://www.tempscat.com, http://sallent.dyndns.org, tempsca
     file_server
 }
 
-# ==============================================================================
-# VAULTWARDEN HTTPS REVERSE PROXY (Subtle Crypto / Context Segur)
-# ==============================================================================
 :8443 {
     tls /etc/caddy/certs/vaultwarden.crt /etc/caddy/certs/vaultwarden.key
+    @deny_dyndns {
+        header Host *sallent.dyndns*
+    }
+    abort @deny_dyndns
     reverse_proxy vaultwarden:80
 }
 

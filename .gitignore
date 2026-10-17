@@ -80,3 +80,6 @@ cuhws/meteoclimatic.htm
 cuhws/jsondata/*.txt
 cuhws/jsondata/*.json
 cuhws/chartcache/
+goaccess/data/
+backups_pre_update/
+.agents/

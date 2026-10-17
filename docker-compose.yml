@@ -231,9 +231,13 @@ services:
       --real-time-html
       --addr=0.0.0.0
       --port=7890
+      --db-path=/srv/goaccess/data
+      --restore
+      --persist
     volumes:
       - /opt/servidor/caddy/logs:/var/log/caddy:ro
       - /opt/servidor/goaccess/report:/srv/goaccess
+      - /opt/servidor/goaccess/data:/srv/goaccess/data
     ports:
       - "7890:7890"
     networks:
