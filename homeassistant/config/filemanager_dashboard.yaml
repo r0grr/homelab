@@ -3,9 +3,25 @@ views:
   - title: Gestor de Fitxers
     path: filemanager
     icon: mdi:folder-edit
-    type: panel
     cards:
-      - type: custom:dynamic-iframe
-        title: Gestor de Fitxers (/opt/servidor)
-        port: 8085
-        path: /files/
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              # 📁 Gestor de Fitxers (File Browser)
+              Explorador, editor i gestor de fitxers de tot el directori `/opt/servidor` i del disc de còpies de seguretat.
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Obrir Gestor de Fitxers (LAN)
+                icon: mdi:open-in-new
+                tap_action:
+                  action: url
+                  url_path: "http://192.168.2.200:8085/files/"
+              - type: button
+                name: Obrir Gestor de Fitxers (Tailscale)
+                icon: mdi:shield-link-variant
+                tap_action:
+                  action: url
+                  url_path: "http://100.122.161.66:8085/files/"

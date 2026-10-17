@@ -3,9 +3,31 @@ views:
   - title: MeteoSallent
     path: meteosallent
     icon: mdi:weather-sunny
-    type: panel
     cards:
-      - type: custom:dynamic-iframe
-        title: MeteoSallent (Weather34)
-        port: 8090
-        path: /
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              # ⛅ MeteoSallent (Weather34)
+              Panell meteorològic en viu (CU-HWS) amb les dades actuals de l'estació Davis Vantage Pro2 Plus a Sallent.
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Web TempsCat
+                icon: mdi:web
+                tap_action:
+                  action: url
+                  url_path: "https://www.tempscat.com/"
+              - type: button
+                name: Obrir Local (LAN)
+                icon: mdi:open-in-new
+                tap_action:
+                  action: url
+                  url_path: "http://192.168.2.200:8090"
+              - type: button
+                name: Obrir VPN (Tailscale)
+                icon: mdi:shield-link-variant
+                tap_action:
+                  action: url
+                  url_path: "http://100.122.161.66:8090"

@@ -3,10 +3,25 @@ views:
   - title: Gestor de Contrasenyes
     path: vaultwarden
     icon: mdi:shield-key
-    type: panel
     cards:
-      - type: custom:dynamic-iframe
-        title: Vaultwarden (Gestor de Contrasenyes)
-        port: 8443
-        protocol: https
-        path: /
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              # 🛡️ Vaultwarden (Bitwarden)
+              Caixa forta de contrasenyes autohostada i segura. Requereix accés per HTTPS (port 8443) per al funcionament de SubtleCrypto del navegador.
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Obrir Bitwarden (LAN)
+                icon: mdi:lan-connect
+                tap_action:
+                  action: url
+                  url_path: "https://192.168.2.200:8443"
+              - type: button
+                name: Obrir Bitwarden (Tailscale)
+                icon: mdi:shield-link-variant
+                tap_action:
+                  action: url
+                  url_path: "https://100.122.161.66:8443"

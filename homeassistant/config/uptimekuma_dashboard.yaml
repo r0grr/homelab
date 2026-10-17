@@ -3,9 +3,25 @@ views:
   - title: Uptime Kuma
     path: uptime-kuma
     icon: mdi:heart-pulse
-    type: panel
     cards:
-      - type: custom:dynamic-iframe
-        title: Uptime Kuma (Monitoratge d'Estat)
-        port: 3001
-        path: /
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              # 💓 Uptime Kuma
+              Monitoratge en temps real de l'estat dels servidors, serveis Docker, passarel·les de xarxa i alertes de caiguda.
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Obrir Uptime Kuma (LAN)
+                icon: mdi:open-in-new
+                tap_action:
+                  action: url
+                  url_path: "http://192.168.2.200:3001"
+              - type: button
+                name: Obrir Uptime Kuma (Tailscale)
+                icon: mdi:shield-link-variant
+                tap_action:
+                  action: url
+                  url_path: "http://100.122.161.66:3001"

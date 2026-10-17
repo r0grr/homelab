@@ -3,9 +3,25 @@ views:
   - title: Analítica Web
     path: analitica-web
     icon: mdi:chart-line
-    type: panel
     cards:
-      - type: custom:dynamic-iframe
-        title: Analítica Web en Temps Real (GoAccess)
-        port: 7880
-        path: /
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              # 📈 Analítica Web en Temps Real (GoAccess)
+              Mètriques, visites, amplada de banda consumida i procedència del trànsit generat pel webserver Caddy.
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Obrir GoAccess (LAN)
+                icon: mdi:open-in-new
+                tap_action:
+                  action: url
+                  url_path: "http://192.168.2.200:7880"
+              - type: button
+                name: Obrir GoAccess (Tailscale)
+                icon: mdi:shield-link-variant
+                tap_action:
+                  action: url
+                  url_path: "http://100.122.161.66:7880"

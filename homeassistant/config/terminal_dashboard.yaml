@@ -3,9 +3,25 @@ views:
   - title: Terminal
     path: terminal
     icon: mdi:console
-    type: panel
     cards:
-      - type: custom:dynamic-iframe
-        title: Terminal (Web Console)
-        port: 7681
-        path: /
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              # 💻 Terminal Web (ttyd SSH)
+              Consola interactiva i shell bash completa al servidor Mini PC per a manteniment i administració.
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Obrir Terminal Web (LAN)
+                icon: mdi:console
+                tap_action:
+                  action: url
+                  url_path: "http://192.168.2.200:7681"
+              - type: button
+                name: Obrir Terminal Web (Tailscale)
+                icon: mdi:shield-link-variant
+                tap_action:
+                  action: url
+                  url_path: "http://100.122.161.66:7681"

@@ -3,9 +3,25 @@ views:
   - title: Configuració Estació
     path: station-setup
     icon: mdi:tune-vertical
-    type: panel
     cards:
-      - type: custom:dynamic-iframe
-        title: Configuració Weather34
-        port: 8090
-        path: /easyweathersetup.php
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              # ⚙️ Configuració Weather34 (EasyWeatherSetup)
+              Ajustos de la plantilla web, claus API, formats i opcions de visualització. Aquest panell està protegit i bloquejat a Internet; només és accessible des de la xarxa local o VPN.
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Obrir Configuració (LAN)
+                icon: mdi:open-in-new
+                tap_action:
+                  action: url
+                  url_path: "http://192.168.2.200:8090/easyweathersetup.php"
+              - type: button
+                name: Obrir Configuració (Tailscale)
+                icon: mdi:shield-link-variant
+                tap_action:
+                  action: url
+                  url_path: "http://100.122.161.66:8090/easyweathersetup.php"

@@ -3,9 +3,25 @@ views:
   - title: Cumulus MX
     path: cumulusmx
     icon: mdi:weather-partly-cloudy
-    type: panel
     cards:
-      - type: custom:dynamic-iframe
-        title: Panell de Control Cumulus MX
-        port: 8998
-        path: /ai2/index.html
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              # 🌡️ Cumulus MX (Consola AI2)
+              Panell de control del motor meteorològic de la Davis Vantage Pro2 amb la interfície en català, estat del datalogger, registres i configuració interna.
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Obrir Cumulus MX (LAN)
+                icon: mdi:open-in-new
+                tap_action:
+                  action: url
+                  url_path: "http://192.168.2.200:8998/ai2/index.html"
+              - type: button
+                name: Obrir Cumulus MX (Tailscale)
+                icon: mdi:shield-link-variant
+                tap_action:
+                  action: url
+                  url_path: "http://100.122.161.66:8998/ai2/index.html"
