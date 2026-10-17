@@ -3,9 +3,25 @@ views:
   - title: Plaques Solars
     path: solar
     icon: mdi:solar-power
-    type: panel
     cards:
-      - type: custom:dynamic-iframe
-        title: Control Plaques Solars (SolarEdge)
-        port: 5173
-        path: /
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              # ☀️ SolarEdge Pro Dashboard
+              Panell web interactiu (React + Vite) amb flux d'energia solar, autoconsum i balanç de xarxa en temps real.
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Obrir Panell Solar (LAN)
+                icon: mdi:open-in-new
+                tap_action:
+                  action: url
+                  url_path: "http://192.168.2.200:5173"
+              - type: button
+                name: Obrir Panell Solar (Tailscale)
+                icon: mdi:shield-link-variant
+                tap_action:
+                  action: url
+                  url_path: "http://100.122.161.66:5173"
