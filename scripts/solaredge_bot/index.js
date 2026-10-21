@@ -3,6 +3,7 @@ const TelegramBot = require('node-telegram-bot-api').default || require('node-te
 const axios = require('axios');
 const fs = require('fs');
 const mqtt = require('mqtt');
+const net = require('net');
 
 // Variables d'entorn
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || process.env.TELEGRAM_BOT_TOKEN;
@@ -11,18 +12,176 @@ const TELEGRAM_TOPIC_ID = process.env.TELEGRAM_TOPIC_ID ? parseInt(process.env.T
 const SOLAREDGE_SITE_ID = process.env.SOLAREDGE_SITE_ID;
 const SOLAREDGE_API_KEY = process.env.SOLAREDGE_API_KEY;
 
+// Configuració Modbus TCP Local (Inversor SolarEdge)
+const MODBUS_ENABLED = process.env.MODBUS_ENABLED !== 'false';
+const MODBUS_HOST = process.env.MODBUS_INVERTER_IP || '192.168.2.213';
+const MODBUS_PORT = parseInt(process.env.MODBUS_INVERTER_PORT, 10) || 1502;
+const MODBUS_UNIT_ID = parseInt(process.env.MODBUS_UNIT_ID, 10) || 2;
+const MODBUS_TIMEOUT_MS = parseInt(process.env.MODBUS_TIMEOUT_MS, 10) || 4000;
+
 const MQTT_HOST = process.env.MQTT_BROKER_HOST || 'mosquitto';
 const MQTT_PORT = process.env.MQTT_PORT || 1883;
 const CUMULUS_URL = process.env.CUMULUS_URL || 'http://cumulusmx:8998';
-const POLL_INTERVAL_MS = (parseInt(process.env.SOLAR_POLL_INTERVAL_SEC, 10) || 600) * 1000;
+const POLL_INTERVAL_MS = (parseInt(process.env.SOLAR_POLL_INTERVAL_SEC, 10) || 60) * 1000;
 
 // Esglaons d'alerta de consum alt (diferencial consum - generació)
 const CONSUMPTION_THRESHOLDS = [500, 650, 800, 900, 1000, 1200, 1500, 1700, 2000];
 
-// Finestra de monitoratge actiu: 07:00 a 21:00
+// ------------------------------------------------------------------------------
+// Finestra de Monitoratge Actiu Dinàmic (Adaptat a les Hores de Llum Solar)
+// ------------------------------------------------------------------------------
+const SALLENT_LAT = 41.8219;
+const SALLENT_LON = 1.8953;
+
+let lastCumulusData = null;
+
+// Càlcul astronòmic autònom de sortida i posta de sol (NOAA Solar Algorithm) per a Sallent
+function calculateSolarTimes(date = new Date(), lat = SALLENT_LAT, lon = SALLENT_LON) {
+  const rad = Math.PI / 180;
+  const deg = 180 / Math.PI;
+
+  const startOfYear = new Date(date.getFullYear(), 0, 0);
+  const diff = date - startOfYear;
+  const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+  const gamma = 2 * Math.PI / 365 * (dayOfYear - 1 + (date.getHours() - 12) / 24);
+
+  const eqtime = 229.18 * (
+    0.000075 + 0.001868 * Math.cos(gamma) - 0.032077 * Math.sin(gamma)
+    - 0.014615 * Math.cos(2 * gamma) - 0.040849 * Math.sin(2 * gamma)
+  );
+
+  const decl = 0.006918 - 0.399912 * Math.cos(gamma) + 0.070257 * Math.sin(gamma)
+    - 0.006758 * Math.cos(2 * gamma) + 0.000907 * Math.sin(2 * gamma)
+    - 0.002697 * Math.cos(3 * gamma) + 0.0148 * Math.sin(3 * gamma);
+
+  const zenithRad = 90.833 * rad; // Zenith estàndard per refracció atmosfèrica
+  const latRad = lat * rad;
+  const cosHA = (Math.cos(zenithRad) - Math.sin(latRad) * Math.sin(decl)) / (Math.cos(latRad) * Math.cos(decl));
+
+  if (cosHA > 1 || cosHA < -1) return null;
+
+  const haDeg = Math.acos(cosHA) * deg;
+
+  const solarNoonUTC = 720 - 4 * lon - eqtime;
+  const sunriseUTC = solarNoonUTC - 4 * haDeg;
+  const sunsetUTC = solarNoonUTC + 4 * haDeg;
+
+  const tzOffsetMins = -date.getTimezoneOffset();
+  const sunriseLocalMins = Math.round(sunriseUTC + tzOffsetMins);
+  const sunsetLocalMins = Math.round(sunsetUTC + tzOffsetMins);
+
+  const formatTime = (mins) => {
+    const h = Math.floor(mins / 60) % 24;
+    const m = mins % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  };
+
+  return {
+    sunriseMins: sunriseLocalMins,
+    sunsetMins: sunsetLocalMins,
+    sunriseStr: formatTime(sunriseLocalMins),
+    sunsetStr: formatTime(sunsetLocalMins)
+  };
+}
+
+// Determina la finestra de llum solar del dia (Cumulus MX -> Càlcul NOAA -> Taula mensual de seguretat)
+function getDaylightWindow(date = new Date()) {
+  let sunriseStr = null;
+  let sunsetStr = null;
+  let sunriseMins = null;
+  let sunsetMins = null;
+
+  // 1. Prioritat: dades en directe de Cumulus MX (calculades per la pròpia estació Davis a Sallent)
+  if (lastCumulusData) {
+    if (lastCumulusData.Sunrise && typeof lastCumulusData.Sunrise === 'string' && lastCumulusData.Sunrise.includes(':')) {
+      const s = lastCumulusData.Sunrise.trim();
+      const [h, m] = s.split(':').map(Number);
+      if (!isNaN(h) && !isNaN(m)) {
+        sunriseStr = s;
+        sunriseMins = h * 60 + m;
+      }
+    }
+    if (lastCumulusData.Sunset && typeof lastCumulusData.Sunset === 'string' && lastCumulusData.Sunset.includes(':')) {
+      const s = lastCumulusData.Sunset.trim();
+      const [h, m] = s.split(':').map(Number);
+      if (!isNaN(h) && !isNaN(m)) {
+        sunsetStr = s;
+        sunsetMins = h * 60 + m;
+      }
+    }
+  }
+
+  // 2. Si Cumulus encara no ha respost, càlcul astronòmic d'alta precisió per Sallent
+  if (sunriseMins === null || sunsetMins === null) {
+    const astro = calculateSolarTimes(date);
+    if (astro) {
+      if (sunriseMins === null) {
+        sunriseMins = astro.sunriseMins;
+        sunriseStr = astro.sunriseStr;
+      }
+      if (sunsetMins === null) {
+        sunsetMins = astro.sunsetMins;
+        sunsetStr = astro.sunsetStr;
+      }
+    }
+  }
+
+  // 3. Fallback mensual fix (seguretat absoluta si qualsevol altre mètode fallés)
+  if (sunriseMins === null || sunsetMins === null) {
+    const month = date.getMonth();
+    const monthlyFallbacks = [
+      { rise: '08:15', set: '17:45' }, // Gen
+      { rise: '07:50', set: '18:25' }, // Feb
+      { rise: '07:20', set: '19:15' }, // Mar
+      { rise: '07:05', set: '20:35' }, // Abr
+      { rise: '06:30', set: '21:10' }, // Mai
+      { rise: '06:15', set: '21:35' }, // Jun
+      { rise: '06:25', set: '21:30' }, // Jul
+      { rise: '07:00', set: '21:00' }, // Ago
+      { rise: '07:35', set: '20:10' }, // Set
+      { rise: '08:05', set: '19:15' }, // Oct
+      { rise: '07:45', set: '17:35' }, // Nov
+      { rise: '08:15', set: '17:25' }  // Des
+    ];
+    const fb = monthlyFallbacks[month];
+    sunriseStr = fb.rise;
+    sunsetStr = fb.set;
+    const [rh, rm] = sunriseStr.split(':').map(Number);
+    const [sh, sm] = sunsetStr.split(':').map(Number);
+    sunriseMins = rh * 60 + rm;
+    sunsetMins = sh * 60 + sm;
+  }
+
+  // Marge actiu adaptat a la generació solar:
+  // - Comença 15 min abans de la sortida de sol (albada, primera llum difusa)
+  // - Acaba 20 min després de la posta de sol (crepuscle, quan la producció solar cau a 0 W)
+  const startMins = Math.max(0, sunriseMins - 15);
+  const endMins = Math.min(24 * 60 - 1, sunsetMins + 20);
+
+  const formatTime = (mins) => {
+    const h = Math.floor(mins / 60) % 24;
+    const m = mins % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  };
+
+  return {
+    sunriseStr,
+    sunsetStr,
+    sunriseMins,
+    sunsetMins,
+    startMins,
+    endMins,
+    startStr: formatTime(startMins),
+    endStr: formatTime(endMins)
+  };
+}
+
+// Finestra de monitoratge actiu dinàmic segons hores de llum solar
 function isMonitoringActive(date = new Date()) {
-  const hour = date.getHours();
-  return hour >= 7 && hour < 21;
+  const nowMins = date.getHours() * 60 + date.getMinutes();
+  const w = getDaylightWindow(date);
+  return nowMins >= w.startMins && nowMins < w.endMins;
 }
 
 // Botons interactius per al Panell en Directe
@@ -99,16 +258,20 @@ mqttClient.on('message', (topic, message) => {
   }
 });
 
-function publishSolarToMqtt(pvWatts, loadWatts, gridWatts) {
+function publishSolarToMqtt(pvWatts, loadWatts, gridWatts, energyTodayKwh) {
   if (!mqttClient.connected) return;
   try {
     mqttClient.publish('solar/power', pvWatts.toFixed(0), { retain: true });
     mqttClient.publish('solar/load', loadWatts.toFixed(0), { retain: true });
     mqttClient.publish('solar/grid', gridWatts.toFixed(0), { retain: true });
+    if (energyTodayKwh !== undefined && energyTodayKwh !== null && !isNaN(energyTodayKwh)) {
+      mqttClient.publish('solar/energy_today', Number(energyTodayKwh).toFixed(2), { retain: true });
+    }
     mqttClient.publish('solar/status', JSON.stringify({
       power_w: Math.round(pvWatts),
       load_w: Math.round(loadWatts),
       grid_w: Math.round(gridWatts),
+      energy_today_kwh: (energyTodayKwh !== undefined && energyTodayKwh !== null && !isNaN(energyTodayKwh)) ? Number(Number(energyTodayKwh).toFixed(2)) : undefined,
       timestamp: new Date().toISOString()
     }), { retain: true });
   } catch (err) {
@@ -147,7 +310,9 @@ let state = {
   gridExportMaxTime: '--:--',
   gridImportMax: 0,
   gridImportMaxTime: '--:--',
-  energyTodayKwh: 0
+  energyTodayKwh: 0,
+  midnightLifetimeKwh: 0,
+  lastLifetimeKwh: 0
 };
 
 function loadMemory() {
@@ -191,9 +356,13 @@ loadMemory();
 async function fetchCumulusRaw() {
   try {
     const res = await axios.get(`${CUMULUS_URL}/api/data/currentdata`, { timeout: 4000 });
-    return res.data || {};
+    const data = res.data || {};
+    if (data && Object.keys(data).length > 0) {
+      lastCumulusData = data;
+    }
+    return data;
   } catch (err) {
-    return {};
+    return lastCumulusData || {};
   }
 }
 
@@ -287,11 +456,132 @@ function getSkyCondition(solarRadVal, maxRadVal, sunriseStr, sunsetStr) {
 }
 
 // ------------------------------------------------------------------------------
-// Consulta API SolarEdge (amb memòria cau per a overview)
+// Consulta Modbus TCP Local (i fallback a Cloud API)
 // ------------------------------------------------------------------------------
-async function fetchSolarEdgeData() {
+function readModbusRegisters(ip, port, unitId, startAddr, regCount, timeoutMs = MODBUS_TIMEOUT_MS) {
+  return new Promise((resolve, reject) => {
+    const socket = new net.Socket();
+    let isDone = false;
+    let timer = setTimeout(() => {
+      if (!isDone) {
+        isDone = true;
+        socket.destroy();
+        reject(new Error(`Modbus TCP Timeout (${timeoutMs}ms)`));
+      }
+    }, timeoutMs);
+
+    const txId = Math.floor(Math.random() * 65535);
+    const req = Buffer.alloc(12);
+    req.writeUInt16BE(txId, 0);      // Transaction ID
+    req.writeUInt16BE(0, 2);         // Protocol ID (0 = Modbus TCP)
+    req.writeUInt16BE(6, 4);         // Longitud (6 bytes següents)
+    req.writeUInt8(unitId, 6);       // Unit ID (2)
+    req.writeUInt8(3, 7);            // Function code 3 (Read Holding Registers)
+    req.writeUInt16BE(startAddr, 8);  // Adreça registre inici
+    req.writeUInt16BE(regCount, 10);  // Quantitat de registres
+
+    let chunks = [];
+
+    socket.connect(port, ip, () => {
+      socket.write(req);
+    });
+
+    socket.on('data', (data) => {
+      chunks.push(data);
+      const total = Buffer.concat(chunks);
+      if (total.length >= 9) {
+        const byteCount = total.readUInt8(8);
+        if (total.length >= 9 + byteCount) {
+          if (!isDone) {
+            isDone = true;
+            clearTimeout(timer);
+            socket.end();
+            const pdu = total.slice(9, 9 + byteCount);
+            resolve(pdu);
+          }
+        }
+      }
+    });
+
+    socket.on('error', (err) => {
+      if (!isDone) {
+        isDone = true;
+        clearTimeout(timer);
+        socket.destroy();
+        reject(err);
+      }
+    });
+
+    socket.on('close', () => {
+      if (!isDone) {
+        isDone = true;
+        clearTimeout(timer);
+        reject(new Error('Modbus socket tancat prematurament'));
+      }
+    });
+  });
+}
+
+async function fetchSolarEdgeDataModbus() {
+  // Model SunSpec 101/103 (Inversor SolarEdge): registre 40069, 40 registres
+  const inv = await readModbusRegisters(MODBUS_HOST, MODBUS_PORT, MODBUS_UNIT_ID, 40069, 40);
+  const pvRaw = inv.readInt16BE(14 * 2);
+  const pvSf = inv.readInt16BE(15 * 2);
+  const pvWatts = Math.max(0, pvRaw * Math.pow(10, pvSf));
+
+  const lifeRaw = inv.readUInt32BE(24 * 2);
+  const lifeSf = inv.readInt16BE(26 * 2);
+  const lifetimeKwh = (lifeRaw * Math.pow(10, lifeSf)) / 1000;
+  const status = inv.readUInt16BE(38 * 2);
+
+  state.lastLifetimeKwh = lifetimeKwh;
+  if (!state.midnightLifetimeKwh || state.midnightLifetimeKwh <= 0) {
+    state.midnightLifetimeKwh = Math.max(0, lifetimeKwh - (state.energyTodayKwh || 0));
+  }
+  const energyTodayKwh = Math.max(0, lifetimeKwh - state.midnightLifetimeKwh);
+  state.energyTodayKwh = Math.round(energyTodayKwh * 1000) / 1000;
+
+  // Pausa de 120ms abans de consultar el comptador (l'inversor només accepta 1 connexió Modbus concurrent)
+  await new Promise(r => setTimeout(r, 120));
+
+  let gridWatts = 0;
+  try {
+    // Model SunSpec 203 (Comptador d'energia xarxa): registre 40188, 30 registres
+    const meter = await readModbusRegisters(MODBUS_HOST, MODBUS_PORT, MODBUS_UNIT_ID, 40188, 30);
+    const gridRaw = meter.readInt16BE(18 * 2);
+    const gridSf = meter.readInt16BE(22 * 2);
+    const rawGridWatts = gridRaw * Math.pow(10, gridSf);
+    // En aquesta instal·lació física (orientació pinces TI / comptador), el registre
+    // és positiu en injectar excedent a la xarxa i negatiu en consumir de la xarxa.
+    // Invertim el signe per al conveni del bot (+ comprant de xarxa, - venent excedent):
+    gridWatts = -rawGridWatts;
+  } catch (meterErr) {
+    console.warn('⚠️ [Modbus] Error llegint comptador (Model 203):', meterErr.message);
+  }
+
+  // Conservació d'energia: Consum casa = Producció solar + Balanç de xarxa (+ consum xarxa, - injecció excedent)
+  const loadWatts = Math.max(0, pvWatts + gridWatts);
+
+  const pvKw = pvWatts / 1000;
+  const loadKw = loadWatts / 1000;
+  const gridKw = gridWatts / 1000;
+
+  return {
+    source: 'modbus',
+    PV: { currentPower: pvKw },
+    LOAD: { currentPower: loadKw },
+    GRID: { currentPower: Math.abs(gridKw) },
+    gridKwSigned: gridKw,
+    inverterStatus: status,
+    lifetimeKwh,
+    energyTodayKwh: state.energyTodayKwh
+  };
+}
+
+async function fetchSolarEdgeDataCloud() {
   if (SOLAREDGE_API_KEY === 'pega_aqui_tu_api_key' || SOLAREDGE_API_KEY === 'DEMO' || !SOLAREDGE_API_KEY) {
     return {
+      source: 'demo',
       PV: { currentPower: 3.5 },
       LOAD: { currentPower: 1.2 },
       GRID: { currentPower: -2.3 },
@@ -304,14 +594,30 @@ async function fetchSolarEdgeData() {
   
   const isExporting = flow.connections?.some(c => c.to?.toLowerCase() === 'grid');
   flow.gridKwSigned = isExporting ? -(flow.GRID?.currentPower || 0) : (flow.GRID?.currentPower || 0);
+  flow.source = 'cloud';
   
   return flow;
+}
+
+async function fetchSolarEdgeData() {
+  if (MODBUS_ENABLED) {
+    try {
+      const data = await fetchSolarEdgeDataModbus();
+      return data;
+    } catch (err) {
+      console.warn(`⚠️ [Modbus] Error lectura local (${err.message}). Reintentant amb Cloud API...`);
+    }
+  }
+  return await fetchSolarEdgeDataCloud();
 }
 
 let cachedEnergyKwh = null;
 let lastEnergyFetch = 0;
 
 async function fetchSolarOverviewEnergy(force = false) {
+  if (MODBUS_ENABLED && state.energyTodayKwh !== undefined && state.energyTodayKwh !== null && state.energyTodayKwh > 0) {
+    return state.energyTodayKwh;
+  }
   const now = Date.now();
   if (!force && cachedEnergyKwh !== null && (now - lastEnergyFetch < 20 * 60 * 1000)) {
     return cachedEnergyKwh;
@@ -329,7 +635,7 @@ async function fetchSolarOverviewEnergy(force = false) {
       return cachedEnergyKwh;
     }
   } catch (err) {
-    console.error('Error consultant overview de SolarEdge:', err.message);
+    console.error('Error consultant overview de SolarEdge Cloud:', err.message);
   }
   return cachedEnergyKwh || state.energyTodayKwh || 0;
 }
@@ -399,6 +705,9 @@ function checkDayRollover() {
     state.gridImportMax = 0;
     state.gridImportMaxTime = '--:--';
     state.energyTodayKwh = 0;
+    if (state.lastLifetimeKwh) {
+      state.midnightLifetimeKwh = state.lastLifetimeKwh;
+    }
     cachedEnergyKwh = null;
     saveMemory();
   }
@@ -480,27 +789,38 @@ async function checkConsumptionAlerts(pvKw, loadKw) {
     state.currentConsumptionTierIndex = tierIndex;
     saveMemory();
   } else if (tierIndex < prevIndex) {
-    // Si ha baixat a un esglaó inferior però encara > 500W, actualitzem esborrant l'anterior
-    await deleteLastAlert();
-
+    // Si ha baixat d'esglaó però encara > 500W, editem el missatge existent sense generar noves notificacions sonores
     const threshold = CONSUMPTION_THRESHOLDS[tierIndex];
-    const sent = await sendConsumptionAlert(
-      `⚠️ *Consum en descens (encara alt):*\n` +
+    const text = `⚠️ *Consum en descens (encara alt):*\n` +
       `S'estan gastant *${deficitW} W* per sobre de la generació solar (esglaó: *${threshold} W*).\n\n` +
-      `⚡ Solar: *${pvW.toFixed(0)} W* | 🏠 Consum: *${loadW.toFixed(0)} W*`
-    );
-    if (sent && sent.message_id) {
-      state.lastAlertMessageId = sent.message_id;
+      `⚡ Solar: *${pvW.toFixed(0)} W* | 🏠 Consum: *${loadW.toFixed(0)} W*`;
+
+    if (state.lastAlertMessageId) {
+      try {
+        await bot.editMessageText(text, {
+          chat_id: CHAT_ID,
+          message_id: state.lastAlertMessageId,
+          parse_mode: 'Markdown'
+        });
+      } catch (err) {
+        await deleteLastAlert();
+        const sent = await sendConsumptionAlert(text);
+        if (sent && sent.message_id) {
+          state.lastAlertMessageId = sent.message_id;
+        }
+      }
+    } else {
+      const sent = await sendConsumptionAlert(text);
+      if (sent && sent.message_id) {
+        state.lastAlertMessageId = sent.message_id;
+      }
     }
     state.currentConsumptionTierIndex = tierIndex;
     saveMemory();
   }
 }
 
-// ------------------------------------------------------------------------------
-// Format del Panell Solar en Directe (Missatge Únic de 14 caràcters)
-// ------------------------------------------------------------------------------
-function formatLiveDashboard(pvKw, loadKw, gridKw, cumulusData, energyToday) {
+function formatLiveDashboard(pvKw, loadKw, gridKw, cumulusData, energyToday, source = 'modbus') {
   const pvW = Math.round(pvKw * 1000);
   const loadW = Math.round(loadKw * 1000);
   const gridW = Math.round(gridKw * 1000);
@@ -516,6 +836,7 @@ function formatLiveDashboard(pvKw, loadKw, gridKw, cumulusData, energyToday) {
 
   const sky = getSkyCondition(cumulusData.SolarRad, cumulusData.CurrentSolarMax, cumulusData.Sunrise, cumulusData.Sunset);
   const timeStr = new Date().toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' });
+  const sourceLabel = source === 'modbus' ? 'Modbus TCP Local ⚡' : 'SolarEdge Cloud ☁️';
 
   let text = `☀️ *PANELL SOLAR EN DIRECTE*\n`;
   text += `━━━━━━━━━━━━━━\n`;
@@ -548,7 +869,7 @@ function formatLiveDashboard(pvKw, loadKw, gridKw, cumulusData, energyToday) {
   }
   text += `• 🌅 Sortida: *${cumulusData.Sunrise || '--:--'}* | 🌇 Posta: *${cumulusData.Sunset || '--:--'}*\n`;
   text += `━━━━━━━━━━━━━━\n`;
-  text += `🔄 _Actualitzat a les ${timeStr} (En directe)_`;
+  text += `🔄 _Actualitzat a les ${timeStr} (${sourceLabel})_`;
 
   return text;
 }
@@ -567,8 +888,11 @@ async function updateLiveDashboard(forceNew = false) {
     const loadKw = flow.LOAD?.currentPower || 0;
     const gridKw = flow.gridKwSigned !== undefined ? flow.gridKwSigned : (flow.GRID?.currentPower || 0);
 
-    // Publicar a MQTT (ininterromput 24/7)
-    publishSolarToMqtt(pvKw * 1000, loadKw * 1000, gridKw * 1000);
+    // Energia acumulada avui (de Modbus o fallback a Cloud overview)
+    const energyKwh = flow.energyTodayKwh !== undefined ? flow.energyTodayKwh : await fetchSolarOverviewEnergy();
+
+    // Publicar a MQTT (ininterromput 24/7, incloent energia d'avui)
+    publishSolarToMqtt(pvKw * 1000, loadKw * 1000, gridKw * 1000, energyKwh);
 
     // Si estem fora de l'horari actiu (21:00 a 07:00), aturem les edicions a Telegram
     if (!isMonitoringActive() && !forceNew) {
@@ -581,14 +905,11 @@ async function updateLiveDashboard(forceNew = false) {
     // Dades meteorològiques
     const cumulus = await fetchCumulusRaw();
 
-    // Energia acumulada avui
-    const energyKwh = await fetchSolarOverviewEnergy();
-
     // Actualitzar estadístiques del dia
     updateDailyStats(pvKw, loadKw, gridKw, energyKwh);
 
     // Format del text
-    const text = formatLiveDashboard(pvKw, loadKw, gridKw, cumulus, energyKwh);
+    const text = formatLiveDashboard(pvKw, loadKw, gridKw, cumulus, energyKwh, flow.source);
 
     const opts = {
       parse_mode: 'Markdown',
@@ -617,6 +938,7 @@ async function updateLiveDashboard(forceNew = false) {
           ...liveDashboardButtons
         });
         saveMemory();
+        console.log(`🔄 [LIVE] Panell actualitzat (#${state.liveMessageId}) a les ${new Date().toLocaleTimeString('ca-ES')} (PV: ${(pvKw*1000).toFixed(0)}W, Casa: ${(loadKw*1000).toFixed(0)}W, Xarxa: ${(gridKw*1000).toFixed(0)}W).`);
         return;
       } catch (err) {
         const desc = err.message || '';
@@ -654,9 +976,9 @@ async function updateLiveDashboard(forceNew = false) {
 }
 
 // ------------------------------------------------------------------------------
-// Resum Diari al Final del Dia (21:00h)
+// Resum Diari al Final del Dia (Posta de Sol)
 // ------------------------------------------------------------------------------
-async function sendDailySummary() {
+async function sendDailySummary(daylightWindow) {
   try {
     await deleteLastAlert();
 
@@ -687,16 +1009,23 @@ async function sendDailySummary() {
     text += `☀️ *Meteorologia Solar (Davis VP2):*\n`;
     text += `• Hores de sol efectives: *${cumulus.SunshineHours || '0.0'} h*\n`;
     text += `• Radiació solar màxima: *${cumulus.HighSolarRadToday || '--'} W/m²* (${cumulus.HighSolarRadTodayTime || '--'})\n`;
-    text += `• 🌅 Sortida de sol: *${cumulus.Sunrise || '--:--'}*\n`;
-    text += `• 🌇 Posta de sol: *${cumulus.Sunset || '--:--'}*\n`;
+    text += `• 🌅 Sortida de sol: *${cumulus.Sunrise || daylightWindow?.sunriseStr || '--:--'}*\n`;
+    text += `• 🌇 Posta de sol: *${cumulus.Sunset || daylightWindow?.sunsetStr || '--:--'}*\n`;
     text += `━━━━━━━━━━━━━━\n`;
-    text += `🌙 _Monitoratge pausat fins a les 07:00 h. Bona nit!_`;
+
+    // Càlcul de la sortida de sol de demà per a la informació de repòs nocturn
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowWindow = getDaylightWindow(tomorrow);
+    const nextSunrise = tomorrowWindow ? tomorrowWindow.sunriseStr : (daylightWindow ? daylightWindow.sunriseStr : '07:30');
+
+    text += `🌙 _Posta de sol completada. Monitoratge pausat fins a la sortida de sol (~${nextSunrise} h). Bona nit!_`;
 
     const opts = { parse_mode: 'Markdown' };
     if (TELEGRAM_TOPIC_ID) opts.message_thread_id = TELEGRAM_TOPIC_ID;
 
     await bot.sendMessage(CHAT_ID, text, opts);
-    console.log(`📊 [SUMMARY] Resum diari de generació enviat correctament a les 21:00h.`);
+    console.log(`📊 [SUMMARY] Resum diari de generació enviat correctament després de la posta de sol (${daylightWindow?.sunsetStr || 'vespre'}).`);
 
     // Esborra el panell viu que s'anava actualitzant cada 10 min per deixar el xat net amb només el resum
     if (state.liveMessageId) {
@@ -717,12 +1046,12 @@ async function sendDailySummary() {
 async function checkDailySummary() {
   const now = new Date();
   const todayStr = getTodayStr();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  const daylightWindow = getDaylightWindow(now);
 
-  // Enviar a partir de les 21:00 h (final del monitoratge diari)
-  const hour = now.getHours();
-
-  if (hour >= 21 && state.summarySentDate !== todayStr) {
-    await sendDailySummary();
+  // Enviar un cop superat el final de la finestra de llum solar (posta de sol + marge de crepuscle)
+  if (nowMins >= daylightWindow.endMins && state.summarySentDate !== todayStr) {
+    await sendDailySummary(daylightWindow);
     state.summarySentDate = todayStr;
     saveMemory();
   }
@@ -745,14 +1074,20 @@ async function sendEstatMessage(chatId, threadId) {
     const pv = (data.PV?.currentPower || 0) * 1000;
     const load = (data.LOAD?.currentPower || 0) * 1000;
     const grid = (data.gridKwSigned !== undefined ? data.gridKwSigned : (data.GRID?.currentPower || 0)) * 1000;
+    const energyToday = data.energyTodayKwh !== undefined ? data.energyTodayKwh : state.energyTodayKwh;
     
-    publishSolarToMqtt(pv, load, grid);
+    publishSolarToMqtt(pv, load, grid, energyToday);
+
+    const sourceLabel = data.source === 'modbus' ? 'Modbus TCP Local ⚡' : 'SolarEdge Cloud ☁️';
 
     let text = `☀️ *Estat actual de les plaques:*\n\n`;
     text += `⚡ Generació solar: *${pv.toFixed(0)} W*\n`;
     text += `🏠 Consum casa: *${load.toFixed(0)} W*\n`;
     text += `🔌 Xarxa elèctrica: *${Math.abs(grid).toFixed(0)} W* ${grid >= 0 ? '(Comprant 💸)' : '(Venent excedent 📉)'}\n`;
-    text += `\n🕒 _Hora: ${new Date().toLocaleTimeString('ca-ES')}_`;
+    if (energyToday !== undefined && energyToday !== null) {
+      text += `📊 Energia generada avui: *${Number(energyToday).toFixed(2)} kWh*\n`;
+    }
+    text += `\n🕒 _Hora: ${new Date().toLocaleTimeString('ca-ES')} (${sourceLabel})_`;
     
     const opts = { parse_mode: 'Markdown', ...actionButtons };
     if (threadId) opts.message_thread_id = threadId;
@@ -760,7 +1095,7 @@ async function sendEstatMessage(chatId, threadId) {
   } catch (err) {
     const opts = { parse_mode: 'Markdown' };
     if (threadId) opts.message_thread_id = threadId;
-    bot.sendMessage(chatId, `⚠️ Error en consultar l'API de SolarEdge: ${err.message}`, opts).catch(err => console.error(err));
+    bot.sendMessage(chatId, `⚠️ Error en consultar telemetria solar: ${err.message}`, opts).catch(err => console.error(err));
   }
 }
 
@@ -802,18 +1137,40 @@ bot.onText(/\/(id|info)/, (msg) => {
   bot.sendMessage(chatId, text, opts).catch(err => console.error(err));
 });
 
-bot.onText(/\/(start|ajuda|help)/, (msg) => {
+bot.onText(/\/testalerta/, async (msg) => {
   const chatId = msg.chat.id;
   const threadId = msg.message_thread_id;
-  const opts = { parse_mode: 'Markdown', ...actionButtons };
+  const opts = { parse_mode: 'Markdown' };
   if (threadId) opts.message_thread_id = threadId;
-  const text = `👋 *Bot Homelab IoT (Solar & Meteorologia)*\n\n` +
-               `Comandes disponibles:\n` +
-               `☀️ /estat - Producció de plaques solars i consum de casa\n` +
-               `🌤 /clima - Telemetria de l'estació Davis Vantage Pro2\n` +
-               `🆔 /id - Conèixer l'ID d'aquest tema o grup\n` +
-               `ℹ️ /ajuda - Mostrar aquesta llista de comandes`;
-  bot.sendMessage(chatId, text, opts).catch(err => console.error(err));
+
+  console.log(`🧪 [TEST] Llançant alerta de consum alt de prova per petició de l'usuari.`);
+  const alertSent = await bot.sendMessage(
+    chatId,
+    `🚨 *[PROVA] Alerta de Consum Alt Simulat!*\n` +
+    `S'estan gastant *1.250 W* més del que produeixen les plaques (esglaó: *1.200 W*).\n\n` +
+    `⚡ Producció solar: *180 W*\n` +
+    `🏠 Consum casa: *1.430 W*\n` +
+    `🔌 Comprant de la xarxa: *1.250 W*\n\n` +
+    `⏱ _Aquest missatge de prova s'auto-esborrarà d'aquí a 15 segons per simular la normalització del consum._`,
+    opts
+  );
+
+  setTimeout(async () => {
+    try {
+      if (alertSent && alertSent.message_id) {
+        await bot.deleteMessage(chatId, alertSent.message_id);
+        console.log(`🧹 [TEST] Alerta de prova esborrada.`);
+        const resSent = await bot.sendMessage(chatId, `✅ *[PROVA] Consum normalitzat!* L'alerta anterior s'ha auto-esborrat correctament per mantenir el xat net.`, opts);
+        setTimeout(() => bot.deleteMessage(chatId, resSent.message_id).catch(() => {}), 10000);
+      }
+    } catch (e) {}
+  }, 15000);
+});
+
+bot.onText(/\/testresum/, async (msg) => {
+  console.log(`🧪 [TEST] Llançant resum diari de prova.`);
+  const w = getDaylightWindow();
+  await sendDailySummary(w);
 });
 
 // Gestor de botons interactius
@@ -840,7 +1197,8 @@ bot.on('callback_query', async (query) => {
 if (!TELEGRAM_TOKEN || !CHAT_ID) {
   console.log('⚠️ Falten dades vitals (Token o Chat ID) a l\'arxiu .env.');
 } else {
-  console.log(`🤖 Bot de SolarEdge iniciat. Horari actiu: 07:00h a 21:00h. Cicle cada ${POLL_INTERVAL_MS / 60000} min.`);
+  const todayWindow = getDaylightWindow();
+  console.log(`🤖 Bot de SolarEdge iniciat. Horari dinàmic de llum: ${todayWindow.sunriseStr}h a ${todayWindow.sunsetStr}h (monitoratge actiu: ${todayWindow.startStr}h a ${todayWindow.endStr}h). Cicle cada ${POLL_INTERVAL_MS / 60000} min.`);
 
   mainCycle();
   setInterval(mainCycle, POLL_INTERVAL_MS);
