@@ -23,11 +23,24 @@ http://tempscat.com, http://www.tempscat.com, tempscat.com, www.tempscat.com {
 
     # Compressió d'actius web i HTML per a màxima velocitat (Google PageSpeed / Core Web Vitals)
     encode zstd gzip
+
+    # Control estricte de mètodes HTTP: només es permeten GET, POST i HEAD
+    @disallowed_methods {
+        not method GET POST HEAD
+    }
+    respond @disallowed_methods "Mètode no permès" 405
+
     # Bloqueig de seguretat: fitxers de configuració i claus des d'Internet
     @blocked {
         path /easyweathersetup.php* /settings.php* /settings1.php*
     }
     respond @blocked "Accés prohibit" 403
+
+    # Bloqueig de fitxers de configuració sensibles i scripts executables
+    @sensitive_files {
+        path *.env* *.ini *.conf *.sh *.sql *.bak *.yaml *.yml
+    }
+    respond @sensitive_files "Accés prohibit" 403
 
     # Bloqueig d'escanejadors i bots maliciosos (drop immediat per estalviar recursos)
     @scanners {
