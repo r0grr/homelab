@@ -65,6 +65,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
     networks:
       - homelab-net
+      - web-net
 
   # ============================================================================
   # 4. SOLAREDGE BOT & TELEMETRÍA SOLAR (Microservicio Unificado)
@@ -121,6 +122,7 @@ services:
       - weather34
     networks:
       - homelab-net
+      - web-net
 
   # ============================================================================
   # 6. WEB TERMINAL & SSH (Mòdul de Terminal Web per a Home Assistant)
@@ -191,7 +193,7 @@ services:
     depends_on:
       - cumulusmx
     networks:
-      - homelab-net
+      - web-net
 
   # ============================================================================
   # 9. FILE BROWSER (Gestor de Fitxers Web per a Home Assistant)
@@ -232,6 +234,7 @@ services:
       - /opt/servidor/goaccess/report:/srv/goaccess:ro
     networks:
       - homelab-net
+      - web-net
 
   # ============================================================================
   # 11. GOACCESS (Panell d'Analítica i Monitoratge d'Accessos Web en Temps Real)
@@ -303,4 +306,9 @@ networks:
     ipam:
       config:
         - subnet: 172.20.0.0/16
+  web-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
 
