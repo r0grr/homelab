@@ -85,64 +85,79 @@ function calculateSolarTimes(date = new Date(), lat = SALLENT_LAT, lon = SALLENT
   };
 }
 
-// Determina la finestra de llum solar del dia (Cumulus MX -> Càlcul NOAA -> Taula mensual de seguretat)
+// Determina la finestra de llum solar del dia (Càlcul astronòmic NOAA adaptat al canvi d'hora DST + validació Cumulus MX)
 function getDaylightWindow(date = new Date()) {
   let sunriseStr = null;
   let sunsetStr = null;
   let sunriseMins = null;
   let sunsetMins = null;
 
-  // 1. Prioritat: dades en directe de Cumulus MX (calculades per la pròpia estació Davis a Sallent)
+  // 1. Càlcul astronòmic NOAA solar autònom (patró d'or físic amb fus horari local dinàmic)
+  const astro = calculateSolarTimes(date);
+  if (astro) {
+    sunriseMins = astro.sunriseMins;
+    sunsetMins = astro.sunsetMins;
+    sunriseStr = astro.sunriseStr;
+    sunsetStr = astro.sunsetStr;
+  }
+
+  // 2. Comprovació de dades de Cumulus MX: només s'utilitzen si són coherents amb l'astronomia (evita desfasaments DST de +-1h)
   if (lastCumulusData) {
+    let cRiseMins = null;
+    let cSetMins = null;
+    let cRiseStr = null;
+    let cSetStr = null;
+
     if (lastCumulusData.Sunrise && typeof lastCumulusData.Sunrise === 'string' && lastCumulusData.Sunrise.includes(':')) {
       const s = lastCumulusData.Sunrise.trim();
       const [h, m] = s.split(':').map(Number);
       if (!isNaN(h) && !isNaN(m)) {
-        sunriseStr = s;
-        sunriseMins = h * 60 + m;
+        cRiseStr = s;
+        cRiseMins = h * 60 + m;
       }
     }
     if (lastCumulusData.Sunset && typeof lastCumulusData.Sunset === 'string' && lastCumulusData.Sunset.includes(':')) {
       const s = lastCumulusData.Sunset.trim();
       const [h, m] = s.split(':').map(Number);
       if (!isNaN(h) && !isNaN(m)) {
-        sunsetStr = s;
-        sunsetMins = h * 60 + m;
+        cSetStr = s;
+        cSetMins = h * 60 + m;
+      }
+    }
+
+    if (cRiseMins !== null && cSetMins !== null && astro) {
+      const diffRise = Math.abs(cRiseMins - astro.sunriseMins);
+      const diffSet = Math.abs(cSetMins - astro.sunsetMins);
+      // Si la diferència és > 30 minuts, Cumulus MX té un desfasament horari (p.ex. canvi d'hora d'estiu/hivern pendent de rollover a mitjanit)
+      if (diffRise > 30 || diffSet > 30) {
+        // Mantenim els valors d'astro (astronòmicament exactes per Sallent segons DST actual)
+      } else {
+        // Si són pràcticament idèntics (diferència <= 30 min), Cumulus està perfectament alineat
+        sunriseStr = cRiseStr;
+        sunsetStr = cSetStr;
+        sunriseMins = cRiseMins;
+        sunsetMins = cSetMins;
       }
     }
   }
 
-  // 2. Si Cumulus encara no ha respost, càlcul astronòmic d'alta precisió per Sallent
+  // 3. Fallback d'emergència per mesos si el càlcul astronòmic fallés
   if (sunriseMins === null || sunsetMins === null) {
-    const astro = calculateSolarTimes(date);
-    if (astro) {
-      if (sunriseMins === null) {
-        sunriseMins = astro.sunriseMins;
-        sunriseStr = astro.sunriseStr;
-      }
-      if (sunsetMins === null) {
-        sunsetMins = astro.sunsetMins;
-        sunsetStr = astro.sunsetStr;
-      }
-    }
-  }
-
-  // 3. Fallback mensual fix (seguretat absoluta si qualsevol altre mètode fallés)
-  if (sunriseMins === null || sunsetMins === null) {
+    const isSummerOffset = date.getTimezoneOffset() <= -120; // UTC+2 (horari d'estiu CEST)
     const month = date.getMonth();
     const monthlyFallbacks = [
-      { rise: '08:15', set: '17:45' }, // Gen
-      { rise: '07:50', set: '18:25' }, // Feb
-      { rise: '07:20', set: '19:15' }, // Mar
-      { rise: '07:05', set: '20:35' }, // Abr
-      { rise: '06:30', set: '21:10' }, // Mai
-      { rise: '06:15', set: '21:35' }, // Jun
-      { rise: '06:25', set: '21:30' }, // Jul
-      { rise: '07:00', set: '21:00' }, // Ago
-      { rise: '07:35', set: '20:10' }, // Set
-      { rise: '08:05', set: '19:15' }, // Oct
-      { rise: '07:45', set: '17:35' }, // Nov
-      { rise: '08:15', set: '17:25' }  // Des
+      { rise: '08:15', set: '17:45' }, // Gen (CET)
+      { rise: '07:50', set: '18:25' }, // Feb (CET)
+      { rise: isSummerOffset ? '07:45' : '06:45', set: isSummerOffset ? '20:10' : '19:10' }, // Mar
+      { rise: '07:05', set: '20:35' }, // Abr (CEST)
+      { rise: '06:30', set: '21:10' }, // Mai (CEST)
+      { rise: '06:15', set: '21:35' }, // Jun (CEST)
+      { rise: '06:25', set: '21:30' }, // Jul (CEST)
+      { rise: '07:00', set: '21:00' }, // Ago (CEST)
+      { rise: '07:35', set: '20:10' }, // Set (CEST)
+      { rise: isSummerOffset ? '08:05' : '07:15', set: isSummerOffset ? '19:00' : '17:58' }, // Oct
+      { rise: '07:45', set: '17:35' }, // Nov (CET)
+      { rise: '08:15', set: '17:25' }  // Des (CET)
     ];
     const fb = monthlyFallbacks[month];
     sunriseStr = fb.rise;
@@ -834,7 +849,8 @@ function formatLiveDashboard(pvKw, loadKw, gridKw, cumulusData, energyToday, sou
     gridText = `*0 W* (Autosuficient 100% ⚖️)`;
   }
 
-  const sky = getSkyCondition(cumulusData.SolarRad, cumulusData.CurrentSolarMax, cumulusData.Sunrise, cumulusData.Sunset);
+  const daylightWindow = getDaylightWindow();
+  const sky = getSkyCondition(cumulusData.SolarRad, cumulusData.CurrentSolarMax, daylightWindow.sunriseStr, daylightWindow.sunsetStr);
   const timeStr = new Date().toLocaleTimeString('ca-ES', { hour: '2-digit', minute: '2-digit' });
   const sourceLabel = source === 'modbus' ? 'Modbus TCP Local ⚡' : 'SolarEdge Cloud ☁️';
 
@@ -867,7 +883,7 @@ function formatLiveDashboard(pvKw, loadKw, gridKw, cumulusData, energyToday, sou
   if (cumulusData.SunshineHours !== undefined && cumulusData.SunshineHours !== null) {
     text += `• Hores de sol avui: *${cumulusData.SunshineHours} h*\n`;
   }
-  text += `• 🌅 Sortida: *${cumulusData.Sunrise || '--:--'}* | 🌇 Posta: *${cumulusData.Sunset || '--:--'}*\n`;
+  text += `• 🌅 Sortida: *${daylightWindow.sunriseStr}* | 🌇 Posta: *${daylightWindow.sunsetStr}*\n`;
   text += `━━━━━━━━━━━━━━\n`;
   text += `🔄 _Actualitzat a les ${timeStr} (${sourceLabel})_`;
 
@@ -1009,8 +1025,8 @@ async function sendDailySummary(daylightWindow) {
     text += `☀️ *Meteorologia Solar (Davis VP2):*\n`;
     text += `• Hores de sol efectives: *${cumulus.SunshineHours || '0.0'} h*\n`;
     text += `• Radiació solar màxima: *${cumulus.HighSolarRadToday || '--'} W/m²* (${cumulus.HighSolarRadTodayTime || '--'})\n`;
-    text += `• 🌅 Sortida de sol: *${cumulus.Sunrise || daylightWindow?.sunriseStr || '--:--'}*\n`;
-    text += `• 🌇 Posta de sol: *${cumulus.Sunset || daylightWindow?.sunsetStr || '--:--'}*\n`;
+    text += `• 🌅 Sortida de sol: *${daylightWindow?.sunriseStr || cumulus.Sunrise || '--:--'}*\n`;
+    text += `• 🌇 Posta de sol: *${daylightWindow?.sunsetStr || cumulus.Sunset || '--:--'}*\n`;
     text += `━━━━━━━━━━━━━━\n`;
 
     // Càlcul de la sortida de sol de demà per a la informació de repòs nocturn
