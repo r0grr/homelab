@@ -170,6 +170,9 @@ services:
       - "8090:80"
     environment:
       - TZ=${TZ:-Europe/Madrid}
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     volumes:
       - /opt/servidor/cuhws:/var/www/html
       - /opt/servidor/cumulusmx/web:/var/www/html/cumulusdata:ro
