@@ -3,9 +3,9 @@
 include_once(__DIR__ . '/jsondata/gencat_pla_alfa.php');
 $pla_data = get_gencat_pla_alfa();
 
-$nivell_avui = (isset($pla_data['nivell_avui']) && intval($pla_data['nivell_avui']) >= 0 && intval($pla_data['nivell_avui']) <= 4) ? intval($pla_data['nivell_avui']) : 1;
-$nivell_avui_text = $pla_data['nivell_avui_text'] ?? 'Moderat';
-$color_avui = $pla_data['color_avui'] ?? '#f39c12';
+$nivell_avui = (isset($pla_data['nivell_avui']) && intval($pla_data['nivell_avui']) >= 0 && intval($pla_data['nivell_avui']) <= 4) ? intval($pla_data['nivell_avui']) : 0;
+$nivell_avui_text = $pla_data['nivell_avui_text'] ?? 'Baix / Moderat';
+$color_avui = $pla_data['color_avui'] ?? '#27ae60';
 
 $has_dema = !empty($pla_data['has_dema']) && isset($pla_data['nivell_dema']) && intval($pla_data['nivell_dema']) >= 0 && intval($pla_data['nivell_dema']) <= 4;
 $nivell_dema = $has_dema ? intval($pla_data['nivell_dema']) : null;
@@ -14,7 +14,7 @@ $color_dema = $has_dema ? ($pla_data['color_dema'] ?? '#94a3b8') : '';
 
 $hora = $pla_data['hora'] ?? '9:30';
 $data_pla = $pla_data['data'] ?? date('d/m/Y');
-$advisory = $pla_data['advisory'] ?? 'Suspensió de cremes i feines agrícoles amb maquinària';
+$advisory = $pla_data['advisory'] ?? 'Sense restriccions especials en activitats';
 
 $level_colors = [
     0 => '#27ae60',

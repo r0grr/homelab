@@ -4,12 +4,15 @@ function get_gencat_pla_alfa() {
     $cache_file = __DIR__ . '/gencat_pla_alfa.json';
     $cache_time = 900; // 15 minutes cache
 
-    // Serve cached data if still fresh
-    if (file_exists($cache_file) && (time() - filemtime($cache_file) < $cache_time)) {
+    $cached = null;
+    $has_cache = file_exists($cache_file);
+    if ($has_cache) {
         $cached = @json_decode(file_get_contents($cache_file), true);
-        if (!empty($cached) && is_array($cached)) {
-            return $cached;
-        }
+    }
+
+    // Serve cached data if still fresh
+    if ($has_cache && !empty($cached) && is_array($cached) && (time() - filemtime($cache_file) < $cache_time)) {
+        return $cached;
     }
 
 $ctx = stream_context_create([
@@ -47,7 +50,7 @@ $level_advisories = [
     4 => 'Restricció d\'accés a massissos i suspensió total'
 ];
 
-$nivell_avui = 3; // default fallback
+$nivell_avui = 0; // default fallback segur (Baix / Moderat)
 $has_dema = false;
 $nivell_dema = null;
 $nivell_dema_text = null;
@@ -130,7 +133,12 @@ $output = [
     'gencat_url' => 'https://interior.gencat.cat/ca/arees_dactuacio/agents-rurals/pla-alfa/'
 ];
 
-    if ($found_data || !file_exists($cache_file)) {
+    // Si la xarxa ha fallat però tenim dades prèvies a la cau, mantenir les dades oficials prèvies
+    if (!$found_data && $has_cache && !empty($cached) && is_array($cached)) {
+        return $cached;
+    }
+
+    if ($found_data || !$has_cache) {
         @file_put_contents($cache_file, json_encode($output, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
 
