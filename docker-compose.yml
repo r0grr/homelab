@@ -29,6 +29,9 @@ services:
     restart: unless-stopped
     ports:
       - "1883:1883"
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     volumes:
       - /opt/servidor/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - /opt/servidor/mosquitto/data:/mosquitto/data
@@ -50,6 +53,9 @@ services:
       - /dev/ttyS1:/dev/ttyS1
     environment:
       - TZ=${TZ:-Europe/Madrid}
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     volumes:
       - /opt/servidor/cumulusmx/data:/opt/CumulusMX/data
       - /opt/servidor/cumulusmx/config:/opt/CumulusMX/config
@@ -76,6 +82,9 @@ services:
       context: ./scripts/solaredge_bot
     container_name: solaredge-bot
     restart: unless-stopped
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     environment:
       - TZ=${TZ:-Europe/Madrid}
       - MQTT_BROKER_HOST=mosquitto
@@ -111,6 +120,9 @@ services:
     restart: unless-stopped
     ports:
       - "5173:5173"
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     environment:
       - TZ=${TZ:-Europe/Madrid}
       - VITE_SOLAREDGE_SITE_ID=${SOLAREDGE_SITE_ID}
@@ -135,6 +147,9 @@ services:
     restart: unless-stopped
     ports:
       - "7681:7681"
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     networks:
       - homelab-net
 
@@ -148,6 +163,9 @@ services:
     container_name: cloudflared
     restart: unless-stopped
     command: tunnel run
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     environment:
       - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
     volumes:
@@ -208,6 +226,9 @@ services:
     restart: unless-stopped
     ports:
       - "8085:80"
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     volumes:
       - /opt/servidor:/srv/servidor
       - /mnt/backups:/srv/disc_copies_sata
@@ -228,6 +249,9 @@ services:
       - "443:443"
       - "7880:7880"
       - "8443:8443"
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     volumes:
       - /opt/servidor/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - /opt/servidor/caddy/data:/data
@@ -246,6 +270,9 @@ services:
     image: allinurl/goaccess:latest
     container_name: goaccess
     restart: unless-stopped
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     command: >
       /var/log/caddy/access.log
       -o /srv/goaccess/index.html
@@ -274,6 +301,9 @@ services:
     restart: unless-stopped
     ports:
       - "8080:80"
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     environment:
       - TZ=${TZ:-Europe/Madrid}
       - WEBSOCKET_ENABLED=true
@@ -293,6 +323,9 @@ services:
     restart: unless-stopped
     ports:
       - "3001:3001"
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     environment:
       - TZ=${TZ:-Europe/Madrid}
       - UPTIME_KUMA_DISABLE_FRAME_SAMEORIGIN=1
