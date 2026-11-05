@@ -152,13 +152,32 @@ def ensure_symlinks():
                 rel_target = os.path.relpath(TARGET_FILE, d)
                 os.symlink(rel_target, link)
         except Exception as e:
-            print(f"Notice ensuring symlink in {d}: {e}", file=sys.stderr, flush=True)
+def load_cache_from_disk():
+    """Populates CACHE from existing valid meteoclimatic.htm on disk to avoid hardcoded fallbacks on reboot."""
+    global CACHE
+    if not os.path.exists(TARGET_FILE):
+        return
+    try:
+        with open(TARGET_FILE, 'r', encoding='utf-8', errors='ignore') as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith('*') and '=' in line:
+                    k, v = line[1:].split('=', 1)
+                    k = k.lower()
+                    if k in CACHE:
+                        if isinstance(CACHE[k], int):
+                            CACHE[k] = safe_int(v, CACHE[k])
+                        else:
+                            CACHE[k] = safe_float(v, CACHE[k])
+    except Exception as e:
+        print(f"Notice loading cache from disk: {e}", file=sys.stderr, flush=True)
 
 def read_realtime_data():
     """
     Safely reads Cumulus MX realtime.txt with retry logic to avoid race conditions.
+    Allows up to 20 seconds during system startup while Cumulus MX initializes hardware.
     """
-    for attempt in range(4):
+    for attempt in range(20):
         if not os.path.exists(RT_PATH):
             time.sleep(1)
             continue
@@ -172,7 +191,7 @@ def read_realtime_data():
                     return parts
         except Exception:
             pass
-        time.sleep(0.5)
+        time.sleep(1)
     return None
 
 def safe_load_ini(filename):
@@ -523,6 +542,7 @@ def run_noaa_sync():
 
 def main():
     ensure_symlinks()
+    load_cache_from_disk()
     run_noaa_sync()
 
     loop_count = 0
