@@ -95,12 +95,17 @@ command_line:
   - sensor:
       name: "Mini PC - Temperatura Placa Base"
       unique_id: "minipc_temp_placa_base"
-      command: "awk '{printf \"%.1f\", $1/1000}' /sys/class/hwmon/hwmon0/temp1_input 2>/dev/null || echo 0"
+      command: "python3 /config/read_board_temp.py"
       unit_of_measurement: "°C"
       device_class: "temperature"
       state_class: "measurement"
-      scan_interval: 30
-      value_template: "{{ value | float }}"
+      scan_interval: 15
+      value_template: "{{ value_json.temp }}"
+      json_attributes:
+        - cpu_temp
+        - nvme_temp
+        - sata_temp
+        - method
 
   - sensor:
       name: "Mini PC - Consum Potència CPU"

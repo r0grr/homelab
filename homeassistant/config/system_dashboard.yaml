@@ -69,15 +69,15 @@ views:
                   yellow: 70
                   red: 85
               - type: gauge
-                name: Placa Base (ACPI)
+                name: Placa / Dissipador
                 entity: sensor.mini_pc_temperatura_placa_base
-                min: 15
-                max: 75
+                min: 20
+                max: 85
                 needle: true
                 severity:
-                  green: 15
-                  yellow: 45
-                  red: 65
+                  green: 20
+                  yellow: 60
+                  red: 75
           - type: horizontal-stack
             cards:
               - type: gauge
