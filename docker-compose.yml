@@ -181,7 +181,7 @@ services:
   # Interfície web Weather34 / CU-HWS optimitzada per a Cumulus MX i Davis VP2+.
   # ============================================================================
   weather34:
-    image: php:8.2-apache
+    image: php:8.5-apache
     container_name: weather34
     restart: unless-stopped
     ports:
