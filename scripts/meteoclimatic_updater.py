@@ -152,6 +152,8 @@ def ensure_symlinks():
                 rel_target = os.path.relpath(TARGET_FILE, d)
                 os.symlink(rel_target, link)
         except Exception as e:
+            pass
+
 def load_cache_from_disk():
     """Populates CACHE from existing valid meteoclimatic.htm on disk to avoid hardcoded fallbacks on reboot."""
     global CACHE
