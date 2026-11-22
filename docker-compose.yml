@@ -11,6 +11,9 @@ services:
     cap_add:
       - NET_ADMIN
       - NET_RAW
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.monitor-only=true"
     environment:
       - TZ=${TZ:-Europe/Madrid}
     volumes:
@@ -32,6 +35,8 @@ services:
     dns:
       - 1.1.1.1
       - 8.8.8.8
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     volumes:
       - /opt/servidor/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - /opt/servidor/mosquitto/data:/mosquitto/data
@@ -51,6 +56,9 @@ services:
     devices:
       - /dev/ttyS0:/dev/ttyS0
       - /dev/ttyS1:/dev/ttyS1
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.monitor-only=true"
     environment:
       - TZ=${TZ:-Europe/Madrid}
     dns:
@@ -186,6 +194,9 @@ services:
     restart: unless-stopped
     ports:
       - "8090:80"
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.monitor-only=true"
     environment:
       - TZ=${TZ:-Europe/Madrid}
     dns:
@@ -229,6 +240,8 @@ services:
     dns:
       - 1.1.1.1
       - 8.8.8.8
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     volumes:
       - /opt/servidor:/srv/servidor
       - /mnt/backups:/srv/disc_copies_sata
@@ -252,6 +265,8 @@ services:
     dns:
       - 1.1.1.1
       - 8.8.8.8
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     volumes:
       - /opt/servidor/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - /opt/servidor/caddy/data:/data
@@ -273,6 +288,8 @@ services:
     dns:
       - 1.1.1.1
       - 8.8.8.8
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     command: >
       /var/log/caddy/access.log
       -o /srv/goaccess/index.html
@@ -304,6 +321,8 @@ services:
     dns:
       - 1.1.1.1
       - 8.8.8.8
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     environment:
       - TZ=${TZ:-Europe/Madrid}
       - WEBSOCKET_ENABLED=true
@@ -326,11 +345,34 @@ services:
     dns:
       - 1.1.1.1
       - 8.8.8.8
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     environment:
       - TZ=${TZ:-Europe/Madrid}
       - UPTIME_KUMA_DISABLE_FRAME_SAMEORIGIN=1
     volumes:
       - /opt/servidor/uptime-kuma/data:/app/data
+    networks:
+      - homelab-net
+
+  # ============================================================================
+  # 14. WATCHTOWER (Actualitzacions Automàtiques i Monitoratge de Contenidors)
+  # ============================================================================
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=${TZ:-Europe/Madrid}
+      - DOCKER_API_VERSION=1.45
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_SCHEDULE=0 0 4 * * *
+      - WATCHTOWER_NOTIFICATIONS=shoutrrr
+      - WATCHTOWER_NOTIFICATION_URL=telegram://${TELEGRAM_BOT_TOKEN}@telegram?chats=${TELEGRAM_UPDATES_CHAT_ID}:${TELEGRAM_UPDATES_TOPIC_ID}
+      - WATCHTOWER_NOTIFICATION_REPORT=true
     networks:
       - homelab-net
 
