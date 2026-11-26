@@ -42,9 +42,17 @@ http://tempscat.com, http://www.tempscat.com, tempscat.com, www.tempscat.com {
     }
     respond @sensitive_files "Accés prohibit" 403
 
-    # Bloqueig d'escanejadors i bots maliciosos (drop immediat per estalviar recursos)
+    # Bloqueig universal de dotfiles i fitxers/directoris ocults (drop immediat per estalviar recursos)
+    # Permet estrictament /.well-known per a la validació de dominis i certificats SSL (ACME / Let's Encrypt)
+    @dotfiles {
+        path /.* */.*
+        not path /.well-known*
+    }
+    abort @dotfiles
+
+    # Bloqueig d'escanejadors i bots maliciosos (CMS, panells administratius i scripts vulnerables)
     @scanners {
-        path /.git* /.env* /wp-* /wordpress* /blog* /xmlrpc.php* /phpmyadmin* /pma* /.vscode* /.aws*
+        path /wp-* /wordpress* /blog* /xmlrpc.php* /phpmyadmin* /pma* /admin* /setup.php* /install.php*
     }
     abort @scanners
 
